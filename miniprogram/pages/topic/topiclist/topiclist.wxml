@@ -1,0 +1,29 @@
+<scroll-view scroll-x class="bg-white nav fixed">
+  <view class='flex text-center'>
+    <block wx:for="{{navItems}}" wx:for-index="idx" data-data="{{item}}">
+      <view class="cu-item flex-sub {{item.index==tabCur?'text-green cur':''}}" bindtap='tabSelect' data-id="{{item.index}}">
+        {{item.name}}
+      </view>
+    </block>
+  </view>
+</scroll-view>
+
+<!--文章列表-->
+<view class="cu-card article no-card margin-top-self">
+  <view wx:for="{{[1,2,3,4,5,6,7,8,9]}}" wx:for-item='i' wx:key class="cu-item shadow">
+    <view class="title text-cut ">这里有个戏精铲屎官，主子了解一下这里有个戏精铲屎官，主子了解一下</view>
+    <view class="content">
+      <image src="https://image.weilanwl.com/img/4x3-3.jpg" mode="aspectFill"></image>
+      <view class="desc">
+        <view class='text-content '> 这是一个伪铲屎官为了给自己的程序凑字数瞎几把乱写的一堆文字，了解一下就OK！一个伪铲屎官为了给自己的程序凑字数瞎几把乱写的一堆文字，了解一下就OKヾ(=･ω･=)o</view>
+        <view class='text-gray text-sm text-right'>
+          <text class="icon-timefill"></text> 2019-01-01
+          <text class="icon-attentionfill"></text> 10000
+          <text class="icon-appreciatefill"></text> 200
+          <text class="icon-messagefill"></text> 20
+        </view>
+      </view>
+
+    </view>
+  </view>
+</view>

@@ -1,0 +1,17 @@
+<template name="login">
+  <view class="cu-modal {{showLogin?'show':''}}">
+    <view class="cu-dialog">
+      <view class="flex padding justify-center">
+        <view class="cu-avatar xl margin-top-xl round" style="background-image:url(../../images/gravatar.png);">
+        </view>
+      </view>
+      <view class='padding-xl text-gray'>
+        允许微信授权后,可体验更多功能
+      </view>
+      <view class="cu-bar bg-white ">
+        <view class='action margin-0 flex-sub ' bindtap='hideModal'>返回首页</view>
+        <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>授权登录</view>
+      </view>
+    </view>
+  </view>
+</template>

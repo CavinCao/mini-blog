@@ -1,0 +1,10 @@
+<view class="bg-white">
+<view class="cu-card">
+  <view class="cu-item bg-img shadow-blur" style="background-image:url({{item.img}})" bindtap="toChild" data-url="{{item.url}}" wx:for="{{list}}" wx:key>
+    <view class="cardTitle">
+      {{item.title}}
+    </view>
+  </view>
+</view>
+<view class='cu-tabbar-height'></view>
+</view>
