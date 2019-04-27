@@ -1,0 +1,7 @@
+<template name="end"> 
+  <view class="end">    
+    <view>
+      ——The end——
+    </view>
+  </view>
+</template>

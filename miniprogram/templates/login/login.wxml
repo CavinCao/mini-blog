@@ -2,15 +2,16 @@
   <view class="cu-modal {{showLogin?'show':''}}">
     <view class="cu-dialog">
       <view class="flex padding justify-center">
-        <view class="cu-avatar xl margin-top-xl round" style="background-image:url(../../images/gravatar.png);">
+        <view class="cu-avatar xl margin-top-xl round" style="background-image:url(../../images/gravatar.png);"></view>
+      </view>
+      <view class='padding-xl text-gray'>允许微信授权后,可体验更多功能</view>
+      <view class="cu-bar bg-white justify-center ">
+        <view class='action'>
+          <button class='cu-btn line-green text-green' style='padding:0 90rpx' bindtap='navigateBack'>返回首页</button>
+          <button open-type='getUserInfo' class='cu-btn bg-green margin-left' style='padding:0 90rpx' bindgetuserinfo="getUserInfo">
+            授权登录
+          </button>
         </view>
-      </view>
-      <view class='padding-xl text-gray'>
-        允许微信授权后,可体验更多功能
-      </view>
-      <view class="cu-bar bg-white ">
-        <view class='action margin-0 flex-sub ' bindtap='hideModal'>返回首页</view>
-        <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>授权登录</view>
       </view>
     </view>
   </view>

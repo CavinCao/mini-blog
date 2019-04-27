@@ -2,6 +2,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init()
 const rp = require('request-promise');
+const dateUtils = require('date-utils')
 const db = cloud.database()
 const _ = db.command
 
@@ -44,20 +45,28 @@ async function syncWechatPosts(isUpdate) {
         continue;
       }
       if (!existPost.data.length) {
+        let dt = new Date(posts.item[index].update_time * 1000);
+        let createTime = dt.toFormat("YYYY-MM-DD")
+        //移除公众号代码片段序号
+        let content=posts.item[index].content.news_item[0].content.replace(/<ul.*code-snippet__line-index code-snippet__js.*?<\/ul>/g,'')
+        //替换图片data-url
+        content=content.replace(/data-src/g,"src")
 
         var data = {
           uniqueId: posts.item[index].media_id,
           sourceFrom: "wechat",
-          content: posts.item[index].content.news_item[0].content,
+          content: content,
           author: posts.item[index].content.news_item[0].author,
           title: posts.item[index].content.news_item[0].title,
           defaultImageUrl: posts.item[index].content.news_item[0].thumb_url,
-          createTime: posts.item[index].update_time,
+          createTime: createTime,
+          timestamp: posts.item[index].update_time,
           totalComments: 0,//总的点评数
           totalVisits: 100,//总的访问数
           totalZans: 50,//总的点赞数
           label: [],//标签
-          classify: 0//分类
+          classify: 0,//分类
+          contentType: "html"
         }
 
         await db.collection(collection).add({
@@ -76,15 +85,13 @@ async function syncWechatPosts(isUpdate) {
             content: posts.item[index].content.news_item[0].content,
             author: posts.item[index].content.news_item[0].author,
             title: posts.item[index].content.news_item[0].title,
-            defaultImageUrl: posts.item[index].content.news_item[0].thumb_url,
-            createTime: posts.item[index].update_time
+            defaultImageUrl: posts.item[index].content.news_item[0].thumb_url
           }
         });
 
       }
     }
-
-    offset=offset+count
+    offset = offset + count
   }
 }
 /**

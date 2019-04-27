@@ -1,0 +1,7 @@
+<template name="nodata"> 
+  <view class="nodata">    
+    <view>
+      —————— 没有对应的数据哦 ——————
+    </view>
+  </view>
+</template>

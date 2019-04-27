@@ -1,49 +1,38 @@
-<!--搜索栏-->
+<import src="../../templates/nodata.wxml" />
+<!-- 搜索栏 -->
 <view class='box'>
-  <view class="cu-bar search bg-white">
-    <view class='search-form round'>
-      <text class="icon-search"></text>
-      <input type="text" placeholder="搜索感兴趣的文章" confirm-type="search"></input>
-    </view>
-    <view class='action'>
-      <button class='cu-btn bg-green shadow-blur round'>搜索</button>
-    </view>
-  </view>
-</view>
-<!--文章列表-->
-<view class="cu-card article no-card">
-  <view wx:for="{{[1,2,3,4]}}" wx:for-item='i' wx:key class="cu-item shadow">
-    <view class="title text-cut ">这里有个戏精铲屎官，主子了解一下这里有个戏精铲屎官，主子了解一下</view>
-    <view class="content">
-      <image src="https://image.weilanwl.com/img/4x3-3.jpg" mode="aspectFill"></image>
-      <view class="desc">
-        <view class='text-content '> 这是一个伪铲屎官为了给自己的程序凑字数瞎几把乱写的一堆文字，了解一下就OK！一个伪铲屎官为了给自己的程序凑字数瞎几把乱写的一堆文字，了解一下就OKヾ(=･ω･=)o</view>
-        <view class='text-gray text-sm text-right'>
-          <text class="icon-timefill"></text> 2019-01-01
-          <text class="icon-attentionfill"></text> 10000
-          <text class="icon-appreciatefill"></text> 200
-          <text class="icon-messagefill"></text> 20
-        </view>
+  <form bindsubmit='bindconfirm'>
+    <view class="cu-bar search bg-white">
+      <view class='search-form round'>
+        <text class="icon-search"></text>
+        <input type="text" placeholder="搜索感兴趣的文章" name="searchContent" confirm-type="search"></input>
       </view>
-
+      <view class='action'>
+        <button class='cu-btn bg-green shadow-blur round' form-type='submit'>搜索</button>
+      </view>
     </view>
-  </view>
+  </form>
 </view>
-
+<!-- 文章列表 -->
 <view class="cu-card dynamic no-card">
-  <view wx:for="{{2}}" wx:key class="cu-item shadow">
-    <view class='text-content'>
-      你们的铲屎官是不是经常突然对手机傻笑？我家铲屎官常常坐沙发上笑的发抖！（暗中观察.jpg）你们的铲屎官是不是经常突然对手机傻笑？我家铲屎官常常坐沙发上笑的发抖！（暗中观察.jpg）
-    </view>
+  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow">
+    <view class='text-content margin-top-sm'>{{item.title}}</view>
     <view class="grid col-1 flex-sub padding-lr">
-      <view class="bg-img {{isCard?'':'only-img'}}" style="background-image:url(https://image.weilanwl.com/img/square-1.jpg);" wx:for="1" wx:key>
-      </view>
+      <view class="bg-img only-img" style="background-image:url({{item.defaultImageUrl}})"></view>
     </view>
     <view class='text-gray text-sm text-right padding'>
-      <text class="icon-timefill"></text> 2019-01-01
-      <text class="icon-attentionfill"></text> 10
-      <text class="icon-appreciatefill"></text> 20
-      <text class="icon-messagefill"></text> 30
+      <text class="icon-timefill"></text>
+      {{item.createTime}}
+      <text class="icon-attentionfill" />
+      {{item.totalVisits}}
+      <text class="icon-appreciatefill" />
+      {{item.totalZans}}
+      <text class="icon-messagefill" />
+      {{item.totalComments}}
     </view>
   </view>
+</view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+  <template is="nodata" />
 </view>

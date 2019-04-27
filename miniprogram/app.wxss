@@ -7,3 +7,23 @@
   align-items: center;
   box-sizing: border-box;
 } 
+.nodata {
+  font-size: 30rpx;
+  line-height: 1.2;
+  font-weight: normal;
+  text-align: center;
+  color: #999;
+  margin-top: 200rpx;
+  margin-bottom: 200rpx;
+}
+.end {
+  font-size: 24rpx;
+  line-height: 1.2;
+  font-weight: normal;
+  text-align: center;
+  color: #999;
+  margin-top: 100rpx;
+  margin-bottom: 30rpx;
+  background-color: #fff;
+  padding-bottom: 30rpx
+}

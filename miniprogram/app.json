@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/topic/topic",
     "pages/mine/mine",
-    "pages/topic/topiclist/topiclist"
+    "pages/topic/topiclist/topiclist",
+    "pages/detail/detail"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -14,20 +15,14 @@
   "tabBar": {
     "color": "#959394",
     "selectedColor": "#1296db",
-    "backgroundColor": "#f0f0f0",
-    "borderStyle": "white",
+    "backgroundColor": "#fff",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
         "iconPath": "/images/tab/index.png",
         "selectedIconPath": "/images/tab/index_clicked.png",
         "text": "首页"
-      },
-      {
-        "pagePath": "pages/topic/topic",
-        "iconPath": "/images/tab/topic.png",
-        "selectedIconPath": "images/tab/topic_clicked.png",
-        "text": "专题"
       },
       {
         "pagePath": "pages/mine/mine",

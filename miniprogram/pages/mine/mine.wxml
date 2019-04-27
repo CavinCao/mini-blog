@@ -12,13 +12,13 @@
 
 <view class="cu-list menu margin-top-sm shadow-lg">
   <view class="cu-item arrow">
-    <view class='content' bindtap='CopyLink' data-link='https://github.com/weilanwl/ColorUI'>
+    <view class='content' bindtap='' >
       <text class='icon-github text-grey'></text>
       <text class='text-grey'>我的收藏</text>
     </view>
   </view>
   <view class="cu-item arrow ">
-    <navigator class='content' url='../log/log' hover-class='none'>
+    <navigator class='content'  hover-class='none'>
       <text class='icon-formfill text-green'></text>
       <text class='text-grey'>我的足迹</text>
     </navigator>
@@ -36,7 +36,7 @@
     </button>
   </view>
   <view class="cu-item arrow">
-    <navigator class='content' url='../test/list' hover-class='none'>
+    <navigator class='content' bindtap='showWechatCode' hover-class='none'>
       <text class='icon-creativefill text-orange'></text>
       <text class='text-grey'>联系作者</text>
     </navigator>
@@ -44,4 +44,4 @@
 </view>
 
 <!--弹出层：授权-->
-<template is="login" data="{{showLogin: true, canIUse: canIUse}}"></template>
+<template is="login" data="{{showLogin: showLogin}}"></template>

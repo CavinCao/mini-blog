@@ -1,18 +1,33 @@
-// miniprogram/pages/mine/mine.js
+const api = require('../../utils/api.js');
+const regeneratorRuntime = require('../../utils/runtime.js');
+const app = getApp();
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    userInfo: { avatarUrl: 'https://image.weilanwl.com/img/square-4.jpg',nickName:'曹小斌'},
+    userInfo: {},
+    showLogin: false
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    let that = this;
+    app.checkUserInfo(function (userInfo, isLogin) {
+      if (!isLogin) {
+        that.setData({
+          showLogin: true
+        })
+      } else {
+        that.setData({
+          userInfo: userInfo
+        });
+      }
+    });
   },
 
   /**
@@ -21,21 +36,6 @@ Page({
   onReady: function () {
 
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
   /**
    * 生命周期函数--监听页面卸载
    */
@@ -62,5 +62,46 @@ Page({
    */
   onShareAppMessage: function () {
 
+  },
+
+  /**
+   * 返回
+   */
+  navigateBack: function (e) {
+    wx.switchTab({
+      url: '../index/index'
+    })
+  },
+
+  /**
+   * 获取用户头像
+   * @param {} e 
+   */
+  getUserInfo: function (e) {
+    console.log(e.detail.userInfo)
+    if (e.detail.userInfo) {
+      app.globalData.userInfo = e.detail.userInfo
+      this.setData({
+        showLogin: !this.data.showLogin,
+        userInfo: e.detail.userInfo
+      });
+    } else {
+      wx.switchTab({
+        url: '../index/index'
+      })
+    }
+  },
+  showQrcode: async function(e){
+    wx.previewImage({
+      urls: ['https://test-91f3af.tcb.qcloud.la/common/WechatIMG66.jpeg?sign=38e2cccbf86dd602ae575c89b2911b16&t=1556369699'],
+      current: 'https://test-91f3af.tcb.qcloud.la/common/WechatIMG66.jpeg?sign=38e2cccbf86dd602ae575c89b2911b16&t=1556369699'
+    })
+  },
+  showWechatCode:async function(e){
+    wx.previewImage({
+      urls: ['https://test-91f3af.tcb.qcloud.la/common/WechatIMG2.jpeg?sign=e81a38eec6cebfc82c1c34bb7e233bae&t=1556369822'],
+      current: 'https://test-91f3af.tcb.qcloud.la/common/WechatIMG2.jpeg?sign=e81a38eec6cebfc82c1c34bb7e233bae&t=1556369822'
+    })
   }
 })
+

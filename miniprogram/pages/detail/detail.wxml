@@ -1,0 +1,26 @@
+<import src="../../templates/end.wxml" />
+<import src="/towxml/entry.wxml" />
+<view style="background-color: #fff">
+    <view class="cu-card dynamic no-card">
+        <view class="cu-item shadow">
+            <view class='text-content margin-top-sm'>{{post.title}}</view>
+            <view class="grid col-1 flex-sub padding-lr">
+                <view class="bg-img only-img" style="background-image:url({{post.defaultImageUrl}})" />
+            </view>
+            <view class='text-gray text-sm text-right padding'>
+                <text class="icon-timefill" />
+                {{post.createTime}}
+                <text class="icon-attentionfill" />
+                {{post.totalVisits}}
+                <text class="icon-appreciatefill" />
+                {{post.totalZans}}
+                <text class="icon-messagefill" />
+                {{post.totalComments}}
+            </view>
+        </view>
+    </view>
+    <view>
+        <template is="entry" data="{{...post.content}}" />
+    </view>
+    <template is="end" />
+</view>
