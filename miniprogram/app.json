@@ -4,7 +4,8 @@
     "pages/topic/topic",
     "pages/mine/mine",
     "pages/topic/topiclist/topiclist",
-    "pages/detail/detail"
+    "pages/detail/detail",
+    "pages/mine/collection/collection"
   ],
   "window": {
     "backgroundTextStyle": "light",

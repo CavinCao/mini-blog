@@ -1,6 +1,6 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init()
+cloud.init({env:process.env.Env})
 const rp = require('request-promise');
 const dateUtils = require('date-utils')
 const db = cloud.database()
@@ -66,7 +66,9 @@ async function syncWechatPosts(isUpdate) {
           totalZans: 50,//总的点赞数
           label: [],//标签
           classify: 0,//分类
-          contentType: "html"
+          contentType: "html",
+          digest:posts.item[index].content.news_item[0].digest,//摘要
+          isShow:1//是否展示
         }
 
         await db.collection(collection).add({

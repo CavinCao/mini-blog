@@ -61,7 +61,7 @@ Page({
    * @param {} e 
    */
   bindconfirm:async function(e){
-    var that=this;
+    let that=this;
     console.log('e.detail.value', e.detail.value.searchContent)
     let page=1
     that.setData({
@@ -88,7 +88,7 @@ Page({
       return
     }
     let result = await api.getPostsList(page,filter)
-    if (result.data.length == 0) {
+    if (result.data.length === 0) {
       that.setData({
         nomore:true
       })

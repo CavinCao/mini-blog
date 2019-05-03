@@ -1,3 +1,4 @@
+const config = require('../../utils/config.js')
 const api = require('../../utils/api.js');
 const regeneratorRuntime = require('../../utils/runtime.js');
 const app = getApp();
@@ -91,17 +92,43 @@ Page({
       })
     }
   },
-  showQrcode: async function(e){
+  /**
+   * 展示打赏二维码
+   * @param {} e 
+   */
+  showQrcode: async function (e) {
     wx.previewImage({
-      urls: ['https://test-91f3af.tcb.qcloud.la/common/WechatIMG66.jpeg?sign=38e2cccbf86dd602ae575c89b2911b16&t=1556369699'],
-      current: 'https://test-91f3af.tcb.qcloud.la/common/WechatIMG66.jpeg?sign=38e2cccbf86dd602ae575c89b2911b16&t=1556369699'
+      urls: [config.moneyUrl],
+      current: config.moneyUrl
     })
   },
-  showWechatCode:async function(e){
+  /**
+   * 展示微信二维码
+   * @param {*} e 
+   */
+  showWechatCode: async function (e) {
     wx.previewImage({
-      urls: ['https://test-91f3af.tcb.qcloud.la/common/WechatIMG2.jpeg?sign=e81a38eec6cebfc82c1c34bb7e233bae&t=1556369822'],
-      current: 'https://test-91f3af.tcb.qcloud.la/common/WechatIMG2.jpeg?sign=e81a38eec6cebfc82c1c34bb7e233bae&t=1556369822'
+      urls: [config.wechatUrl],
+      current: config.wechatUrl
     })
-  }
+  },
+  /**
+   * 跳转我的收藏
+   * @param {*} e 
+   */
+  bindCollect: async function (e) {
+    wx.navigateTo({
+      url: '../mine/collection/collection?type=1'
+    })
+  },
+  /**
+   * 跳转我的点赞 
+   * @param {*} e 
+   */
+  bindZan: async function (e) {
+    wx.navigateTo({
+      url: '../mine/collection/collection?type=2'
+    })
+  },
 })
 

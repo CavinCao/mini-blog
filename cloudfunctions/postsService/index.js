@@ -1,9 +1,10 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init()
+cloud.init({env:process.env.Env})
 const Towxml = require('towxml');
 const db = cloud.database()
 const _ = db.command
+const dateUtils = require('date-utils')
 
 const towxml = new Towxml();
 
@@ -15,10 +16,143 @@ exports.main = async (event, context) => {
     case 'getPostsDetail': {
       return getPostsDetail(event)
     }
+    case 'addPostComment': {
+      return addPostComment(event)
+    }
+    case 'addPostChildComment': {
+      return addPostChildComment(event)
+    }
+    case 'addPostCollection': {
+      return addPostCollection(event)
+    }
+    case 'deletePostCollectionOrZan': {
+      return deletePostCollectionOrZan(event)
+    }
+    case 'addPostZan': {
+      return addPostZan(event)
+    }
     default: break
   }
 }
+/**
+ * 新增评论
+ * @param {} event 
+ */
+async function addPostComment(event) {
+  /**
+   * 1.新增评论消息
+   * {
+   *    "postId":"",
+   *    "avatarUrl":"",
+   *    "nickName":"".
+   * }
+   * 2.更新文章评论总数
+   */
+  await db.collection("mini_comments").add({
+    data: event.commentContent
+  });
 
+  let post = await db.collection('mini_posts').doc(event.commentContent.postId).get();
+  await db.collection('mini_posts').doc(posts.data[0]['_id']).update({
+    data: {
+      totalComments: posts.data['totalComments'] + 1
+    }
+  })
+}
+
+/**
+ * 新增子评论
+ * @param {} event 
+ */
+async function addPostChildComment(event){
+  return await db.collection('mini_comments').doc(event.id).update({
+    data: {
+      childComment: _.push(event.comments)
+    }
+  })
+}
+
+/**
+ * 处理文章收藏
+ * @param {*} event 
+ */
+async function addPostCollection(event) {
+  console.info("处理addPostCollection方法开始")
+  let postRelated = await db.collection('mini_posts_related').where({
+    openId: event.userInfo.openId,
+    postId:event.postId,
+    type: event.type
+  }).get();
+  console.info(postRelated)
+  console.info(!postRelated.data)
+
+  if (postRelated.data.length===0) {
+    let date=new Date().toFormat("YYYY-MM-DD")
+    console.info(date)
+    let result=await db.collection('mini_posts_related').add({
+      data: {
+        openId: event.userInfo.openId,
+        postId: event.postId,
+        postTitle: event.postTitle,
+        postUrl: event.postUrl,
+        postDigest:event.postDigest,
+        type: event.type,
+        createTime: new Date().toFormat("YYYY-MM-DD")
+      }
+    })
+    console.info(result)
+  }
+}
+
+/**
+ * 处理赞
+ * @param {} event 
+ */
+async function addPostZan(event) {
+  let post = await db.collection('mini_posts').doc(event.postId).get();
+  let postRelated = await db.collection('mini_posts_related').where({
+    openId: event.userInfo.openId,
+    postId:event.postId,
+    type: event.type
+  }).get();
+
+  let zan = post.data.totalZans + 1
+  let task = db.collection('mini_posts').doc(event.id).update({
+    data: {
+      totalZans: zan
+    }
+  });
+
+  if (postRelated.data.length===0) {
+    await db.collection('mini_posts_related').add({
+      data: {
+        openId: event.userInfo.openId,
+        postId: event.postId,
+        postTitle: event.postTitle,
+        postUrl: event.postUrl,
+        postDigest:event.postDigest,
+        type: event.type,
+        createTime: new Date().toFormat("YYYY-MM-DD")
+      }
+    });
+  }
+  let result=await task;
+  console.info(result)
+}
+
+/**
+ * 移除收藏/赞
+ * @param {} event 
+ */
+async function deletePostCollectionOrZan(event) {
+  //TODO:文章喜欢总数就不归还了？
+  let result=await db.collection('mini_posts_related').where({
+    openId: event.userInfo.openId,
+    postId: event.postId,
+    type: event.type
+  }).remove()
+  console.info(result)
+}
 /**
  * 获取文章明细
  * @param {} id 
@@ -32,8 +166,19 @@ async function getPostsDetail(event) {
     return "";
   }
 
+  //获取文章时直接浏览量+1
+  let visits = post.data.totalVisits + 1
+  let task = db.collection('mini_posts').doc(event.id).update({
+    data: {
+      totalVisits: visits
+    }
+  })
+
   let content = await convertPosts(post.data.content, "html");
   post.data.content = content;
+  post.data.totalVisits = visits;
+  let result = await task;
+  console.info(result)
   return post.data
 }
 

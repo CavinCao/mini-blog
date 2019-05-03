@@ -1,0 +1,22 @@
+{
+  "name": "mini-blog",
+  "version": "1.0.0",
+  "description": "基于云开发的博客小程序。",
+  "main": "index.js",
+  "dependencies": {
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CavinCao/mini-blog.git"
+  },
+  "author": "Bug生活2048",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CavinCao/mini-blog/issues"
+  },
+  "homepage": "https://github.com/CavinCao/mini-blog#readme"
+}

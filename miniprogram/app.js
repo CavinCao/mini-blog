@@ -7,10 +7,25 @@ App({
     } else {
       wx.cloud.init({
         traceUser: true,
+        env:"product-raeub"
       })
-    }
-
-    this.globalData = {
+      var openid = wx.getStorageSync('openid');
+      if (openid) {
+        this.globalData.openid = openid
+      } else {
+        wx.cloud.callFunction({
+          name: 'login',
+          data: {},
+          success: res => {
+            this.globalData.openid = res.result.openid
+            wx.setStorageSync('openid', res.result.openid);
+          },
+          fail: err => {
+            console.error('[云函数] [login] 调用失败', err)
+          }
+        })
+      }
+      console.info(this.globalData.openid)
     }
   },
   towxml:new Towxml(),

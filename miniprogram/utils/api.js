@@ -3,31 +3,6 @@ const regeneratorRuntime = require('runtime.js');
 const db = wx.cloud.database()
 const _ = db.command
 
-function wxPromisify(fn) {
-    return function (obj = {}) {
-        return new Promise((resolve, reject) => {
-            obj.success = function (res) {
-                //成功
-                resolve(res)
-            }
-            obj.fail = function (res) {
-                //失败
-                reject(res)
-            }
-            fn(obj)
-        })
-    }
-}
-
-//无论promise对象最后状态如何都会执行
-Promise.prototype.finally = function (callback) {
-    let P = this.constructor;
-    return this.then(
-        value => P.resolve(callback()).then(() => value),
-        reason => P.resolve(callback()).then(() => { throw reason })
-    );
-};
-
 /**
  * 获取文章列表
  * @param {} page 
@@ -74,6 +49,18 @@ function getPostsList(page, filter) {
 }
 
 /**
+ * 获取收藏、点赞列表
+ * @param {} page 
+ */
+function getPostRelated(where,page) {
+    return db.collection('mini_posts_related')
+        .where(where)
+        .orderBy('createTime', 'desc')
+        .skip((page - 1) * 10)
+        .limit(10)
+        .get()
+}
+/**
  * 获取文章详情
  * @param {} id 
  */
@@ -83,6 +70,56 @@ function getPostDetail(id) {
         data: {
             action: "getPostsDetail",
             id: id,
+        }
+    })
+}
+
+/**
+ * 新增用户收藏文章
+ */
+function addPostCollection(data) {
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "addPostCollection",
+            postId: data.postId,
+            postTitle: data.postTitle,
+            postUrl: data.postUrl,
+            postDigest: data.postDigest,
+            type: data.type
+        }
+    })
+}
+
+/**
+ * 取消喜欢或收藏
+ */
+function deletePostCollectionOrZan(postId,type)
+{
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "deletePostCollectionOrZan",
+            postId: postId,
+            type: type
+        }
+    })
+}
+
+/**
+ * 新增用户点赞
+ * @param {} data 
+ */
+function addPostZan(data) {
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "addPostZan",
+            postId: data.postId,
+            postTitle: data.postTitle,
+            postUrl: data.postUrl,
+            postDigest: data.postDigest,
+            type: data.type
         }
     })
 }
@@ -101,5 +138,9 @@ function getQrCode() {
 module.exports = {
     getPostsList: getPostsList,
     getPostDetail: getPostDetail,
-    getQrCode: getQrCode
+    getPostRelated: getPostRelated,
+    getQrCode: getQrCode,
+    addPostCollection: addPostCollection,
+    addPostZan: addPostZan,
+    deletePostCollectionOrZan:deletePostCollectionOrZan
 }

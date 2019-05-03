@@ -1,0 +1,30 @@
+<import src="../../../templates/nodata.wxml" />
+<scroll-view scroll-x class="bg-white nav fixed">
+  <view class='flex text-center'>
+    <block wx:for="{{navItems}}" wx:for-index="idx" data-data="{{item}}">
+      <view class="cu-item flex-sub {{item.index==tabCur?'text-green cur':''}}" bindtap='tabSelect' data-id="{{item.index}}">
+        {{item.name}}
+      </view>
+    </block>
+  </view>
+</scroll-view>
+
+<!--文章列表-->
+<view class="cu-card article no-card margin-top-self">
+  <view wx:for="{{postRelated}}"  wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.postId}}" bindtap="bindPostDetail"  class="cu-item shadow">
+    <view class="title text-cut ">{{item.postTitle}}</view>
+    <view class="content">
+      <image src="{{item.postUrl}}" mode="aspectFill"></image>
+      <view class="desc">
+        <view class='text-content '>{{item.postDigest}}</view>
+        <view class='text-gray text-sm text-right'>
+          {{timeDesc}} {{item.createTime}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+  <template is="nodata" />
+</view>

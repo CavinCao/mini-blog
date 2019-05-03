@@ -12,21 +12,21 @@
 
 <view class="cu-list menu margin-top-sm shadow-lg">
   <view class="cu-item arrow">
-    <view class='content' bindtap='' >
-      <text class='icon-github text-grey'></text>
+    <view class='content' bindtap='bindCollect' >
+      <text class='icon-favorfill text-grey'></text>
       <text class='text-grey'>我的收藏</text>
     </view>
   </view>
   <view class="cu-item arrow ">
-    <navigator class='content'  hover-class='none'>
-      <text class='icon-formfill text-green'></text>
-      <text class='text-grey'>我的足迹</text>
-    </navigator>
+    <view class='content' bindtap='bindZan'  hover-class='none'>
+      <text class='icon-appreciatefill text-green'></text>
+      <text class='text-grey'>我的点赞</text>
+    </view>
   </view>
   <view class="cu-item arrow  margin-top-sm">
     <view class='content' bindtap="showQrcode">
-      <text class='icon-appreciatefill text-red'></text>
-      <text class='text-grey'>赞赏支持</text>
+      <text class='icon-refund text-red'></text>
+      <text class='text-grey'>打赏支持</text>
     </view>
   </view>
   <view class="cu-item arrow">
