@@ -49,10 +49,26 @@ function getPostsList(page, filter) {
 }
 
 /**
+ * 获取评论列表
+ * @param {} page 
+ * @param {*} postId 
+ */
+function getPostComments(page, postId) {
+    return db.collection('mini_comments')
+        .where({
+            postId: postId
+        })
+        .orderBy('timestamp', 'desc')
+        .skip((page - 1) * 10)
+        .limit(10)
+        .get()
+}
+
+/**
  * 获取收藏、点赞列表
  * @param {} page 
  */
-function getPostRelated(where,page) {
+function getPostRelated(where, page) {
     return db.collection('mini_posts_related')
         .where(where)
         .orderBy('createTime', 'desc')
@@ -94,14 +110,26 @@ function addPostCollection(data) {
 /**
  * 取消喜欢或收藏
  */
-function deletePostCollectionOrZan(postId,type)
-{
+function deletePostCollectionOrZan(postId, type) {
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {
             action: "deletePostCollectionOrZan",
             postId: postId,
             type: type
+        }
+    })
+}
+
+/**
+ * 新增评论
+ */
+function addPostComment(commentContent) {
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "addPostComment",
+            commentContent: commentContent
         }
     })
 }
@@ -125,6 +153,23 @@ function addPostZan(data) {
 }
 
 /**
+ * 新增子评论
+ * @param {} id 
+ * @param {*} comments 
+ */
+function addPostChildComment(id,postId, comments) {
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "addPostChildComment",
+            id: id,
+            comments: comments,
+            postId:postId
+        }
+    })
+}
+
+/**
  * 获取打赏码
  */
 function getQrCode() {
@@ -142,5 +187,8 @@ module.exports = {
     getQrCode: getQrCode,
     addPostCollection: addPostCollection,
     addPostZan: addPostZan,
-    deletePostCollectionOrZan:deletePostCollectionOrZan
+    deletePostCollectionOrZan: deletePostCollectionOrZan,
+    addPostComment: addPostComment,
+    getPostComments: getPostComments,
+    addPostChildComment: addPostChildComment
 }

@@ -1,6 +1,7 @@
 const config = require('../../utils/config.js')
 const api = require('../../utils/api.js');
 const regeneratorRuntime = require('../../utils/runtime.js');
+const util = require('../../utils/util.js');
 const app = getApp();
 Page({
 
@@ -12,16 +13,26 @@ Page({
     isShow: false,
     collection: { status: false, text: "收藏", icon: "favor" },
     zan: { status: false, text: "点赞", icon: "appreciate" },
-    showLogin:false,
-    userInfo:{},
-    commentContent:""
+    showLogin: false,
+    userInfo: {},
+    commentContent: "",
+    commentPage: 1,
+    commentList: [],
+    nomore: false,
+    nodata: false,
+    commentId: "",
+    placeholder: "评论...",
+    focus: false,
+    toName: "",
+    toOpenId: "",
+    nodata_str:"暂无评论，赶紧抢沙发吧"
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    let that=this;
+    let that = this;
     app.checkUserInfo(function (userInfo, isLogin) {
       if (!isLogin) {
         that.setData({
@@ -39,23 +50,42 @@ Page({
     await that.getPostRelated(blogId)
   },
   /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
+  onReachBottom: async function () {
+    wx.showLoading({
+      title: '加载中...',
+    })
+    try {
+      let that = this;
+      if (that.data.nomore === true)
+        return;
+
+      let page = that.data.commentPage;
+      let commentList = await api.getPostComments(page, that.data.post._id)
+      if (commentList.data.length === 0) {
+        that.setData({
+          nomore: true
+        })
+        if (page === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        that.setData({
+          commentPage: page + 1,
+          commentList: that.data.commentList.concat(commentList.data),
+        })
+      }
+    }
+    catch (err) {
+      console.info(err)
+    }
+    finally {
+      wx.hideLoading()
+    }
 
   },
 
@@ -158,8 +188,8 @@ Page({
     }
     catch (err) {
       wx.showToast({
-        title: '操作失败啦',
-        icon: 'error',
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
         duration: 1500
       })
       console.info(err)
@@ -213,8 +243,8 @@ Page({
     }
     catch (err) {
       wx.showToast({
-        title: '操作失败啦',
-        icon: 'error',
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
         duration: 1500
       })
       console.info(err)
@@ -262,27 +292,128 @@ Page({
    * 提交评论
    * @param {} e 
    */
-  formSubmit: async function(e){
-    console.info(e)
-    let that=this;
-    let content=e.detail.value.inputComment;
+  formSubmit: async function (e) {
+    let that = this;
+    let commentPage = 1
+    let content = e.detail.value.inputComment;
     if (content == undefined || content.length == 0) {
       wx.showToast({
-        title: '评论内容不能为空哦',
-        icon: 'error',
+        title: '请输入内容',
+        icon: 'none',
         duration: 1500
       })
       return
     }
-    var data = {
-      postId: that.data.post._id,
-      cNickName: userInfo.nickName,
-      cAvatarUrl: userInfo.avatarUrl,
-      timestamp: new Date().getTime(),
-      createDate: util.formatTime(new Date()),
-      comment: comment,
-      childComment: [],
-      flag: 0
+    try {
+      wx.showLoading({
+        title: '加载中...',
+      })
+      if (that.data.commentId === "") {
+        var data = {
+          postId: that.data.post._id,
+          cNickName: that.data.userInfo.nickName,
+          cAvatarUrl: that.data.userInfo.avatarUrl,
+          cOpenId: app.globalData.openid,
+          timestamp: new Date().getTime(),
+          createDate: util.formatTime(new Date()),
+          comment: content,
+          childComment: [],
+          flag: 0
+        }
+        await api.addPostComment(data)
+      }
+      else {
+        var childData = [{
+          cOpenId: app.globalData.openid,
+          cNickName: that.data.userInfo.nickName,
+          cAvatarUrl: that.data.userInfo.avatarUrl,
+          timestamp: new Date().getTime(), //new Date(),
+          createDate: util.formatTime(new Date()),
+          comment: content,
+          tNickName: that.data.toName,
+          tOpenId: that.data.toOpenId,
+          flag: 0
+        }]
+        await api.addPostChildComment(that.data.commentId, that.data.post._id, childData)
+      }
+
+      let commentList = await api.getPostComments(commentPage, that.data.post._id)
+      if (commentList.data.length === 0) {
+        that.setData({
+          nomore: true
+        })
+        if (commentPage === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        let post = that.data.post;
+        post.totalComments = post.totalComments + 1
+        that.setData({
+          commentPage: commentPage + 1,
+          commentList: commentList.data,
+          commentContent: "",
+          nomore: false,
+          nodata: false,
+          post: post,
+          commentId: "",
+          placeholder: "评论...",
+          focus: false,
+          toName: "",
+          toOpenId: ""
+        })
+      }
+
+      wx.showToast({
+        title: '提交成功',
+        icon: 'success',
+        duration: 1500
+      })
+    }
+    catch (err) {
+      wx.showToast({
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
+        duration: 1500
+      })
+      console.info(err)
+    }
+    finally {
+      wx.hideLoading()
+    }
+  },
+  /**
+  * 点击评论内容回复
+  */
+  focusComment: function (e) {
+    let that = this;
+    let name = e.currentTarget.dataset.name;
+    let commentId = e.currentTarget.dataset.id;
+    let openId = e.currentTarget.dataset.openid;
+
+    that.setData({
+      commentId: commentId,
+      placeholder: "回复" + name + ":",
+      focus: true,
+      toName: name,
+      toOpenId: openId
+    });
+  },
+  /**
+   * 失去焦点时
+   * @param {*} e 
+   */
+  onReplyBlur: function (e) {
+    let that = this;
+    const text = e.detail.value.trim();
+    if (text === '') {
+      that.setData({
+        commentId: "",
+        placeholder: "评论...",
+        toName: ""
+      });
     }
   }
 })

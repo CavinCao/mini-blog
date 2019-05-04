@@ -7,7 +7,7 @@ App({
     } else {
       wx.cloud.init({
         traceUser: true,
-        env:"product-raeub"
+        env:"test-91f3af"
       })
       var openid = wx.getStorageSync('openid');
       if (openid) {
