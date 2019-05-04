@@ -8,9 +8,10 @@ Page({
   data: {
     posts: [],
     page: 1,
-    filter:"",
-    nodata:false,
-    nomore:false
+    filter: "",
+    nodata: false,
+    nomore: false,
+    defaultSearchValue:""
   },
 
   /**
@@ -20,24 +21,29 @@ Page({
     await this.getPostsList('')
   },
   /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
-
+  onPullDownRefresh: async function () {
+    console.info("xiala")
+    let that = this;
+    let page = 1
+    that.setData({
+      page: page,
+      posts: [],
+      filter: "",
+      nomore: false,
+      nodata: false,
+      defaultSearchValue:""
+    })
+    await this.getPostsList("")
+    wx.stopPullDownRefresh();
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: async function () {
-    let filter=this.data.filter
+    let filter = this.data.filter
     await this.getPostsList(filter)
   },
 
@@ -60,16 +66,16 @@ Page({
    * 搜索功能
    * @param {} e 
    */
-  bindconfirm:async function(e){
-    let that=this;
+  bindconfirm: async function (e) {
+    let that = this;
     console.log('e.detail.value', e.detail.value.searchContent)
-    let page=1
+    let page = 1
     that.setData({
       page: page,
       posts: [],
-      filter:e.detail.value.searchContent,
-      nomore:false,
-      nodata:false
+      filter: e.detail.value.searchContent,
+      nomore: false,
+      nodata: false
     })
     await this.getPostsList(e.detail.value.searchContent)
   },
@@ -82,20 +88,18 @@ Page({
     })
     let that = this
     let page = that.data.page
-    if(that.data.nomore)
-    {
+    if (that.data.nomore) {
       wx.hideLoading()
       return
     }
-    let result = await api.getPostsList(page,filter)
+    let result = await api.getPostsList(page, filter)
     if (result.data.length === 0) {
       that.setData({
-        nomore:true
+        nomore: true
       })
-      if(page===1)
-      {
+      if (page === 1) {
         that.setData({
-          nodata:true
+          nodata: true
         })
       }
     }
