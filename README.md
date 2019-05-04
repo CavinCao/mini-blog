@@ -2,8 +2,9 @@
 
 ## 相关使用和文章介绍
 
-[公众号文章同步至云数据库实现](https://www.bug2048.com/wechat20190421/)
-[[mini-blog]基于云开发的博客小程序诞生](https://www.bug2048.com/wechat20190429/)
+- [公众号文章同步至云数据库实现](https://www.bug2048.com/wechat20190421/)
+
+- [[mini-blog]基于云开发的博客小程序诞生](https://www.bug2048.com/wechat20190429/)
 
 ## 当前进度与计划
 
@@ -22,7 +23,8 @@
 
 
 > 博客地址：[http//:www.bug2048.com](https://www.bug2048.com/) 
+
 > 微信公众号与微信：Bug生活2048
 
-![image](https://www.bug2048.com//content/images/2018/02/qrcode_for_gh_cac1ef8c9733_258.jpg)![image](http://image.bug2048.com/WechatIMG2.jpeg?imageView2/1/w/200/h/200/q/100)
+![image](https://www.bug2048.com//content/images/2018/02/qrcode_for_gh_cac1ef8c9733_258.jpg)  ![image](http://image.bug2048.com/WechatIMG2.jpeg?imageView2/1/w/200/h/200/q/100)
 
