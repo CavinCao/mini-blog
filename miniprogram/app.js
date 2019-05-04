@@ -1,4 +1,5 @@
 const Towxml = require('/towxml/main'); 
+const config = require('/utils/config.js')
 App({           
   onLaunch: function () {
   
@@ -7,7 +8,7 @@ App({
     } else {
       wx.cloud.init({
         traceUser: true,
-        env:"test-91f3af"
+        env:config.env
       })
       var openid = wx.getStorageSync('openid');
       if (openid) {

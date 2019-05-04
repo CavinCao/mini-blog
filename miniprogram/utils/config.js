@@ -7,6 +7,11 @@ var moneyUrl ="https://test-91f3af.tcb.qcloud.la/common/WechatIMG66.jpeg?sign=38
  * 公众号二维码
  */
 var wechatUrl ="https://test-91f3af.tcb.qcloud.la/common/WechatIMG2.jpeg?sign=e81a38eec6cebfc82c1c34bb7e233bae&t=1556369822"
+
+/**
+ * 云开发环境
+ */
+var env="product-raeub"
 /**
  * 个人文章操作枚举
  */
@@ -26,5 +31,6 @@ var postRelatedType = {
 module.exports = {
     postRelatedType: postRelatedType,
     moneyUrl:moneyUrl,
-    wechatUrl:wechatUrl
+    wechatUrl:wechatUrl,
+    env:env
 }
