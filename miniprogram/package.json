@@ -4,6 +4,7 @@
   "description": "基于云开发的博客小程序。",
   "main": "index.js",
   "dependencies": {
+    "wxa-plugin-canvas": "^1.1.11"
   },
   "devDependencies": {},
   "scripts": {
