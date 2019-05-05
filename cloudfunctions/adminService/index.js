@@ -14,7 +14,7 @@ const APPSCREAT = process.env.AppSecret
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
 
-  return await syncWechatPosts(false)
+  return await syncWechatPosts(true)
 }
 
 /**
@@ -48,7 +48,7 @@ async function syncWechatPosts(isUpdate) {
         let dt = new Date(posts.item[index].update_time * 1000);
         let createTime = dt.toFormat("YYYY-MM-DD")
         //移除公众号代码片段序号
-        let content=posts.item[index].content.news_item[0].content.replace(/<ul.*code-snippet__line-index code-snippet__js.*?<\/ul>/g,'')
+        let content=posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g,'')
         //替换图片data-url
         content=content.replace(/data-src/g,"src")
 
