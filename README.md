@@ -8,6 +8,8 @@
 
 - [[mini-blog]基于云开发的博客小程序使用教程](https://www.bug2048.com/wechat20190505/)
 
+- [小程序富文本解析的「伪需求」，从wxParse到towxml的坑](https://www.bug2048.com/wechat20190507/)
+
 ## 当前进度与计划
 
 - [x]  公众号文章同步
