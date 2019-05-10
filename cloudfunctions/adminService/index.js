@@ -1,11 +1,10 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init({env:process.env.Env})
+cloud.init({ env: process.env.Env })
 const rp = require('request-promise');
 const dateUtils = require('date-utils')
 const db = cloud.database()
 const _ = db.command
-
 const APPID = process.env.AppId
 const APPSCREAT = process.env.AppSecret
 
@@ -13,23 +12,36 @@ const APPSCREAT = process.env.AppSecret
 // 云函数入口函数
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-
-  return await syncWechatPosts(true)
+  await syncWechatPosts(false)
+  //TODO:暂时注释：2019-05-09(cloud.openapi.wxacode.getUnlimited)云调用暂不支持云端测试和定时触发器，只能由小程序端触发
+  //await syncPostQrCode()
 }
 
 /**
  * 同步公众号文章至云数据库
  */
 async function syncWechatPosts(isUpdate) {
+  let configData = await getConfigInfo("syncWeChatPosts");
+  if (configData == null) {
+    console.info("未获取相应的配置")
+    return;
+  }
   let collection = "mini_posts"
   let accessToken = await getCacheAccessToken(1)
-  var offset = 0
+  var offset = parseInt(configData.value.currentOffset);
+  let maxCount = parseInt(configData.value.maxSyncCount);
   var count = 10
   var isContinue = true
   while (isContinue) {
     var posts = await getWechatPosts(accessToken, offset, count)
     if (posts.item.length == 0) {
-      isContinue = false
+      isContinue = false;
+      let data = { currentOffset: offset - 10, maxSyncCount: 100 }
+      await db.collection("mini_config").doc(configData._id).update({
+        data: {
+          value: data
+        }
+      });
       break;
     }
 
@@ -48,9 +60,9 @@ async function syncWechatPosts(isUpdate) {
         let dt = new Date(posts.item[index].update_time * 1000);
         let createTime = dt.toFormat("YYYY-MM-DD")
         //移除公众号代码片段序号
-        let content=posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g,'')
+        let content = posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g, '')
         //替换图片data-url
-        content=content.replace(/data-src/g,"src")
+        content = content.replace(/data-src/g, "src")
 
         var data = {
           uniqueId: posts.item[index].media_id,
@@ -67,8 +79,8 @@ async function syncWechatPosts(isUpdate) {
           label: [],//标签
           classify: 0,//分类
           contentType: "html",
-          digest:posts.item[index].content.news_item[0].digest,//摘要
-          isShow:1//是否展示
+          digest: posts.item[index].content.news_item[0].digest,//摘要
+          isShow: 1//是否展示
         }
 
         await db.collection(collection).add({
@@ -82,7 +94,7 @@ async function syncWechatPosts(isUpdate) {
         }
 
         let id = existPost.data[0]._id;
-        await db.collection(collection).doc(id).set({
+        await db.collection(collection).doc(id).update({
           data: {
             content: posts.item[index].content.news_item[0].content,
             author: posts.item[index].content.news_item[0].author,
@@ -95,6 +107,8 @@ async function syncWechatPosts(isUpdate) {
     }
     offset = offset + count
   }
+
+
 }
 /**
  * 获取缓存过的token
@@ -183,4 +197,108 @@ async function getWechatPosts(accessToken, offset, count) {
   const result = await rp(options)
   let rbody = (typeof result === 'object') ? result : JSON.parse(result);
   return rbody;
+}
+
+/**
+ * 同步文章的小程序码
+ */
+async function syncPostQrCode() {
+
+  let configData = await getConfigInfo("syncPostQrCode");
+  if (configData == null) {
+    console.info("未获取相应的配置")
+    return;
+  }
+  console.info(configData)
+  let page = parseInt(configData.value.currentOffset);
+  let maxCount = parseInt(configData.value.maxSyncCount);
+  let isContinue = true;
+  while (isContinue) {
+
+    let posts = await db.collection('mini_posts')
+      .orderBy('timestamp', 'asc')
+      .skip(page * 10)
+      .limit(10)
+      .field({
+        _id: true,
+        qrCode: true,
+        timestamp: true
+      }).get()
+
+    console.info(posts)
+
+    if (posts.data.length == 0) {
+      isContinue = false;
+      break;
+    }
+
+    for (var index in posts.data) {
+      if (posts.data[index].qrCode != null) {
+        continue
+      }
+
+      let scene = 'timestamp=' + posts.data[index].timestamp;
+      let result = await cloud.openapi.wxacode.getUnlimited({
+        scene: scene,
+        page: 'pages/detail/detail'
+      })
+
+      if (result.errCode === 0) {
+        const upload = await cloud.uploadFile({
+          cloudPath: posts.data[index]._id + '.png',
+          fileContent: result.buffer,
+        })
+
+        await db.collection("mini_posts").doc(posts.data[index]._id).update({
+          data: {
+            qrCode: upload.fileID
+          }
+        });
+      }
+    }
+    if ((page - parseInt(configData.value.currentOffset)) * 10 > maxCount) {
+      isContinue = false;
+    }
+    else {
+      page++
+    }
+  }
+
+  let data = { currentOffset: page - 1, maxSyncCount: 100 }
+  await db.collection("mini_config").doc(configData._id).update({
+    data: {
+      value: data
+    }
+  });
+
+}
+
+/**
+ * 获取同步数据配置信息
+ * @param {} key 
+ */
+async function getConfigInfo(key) {
+  /**
+   * 1.同步公众号文章 key：syncWeChatPosts
+   * 2.生成文章小程序码 key:syncPostQrCode
+   */
+  let collection = "mini_config";
+  let result = await db.collection(collection).where({ key: key }).get();
+  if (result.data.length === 0) {
+    let value = { currentOffset: 0, maxSyncCount: 10 }
+    let data = {
+      key: key,
+      value: value,
+      timestamp: Date.now()
+    }
+    //初始化一笔配置,从1开始，最大执行数量为100
+    await db.collection(collection).add({
+      data: data
+    })
+    return data
+  }
+  else {
+    return result.data[0];
+  }
+
 }

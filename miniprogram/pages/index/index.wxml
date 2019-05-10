@@ -5,7 +5,7 @@
     <view class="cu-bar search bg-white">
       <view class='search-form round'>
         <text class="icon-search"></text>
-        <input type="text" placeholder="搜索感兴趣的文章" name="searchContent" confirm-type="search"></input>
+        <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
       </view>
       <view class='action'>
         <button class='cu-btn bg-green shadow-blur round' form-type='submit'>搜索</button>

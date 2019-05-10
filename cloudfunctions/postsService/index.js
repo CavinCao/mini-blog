@@ -31,8 +31,45 @@ exports.main = async (event, context) => {
     case 'addPostZan': {
       return addPostZan(event)
     }
+    case 'addPostQrCode': {
+      return addPostQrCode(event)
+    }
     default: break
   }
+}
+/**
+ * 新增文章二维码
+ * @param {} event 
+ */
+async function addPostQrCode(event)
+{
+  let scene = 'timestamp=' + event.timestamp;
+  let result = await cloud.openapi.wxacode.getUnlimited({
+    scene: scene,
+    page: 'pages/detail/detail'
+  })
+
+  if (result.errCode === 0) {
+    let upload = await cloud.uploadFile({
+      cloudPath: event.postId + '.png',
+      fileContent: result.buffer,
+    })
+
+    await db.collection("mini_posts").doc(event.postId).update({
+      data: {
+        qrCode: upload.fileID
+      }
+    });
+
+    let fileList = [upload.fileID]
+    let resultUrl = await cloud.getTempFileURL({
+      fileList,
+    })
+    return resultUrl.fileList
+  }
+
+  return []
+
 }
 /**
  * 新增评论
@@ -41,17 +78,15 @@ exports.main = async (event, context) => {
 async function addPostComment(event) {
 
   console.info("处理addPostComment")
-  let post = await db.collection('mini_posts').doc(event.commentContent.postId).get();
-  let count = post.data.totalComments + 1
-  let task = db.collection('mini_posts').doc(post.data._id).update({
+  let task = db.collection('mini_posts').doc(event.commentContent.postId).update({
     data: {
-      totalComments: count
+      totalComments: _.inc(1)
     }
   });
   await db.collection("mini_comments").add({
     data: event.commentContent
   });
-  let result=await task;
+  let result = await task;
   console.info(result)
 }
 
@@ -60,11 +95,10 @@ async function addPostComment(event) {
  * @param {} event 
  */
 async function addPostChildComment(event) {
-  let post = await db.collection('mini_posts').doc(event.postId).get();
-  let totalComments = post.data.totalComments + 1
-  let task = db.collection('mini_posts').doc(post.data._id).update({
+
+  let task = db.collection('mini_posts').doc(event.postId).update({
     data: {
-      totalComments: totalComments
+      totalComments: _.inc(1)
     }
   });
 
@@ -110,17 +144,16 @@ async function addPostCollection(event) {
  * @param {} event 
  */
 async function addPostZan(event) {
-  let post = await db.collection('mini_posts').doc(event.postId).get();
+
   let postRelated = await db.collection('mini_posts_related').where({
     openId: event.userInfo.openId,
     postId: event.postId,
     type: event.type
   }).get();
 
-  let zan = post.data.totalZans + 1
-  let task = db.collection('mini_posts').doc(post.data._id).update({
+  let task = db.collection('mini_posts').doc(event.postId).update({
     data: {
-      totalZans: zan
+      totalZans: _.inc(1)
     }
   });
 
@@ -168,18 +201,16 @@ async function getPostsDetail(event) {
   }
 
   //获取文章时直接浏览量+1
-  let visits = post.data.totalVisits + 1
   let task = db.collection('mini_posts').doc(event.id).update({
     data: {
-      totalVisits: visits
+      totalVisits: _.inc(1)
     }
   })
 
   let content = await convertPosts(post.data.content, "html");
   post.data.content = content;
-  post.data.totalVisits = visits;
-  let result = await task;
-  console.info(result)
+  post.data.totalVisits = post.data.totalVisits+1;
+  await task;
   return post.data
 }
 
