@@ -10,6 +10,9 @@ const _ = db.command
 function getPostsList(page, filter) {
     if (filter === '') {
         return db.collection('mini_posts')
+            .where({
+                isShow: 1
+            })
             .orderBy('createTime', 'desc')
             .skip((page - 1) * 10)
             .limit(10)
@@ -30,7 +33,8 @@ function getPostsList(page, filter) {
                 title: db.RegExp({
                     regexp: filter,
                     options: 'i',
-                })
+                }),
+                isShow: 1
             })
             .orderBy('createTime', 'desc')
             .skip((page - 1) * 10)
@@ -157,18 +161,34 @@ function addPostZan(data) {
  * @param {} id 
  * @param {*} comments 
  */
-function addPostChildComment(id,postId, comments) {
+function addPostChildComment(id, postId, comments) {
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {
             action: "addPostChildComment",
             id: id,
             comments: comments,
-            postId:postId
+            postId: postId
         }
     })
 }
 
+/**
+ * 新增文章二维码并返回临时url
+ * @param {*} id 
+ * @param {*} postId 
+ * @param {*} comments 
+ */
+function addPostQrCode(postId, timestamp) {
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "addPostQrCode",
+            timestamp: timestamp,
+            postId: postId
+        }
+    })
+}
 /**
  * 获取打赏码
  */
@@ -176,6 +196,19 @@ function getQrCode() {
     return wx.cloud.getTempFileURL({
         fileList: [{
             fileID: 'cloud://test-91f3af.54ec-test-91f3af/common/1556347401340.jpg'
+        }]
+    })
+}
+
+/**
+ * 获取海报的文章二维码url
+ * @param {*} id 
+ */
+function getReportQrCodeUrl(id) {
+    return wx.cloud.getTempFileURL({
+        fileList: [{
+            fileID: id,
+            maxAge: 60 * 60, // one hour
         }]
     })
 }
@@ -190,5 +223,7 @@ module.exports = {
     deletePostCollectionOrZan: deletePostCollectionOrZan,
     addPostComment: addPostComment,
     getPostComments: getPostComments,
-    addPostChildComment: addPostChildComment
+    addPostChildComment: addPostChildComment,
+    getReportQrCodeUrl: getReportQrCodeUrl,
+    addPostQrCode:addPostQrCode
 }
