@@ -41,8 +41,7 @@ exports.main = async (event, context) => {
  * 新增文章二维码
  * @param {} event 
  */
-async function addPostQrCode(event)
-{
+async function addPostQrCode(event) {
   let scene = 'timestamp=' + event.timestamp;
   let result = await cloud.openapi.wxacode.getUnlimited({
     scene: scene,
@@ -192,13 +191,28 @@ async function deletePostCollectionOrZan(event) {
  * @param {} id 
  */
 async function getPostsDetail(event) {
-  let post = await db.collection("mini_posts").doc(event.id).get()
-  if (post.code) {
-    return "";
+  console.info("启动getPostsDetail")
+  var data;
+  if (event.id != undefined) {
+    let post = await db.collection("mini_posts").doc(event.id).get()
+    if (post.code) {
+      return "";
+    }
+    if (!post.data) {
+      return "";
+    }
+    data = post.data
   }
-  if (!post.data) {
-    return "";
+  else {
+    let list = await db.collection("mini_posts").where({
+      timestamp: event.timestamp
+    }).get()
+    if (list.data.length === 0) {
+      return "";
+    }
+    data = list.data[0]
   }
+
 
   //获取文章时直接浏览量+1
   let task = db.collection('mini_posts').doc(event.id).update({
@@ -207,11 +221,11 @@ async function getPostsDetail(event) {
     }
   })
 
-  let content = await convertPosts(post.data.content, "html");
-  post.data.content = content;
-  post.data.totalVisits = post.data.totalVisits+1;
+  let content = await convertPosts(data.content, "html");
+  data.content = content;
+  data.totalVisits = data.totalVisits + 1;
   await task;
-  return post.data
+  return data
 }
 
 /**
