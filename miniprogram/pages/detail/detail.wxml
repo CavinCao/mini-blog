@@ -45,7 +45,7 @@
         <view class='padding-sm radius  text-sm text-gray'>
           <view class="flex" wx:for="{{item.childComment}}" wx:key="id" wx:for-index="id" wx:for-item="childItem">
             <view data-id="{{item._id}}" data-name="{{childItem.cNickName}}" data-openid="{{childItem.cOpenId}}" bindtap="focusComment">
-              <view>{{childItem.cNickName}}：</view>
+              <view class='text-grey'>{{childItem.cNickName}}：</view>
             </view>
             <view class='flex-sub'>{{childItem.comment}}</view>
           </view>
