@@ -74,6 +74,7 @@ Page({
     console.log(e);
     that.setData({
       tabCur: e.currentTarget.dataset.id,
+      timeDesc: e.currentTarget.dataset.id === "1" ? "收藏时间：" : "点赞时间：",
       scrollLeft: (e.currentTarget.dataset.id - 1) * 60,
       postRelated: [],
       nomore: false,
@@ -98,9 +99,9 @@ Page({
   getPostRelated: async function (type) {
     let that = this;
     let page = that.data.page;
-    let where={
-      type:type,
-      openId:app.globalData.openid
+    let where = {
+      type: type,
+      openId: app.globalData.openid
     };
     let postRelated = await api.getPostRelated(where, page)
     if (postRelated.data.length === 0) {

@@ -84,7 +84,7 @@ function getPostRelated(where, page) {
  * 获取文章详情
  * @param {} id 
  */
-function getPostDetail(id) {
+function getPostDetail(id,timestamp) {
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {

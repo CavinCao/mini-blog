@@ -34,9 +34,10 @@ async function syncWechatPosts(isUpdate) {
   var isContinue = true
   while (isContinue) {
     var posts = await getWechatPosts(accessToken, offset, count)
+    console.info(posts.item.length)
     if (posts.item.length == 0) {
       isContinue = false;
-      let data = { currentOffset: offset - 10, maxSyncCount: 100 }
+      let data = { currentOffset: 0, maxSyncCount: 10 }
       await db.collection("mini_config").doc(configData._id).update({
         data: {
           value: data
@@ -63,6 +64,9 @@ async function syncWechatPosts(isUpdate) {
         let content = posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g, '')
         //替换图片data-url
         content = content.replace(/data-src/g, "src")
+
+        //替换新媒体管家样式问题
+        content = content.replace(/<span style="color:rgba(0, 0, 0, 0);"><span style="line-height: inherit;margin-right: auto;margin-left: auto;border-radius: 4px;">/g, "")
 
         var data = {
           uniqueId: posts.item[index].media_id,
@@ -104,6 +108,9 @@ async function syncWechatPosts(isUpdate) {
         });
 
       }
+    }
+    if (maxCount > 0) {
+      return;
     }
     offset = offset + count
   }
@@ -285,7 +292,7 @@ async function getConfigInfo(key) {
   let collection = "mini_config";
   let result = await db.collection(collection).where({ key: key }).get();
   if (result.data.length === 0) {
-    let value = { currentOffset: 0, maxSyncCount: 10 }
+    let value = { currentOffset: 0, maxSyncCount: 0 }
     let data = {
       key: key,
       value: value,

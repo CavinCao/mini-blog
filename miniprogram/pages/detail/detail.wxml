@@ -4,104 +4,99 @@
 <import src="../../templates/nodata.wxml" />
 <!-- 文章详情 -->
 <view class="bg-white">
-    <view class="cu-card dynamic no-card">
-        <view class="cu-item shadow">
-            <view class='text-content margin-top-sm'>{{post.title}}</view>
-            <view class="grid col-1 flex-sub padding-lr">
-                <view class="bg-img only-img" style="background-image:url({{post.defaultImageUrl}})" />
-            </view>
-            <view class='text-gray text-sm text-right padding'>
-                <text class="icon-timefill" />
-                {{post.createTime}}
-                <text class="icon-attentionfill" />
-                {{post.totalVisits}}
-                <text class="icon-appreciatefill" />
-                {{post.totalZans}}
-                <text class="icon-messagefill" />
-                {{post.totalComments}}
-            </view>
-        </view>
+  <view class="cu-card dynamic no-card">
+    <view class="cu-item shadow">
+      <view class='text-content margin-top-sm'>{{post.title}}</view>
+      <view class="grid col-1 flex-sub padding-lr">
+        <view class="bg-img only-img" style="background-image:url({{post.defaultImageUrl}})" />
+      </view>
+      <view class='text-gray text-sm text-right padding'>
+        <text class="icon-timefill" /> {{post.createTime}}
+        <text class="icon-attentionfill" /> {{post.totalVisits}}
+        <text class="icon-appreciatefill" /> {{post.totalZans}}
+        <text class="icon-messagefill" /> {{post.totalComments}}
+      </view>
     </view>
-    <view>
-        <template is="entry" data="{{...post.content}}" />
-    </view>
-    <view class="margin-xs padding-sm"></view>
+  </view>
+  <view>
+    <template is="entry" data="{{...post.content}}" />
+  </view>
+  <view class="margin-xs padding-sm"></view>
 </view>
 <!-- 评论列表 -->
 <view class="bg-white">
-    <view class="cu-bar bg-white">
-        <view class='action'>
-            <text class='icon-titles text-orange '></text>
-            共{{post.totalComments}}条评论
+  <view class="cu-bar bg-white">
+    <view class='action'>
+      <text class='icon-titles text-orange '></text> 共{{post.totalComments}}条评论
+    </view>
+  </view>
+  <!-- 数据不存在 -->
+  <view wx:if="{{nodata}}">
+    <template is="nodata" data="{{ nodata_str }}" />
+  </view>
+  <view class="cu-list menu menu-avatar comment solids-top">
+    <view class="cu-item" wx:for="{{commentList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+      <view class="cu-avatar round" style="background-image:url({{item.cAvatarUrl}});" data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment"></view>
+      <view class='content'>
+        <view class='text-grey' data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment">
+          {{item.cNickName}}
         </view>
-    </view>
-    <!-- 数据不存在 -->
-    <view wx:if="{{nodata}}">
-        <template is="nodata" data="{{ nodata_str }}" />
-    </view>
-    <view class="cu-list menu menu-avatar comment solids-top">
-        <view class="cu-item" wx:for="{{commentList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-            <view class="cu-avatar round" style="background-image:url({{item.cAvatarUrl}});" data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment"></view>
-            <view class='content'>
-                <view class='text-grey' data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment">
-                    {{item.cNickName}}
-                </view>
-                <view class='text-gray text-content text-df'>{{item.comment}}</view>
-                <view class='padding-sm radius  text-sm text-gray'>
-                    <view class="flex" wx:for="{{item.childComment}}" wx:key="id" wx:for-index="id" wx:for-item="childItem">
-                        <view data-id="{{item._id}}" data-name="{{childItem.cNickName}}" data-openid="{{childItem.cOpenId}}" bindtap="focusComment">
-                            <view>{{childItem.cNickName}}：</view>
-                        </view>
-                        <view class='flex-sub'>{{childItem.comment}}</view>
-                    </view>
-                </view>
-                <view class='flex justify-between'>
-                    <view class='text-gray text-df'>{{item.createDate}}</view>
-                    <view>
-                        <text class="icon-messagefill text-gray margin-left-sm"></text>
-                        <text class="text-gray margin-left-xs">{{item.childComment.length}}</text>
-                    </view>
-                </view>
+        <view class='text-gray text-content text-df'>{{item.comment}}</view>
+        <view class='padding-sm radius  text-sm text-gray'>
+          <view class="flex" wx:for="{{item.childComment}}" wx:key="id" wx:for-index="id" wx:for-item="childItem">
+            <view data-id="{{item._id}}" data-name="{{childItem.cNickName}}" data-openid="{{childItem.cOpenId}}" bindtap="focusComment">
+              <view class='text-grey'>{{childItem.cNickName}}：</view>
             </view>
+            <view class='flex-sub'>{{childItem.comment}}</view>
+          </view>
         </view>
+        <view class='flex justify-between'>
+          <view class='text-gray text-df'>{{item.createDate}}</view>
+          <view>
+            <text class="icon-messagefill text-gray margin-left-sm"></text>
+            <text class="text-gray margin-left-xs">{{item.childComment.length}}</text>
+          </view>
+        </view>
+      </view>
     </view>
-    <view style="padding:50rpx"></view>
+  </view>
+  <view style="padding:50rpx"></view>
 </view>
 <!-- 底部功能 -->
 <view class="comment-fixed">
-    <form catchsubmit="formSubmit" report-submit="true">
-        <view class="cu-bar input">
-            <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
-            <view class='action'>
-                <text class='icon-roundaddfill text-grey' bindtap='showMenuBox'></text>
-            </view>
-            <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
-            <button class='cu-btn bg-green shadow-blur' formType="submit">发送</button>
-        </view>
-    </form>
-    <view class="cu-list grid col-5 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
-        <view class="cu-item item">
-            <view class='icon-share text-olive' style="margin-top:0;"></view>
-            <text>转发</text>
-            <button class="share-button" open-type="share"></button>
-        </view>
-        <view class="cu-item item" catchtap="onCreatePoster">
-            <view class='icon-pic text-olive' style="margin-top:0;"></view>
-            <text>海报</text>
-        </view>
-        <view class="cu-item item" bindtap='postCollection'>
-            <view class='icon-{{collection.icon}} text-olive' style="margin-top:0;"></view>
-            <text>{{collection.text}}</text>
-        </view>
-        <view class="cu-item item" bindtap='postZan'>
-            <view class='icon-{{zan.icon}} text-olive' style="margin-top:0;"></view>
-            <text>{{zan.text}}</text>
-        </view>
-        <view class="cu-item item" bindtap='showQrcode'>
-            <view class='icon-refund text-olive' style="margin-top:0;"></view>
-            <text>赞赏</text>
-        </view>
+  <form catchsubmit="formSubmit" report-submit="true">
+    <view class="cu-bar input">
+      <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
+      <view class='action'>
+        <text class='icon-roundaddfill text-grey' bindtap='showMenuBox'></text>
+      </view>
+      <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
+      <button class='cu-btn bg-green shadow-blur' formType="submit">发送</button>
     </view>
+  </form>
+  <view class="cu-list grid col-5 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
+    <view class="cu-item item">
+      <view class='icon-share text-olive' style="margin-top:0;"></view>
+      <text>转发</text>
+      <button class="share-button" open-type="share"></button>
+    </view>
+    <view class="cu-item item" catchtap="onCreatePoster">
+      <view class='icon-pic text-olive' style="margin-top:0;"></view>
+      <text>海报</text>
+    </view>
+    <view class="cu-item item" bindtap='postCollection'>
+      <view class='icon-{{collection.icon}} text-olive' style="margin-top:0;"></view>
+      <text>{{collection.text}}</text>
+    </view>
+    <view class="cu-item item" bindtap='postZan'>
+      <view class='icon-{{zan.icon}} text-olive' style="margin-top:0;"></view>
+      <text>{{zan.text}}</text>
+    </view>
+    <view class="cu-item item" bindtap='showQrcode'>
+      <view class='icon-refund text-olive' style="margin-top:0;"></view>
+      <text>赞赏</text>
+    </view>
+  </view>
 </view>
 <!-- 弹出层：授权 -->
 <template is="login" data="{{showLogin: showLogin}}"></template>
@@ -109,21 +104,21 @@
 <poster id="poster" hide-loading="{{false}}" preload="{{false}}" config="{{posterConfig}}" bind:success="onPosterSuccess" bind:fail="onPosterFail"></poster>
 <!-- 展示海报弹窗 -->
 <view class="cu-modal {{isShowPosterModal?'show':''}}">
-    <view class="cu-dialog">
-        <view class="cu-bar bg-white justify-end">
-            <view class='content'>海报分享</view>
-            <view class='action' bindtap='hideModal'>
-                <text class='icon-close text-red'></text>
-            </view>
-        </view>
-        <view>
-             <image style='height:800rpx;'  mode="aspectFit" src="{{posterImageUrl}}"  bindtap="posterImageClick"></image>
-        </view>
-        <view class="cu-bar bg-white">
-            <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>
-                取消
-            </view>
-            <view class='action margin-0 flex-sub  solid-left' bindtap='savePosterImage'>保存本地</view>
-        </view>
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class='content'>海报分享</view>
+      <view class='action' bindtap='hideModal'>
+        <text class='icon-close text-red'></text>
+      </view>
     </view>
+    <view>
+      <image style='height:800rpx;' mode="aspectFit" src="{{posterImageUrl}}" bindtap="posterImageClick"></image>
+    </view>
+    <view class="cu-bar bg-white">
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>
+        取消
+      </view>
+      <view class='action margin-0 flex-sub  solid-left' bindtap='savePosterImage'>保存本地</view>
+    </view>
+  </view>
 </view>

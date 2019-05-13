@@ -49,8 +49,9 @@ Page({
     });
 
     let blogId = options.id;
-    await that.getDetail(blogId)
-    await that.getPostRelated(blogId)
+    let timestamp = options.timestamp;
+    await that.getDetail(blogId,timestamp)
+    await that.getPostRelated(that.data.post._id)
   },
   /**
    * 页面上拉触底事件的处理函数
@@ -128,12 +129,12 @@ Page({
   /**
    * 获取文章详情
    */
-  getDetail: async function (blogId) {
+  getDetail: async function (blogId,timestamp) {
     wx.showLoading({
       title: '加载中...',
     })
     let that = this
-    let postDetail = await api.getPostDetail(blogId);
+    let postDetail = await api.getPostDetail(blogId,timestamp);
     that.setData({
       post: postDetail.result
     })
