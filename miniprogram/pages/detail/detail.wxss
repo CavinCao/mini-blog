@@ -15,24 +15,27 @@
 .menu-box {
   position: relative;
   height: 160rpx;
-  padding:0;
+  padding: 0;
   box-sizing: border-box;
   margin-bottom: -160rpx;
 }
 
-.menu-box .item{
-  padding-top:0; 
+.menu-box .item {
+  padding-top: 0;
   margin-top: 0;
 }
 
 .emoji-move-in {
-  -webkit-animation: emoji-move-in 0.3s forwards;
-  animation: emoji-move-in 0.3s forwards;
+  margin-bottom: 0;
+  /*去除动画效果，有点迟钝 2019-05-11*/
+  /*-webkit-animation: emoji-move-in 0.3s forwards;
+  animation: emoji-move-in 0.3s forwards;*/
 }
 
 .emoji-move-out {
-  -webkit-animation: emoji-move-out 0.3s forwards;
-  animation: emoji-move-out 0.3s forwards;
+  margin-bottom: -160rpx;
+  /*-webkit-animation: emoji-move-out 0.3s forwards;
+  animation: emoji-move-out 0.3s forwards;*/
 }
 
 .no-emoji-move {
@@ -40,14 +43,14 @@
   animation: none;
 }
 
-.share-button{
-  opacity: 0; 
-  position:absolute;
+.share-button {
+  opacity: 0;
+  position: absolute;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  top:0;
+  top: 0;
   left: 0;
 }
 

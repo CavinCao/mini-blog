@@ -9,14 +9,15 @@ Page({
    */
   data: {
     userInfo: {},
-    showLogin: false
+    showLogin: false,
+    isAuthor: false
 
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     let that = this;
     app.checkUserInfo(function (userInfo, isLogin) {
       if (!isLogin) {
@@ -29,6 +30,8 @@ Page({
         });
       }
     });
+
+    await that.checkAuthor()
   },
 
   /**
@@ -130,5 +133,37 @@ Page({
       url: '../mine/collection/collection?type=2'
     })
   },
+
+  /**
+   * 后台设置
+   * @param {} e 
+   */
+  showAdmin: async function (e) {
+    wx.navigateTo({
+      url: '../admin/index'
+    })
+  },
+
+  /**
+   * 验证是否是管理员
+   */
+  checkAuthor: async function (e) {
+    let that = this;
+    const value = wx.getStorageSync('isAuthor')
+    if (value) {
+      console.info(value)
+      that.setData({
+        isAuthor: value
+      })
+    }
+    else {
+      let res = await api.checkAuthor();
+      console.info(res)
+      wx.setStorageSync('isAuthor', res.result)
+      that.setData({
+        isAuthor: res.result
+      })
+    }
+  }
 })
 

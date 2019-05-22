@@ -50,7 +50,7 @@ Page({
 
     let blogId = options.id;
     let timestamp = options.timestamp;
-    await that.getDetail(blogId,timestamp)
+    await that.getDetail(blogId, timestamp)
     await that.getPostRelated(that.data.post._id)
   },
   /**
@@ -129,12 +129,12 @@ Page({
   /**
    * 获取文章详情
    */
-  getDetail: async function (blogId,timestamp) {
+  getDetail: async function (blogId, timestamp) {
     wx.showLoading({
       title: '加载中...',
     })
     let that = this
-    let postDetail = await api.getPostDetail(blogId,timestamp);
+    let postDetail = await api.getPostDetail(blogId, timestamp);
     that.setData({
       post: postDetail.result
     })
@@ -340,7 +340,7 @@ Page({
         }]
         await api.addPostChildComment(that.data.commentId, that.data.post._id, childData)
       }
-
+      let messageResultTask = api.sendTemplateMessage(that.data.userInfo.nickName, content, that.data.post._id)
       let commentList = await api.getPostComments(commentPage, that.data.post._id)
       if (commentList.data.length === 0) {
         that.setData({
@@ -369,6 +369,8 @@ Page({
           toOpenId: ""
         })
       }
+      let messageResult = await messageResultTask;
+      console.info(messageResult)
 
       wx.showToast({
         title: '提交成功',
@@ -444,8 +446,7 @@ Page({
    */
   onCreatePoster: async function () {
     let that = this;
-    if(that.data.posterImageUrl!=="")
-    {
+    if (that.data.posterImageUrl !== "") {
       that.setData({
         isShowPosterModal: true
       })
