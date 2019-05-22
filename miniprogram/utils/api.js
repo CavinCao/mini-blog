@@ -84,7 +84,7 @@ function getPostRelated(where, page) {
  * 获取文章详情
  * @param {} id 
  */
-function getPostDetail(id,timestamp) {
+function getPostDetail(id, timestamp) {
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {
@@ -213,6 +213,62 @@ function getReportQrCodeUrl(id) {
     })
 }
 
+/**
+ * 验证是否是管理员
+ */
+function checkAuthor() {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "checkAuthor"
+        }
+    })
+}
+
+/**
+ * 查询可用的formId数量
+ */
+function queryFormIds() {
+    return wx.cloud.callFunction({
+        name: 'messageService',
+        data: {
+            action: "queryFormIds"
+        }
+    })
+}
+
+/**
+ * 查询可用的formId数量
+ */
+function addFormIds(formIds) {
+    return wx.cloud.callFunction({
+        name: 'messageService',
+        data: {
+            action: "addFormIds",
+            formIds: formIds
+        }
+    })
+}
+
+/**
+ * 发送评论通知
+ * @param {} nickName 
+ * @param {*} comment 
+ * @param {*} blogId 
+ */
+function sendTemplateMessage(nickName, comment, blogId) {
+    return wx.cloud.callFunction({
+        name: 'messageService',
+        data: {
+            action: "sendTemplateMessage",
+            nickName: nickName,
+            message: comment,
+            blogId: blogId,
+            tOpenId: ""
+        }
+    })
+}
+
 module.exports = {
     getPostsList: getPostsList,
     getPostDetail: getPostDetail,
@@ -225,5 +281,9 @@ module.exports = {
     getPostComments: getPostComments,
     addPostChildComment: addPostChildComment,
     getReportQrCodeUrl: getReportQrCodeUrl,
-    addPostQrCode:addPostQrCode
+    addPostQrCode: addPostQrCode,
+    checkAuthor: checkAuthor,
+    addFormIds: addFormIds,
+    queryFormIds: queryFormIds,
+    sendTemplateMessage: sendTemplateMessage
 }
