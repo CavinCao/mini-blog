@@ -10,8 +10,8 @@ Page({
   data: {
     userInfo: {},
     showLogin: false,
-    isAuthor: false
-
+    isAuthor: false,
+    showRedDot: ''
   },
 
   /**
@@ -30,6 +30,15 @@ Page({
         });
       }
     });
+
+    let showRedDot = wx.getStorageSync('showRedDot');
+    console.info(showRedDot)
+
+    console.info(showRedDot != '1')
+    that.setData({
+      showRedDot: showRedDot
+    });
+
 
     await that.checkAuthor()
   },
@@ -148,7 +157,7 @@ Page({
    * 历史版本
    * @param {} e 
    */
-  showRelease:async function(e){
+  showRelease: async function (e) {
     wx.navigateTo({
       url: '../mine/release/release'
     })
@@ -158,7 +167,7 @@ Page({
    * 我的消息
    * @param {*} e 
    */
-  bindNotice:async function(e){
+  bindNotice: async function (e) {
     wx.navigateTo({
       url: '../mine/notice/notice'
     })

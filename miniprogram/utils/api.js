@@ -4,6 +4,33 @@ const db = wx.cloud.database()
 const _ = db.command
 
 /**
+ * 获取消息列表
+ * @param {*} page 
+ */
+function getNoticeLogsList(page,openId) {
+    return db.collection('mini_logs')
+        .orderBy('timestamp', 'desc')
+        .skip((page - 1) * 10)
+        .limit(10)
+        .get()
+}
+
+/**
+ * 获取版本发布日志
+ * @param {*} page 
+ */
+function getReleaseLogsList(page) {
+    return db.collection('mini_logs')
+        .where({
+            key: 'releaseLogKey'
+        })
+        .orderBy('timestamp', 'desc')
+        .skip((page - 1) * 10)
+        .limit(10)
+        .get()
+}
+
+/**
  * 获取文章列表
  * @param {} page 
  */
@@ -273,13 +300,13 @@ function sendTemplateMessage(nickName, comment, blogId) {
  * 新增版本日志
  * @param {} log 
  */
-function addReleaseLog(log)
-{
+function addReleaseLog(log,title) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "addReleaseLog",
-            log: log
+            log: log,
+            title:title
         }
     })
 }
@@ -301,5 +328,7 @@ module.exports = {
     addFormIds: addFormIds,
     queryFormIds: queryFormIds,
     sendTemplateMessage: sendTemplateMessage,
-    addReleaseLog:addReleaseLog
+    addReleaseLog: addReleaseLog,
+    getReleaseLogsList: getReleaseLogsList,
+    getNoticeLogsList:getNoticeLogsList
 }

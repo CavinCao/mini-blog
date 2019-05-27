@@ -118,9 +118,9 @@ Page({
         releaseContent: releaseContent.split("\n")
       }
 
-      let title = '小程序更新啦，赶紧来看看更新了哪些内容吧'
+      let title = '小程序更新啦，赶紧来看看吧'
 
-      let res = await api.addReleaseLog(log)
+      let res = await api.addReleaseLog(log,title)
       wx.hideLoading()
       console.info(res)
       if (res.result) {

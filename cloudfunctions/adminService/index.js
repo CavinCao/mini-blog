@@ -42,10 +42,14 @@ async function addReleaseLog(event) {
     let collection = 'mini_logs'
     let data = {
       key: RELEASE_LOG_KEY,
+      tag: '【' + event.log.releaseName + '版本更新】',
       content: event.log,
       title: event.title,
-      path: '../mine/release/release',
+      icon: 'formfill',
+      color: 'blue',
+      path: '../release/release',
       timestamp: Date.now(),
+      datetime: new Date(Date.now() + (8 * 60 * 60 * 1000)).toFormat("YYYY-MM-DD HH24:MI"),
       openId: '',//为空则为所有用户
       type: 'system'
     }

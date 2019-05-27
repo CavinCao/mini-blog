@@ -8,9 +8,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    navItems: [{ name: '与我相关', index: 1 }, { name: '系统消息', index: 2 }],
-    tabCur: 1,
-    scrollLeft: 0,
+    notice: [],
     page: 1,
     nodata: false,
     nomore: false
@@ -19,36 +17,9 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
+  onLoad: async function (options) {
+    wx.setStorageSync('showRedDot', '1');
+    await this.getNoticeLogsList()
   },
 
   /**
@@ -61,29 +32,51 @@ Page({
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-
+  onReachBottom: async function () {
+    await this.getNoticeLogsList()
   },
 
   /**
-   * 用户点击右上角分享
+   * 消息详情
    */
-  onShareAppMessage: function () {
-
-  },
-  /**
- * tab切换
- * @param {} e 
- */
-  tabSelect: async function (e) {
-    let that = this;
-    console.log(e);
-    that.setData({
-      tabCur: e.currentTarget.dataset.id,
-      scrollLeft: (e.currentTarget.dataset.id - 1) * 60,
-      nomore: false,
-      nodata: false,
-      page: 1
+  bindDetail: function (e) {
+    let path = e.currentTarget.dataset.path;
+    console.info(path)
+    wx.navigateTo({
+      url: path
     })
   },
+  /**
+    * 获取消息列表
+  */
+  getNoticeLogsList: async function (filter) {
+    wx.showLoading({
+      title: '加载中...',
+    })
+    let that = this
+    let page = that.data.page
+    if (that.data.nomore) {
+      wx.hideLoading()
+      return
+    }
+    let result = await api.getNoticeLogsList(page, '')
+    if (result.data.length === 0) {
+      that.setData({
+        nomore: true
+      })
+      if (page === 1) {
+        that.setData({
+          nodata: true
+        })
+      }
+    }
+    else {
+      that.setData({
+        page: page + 1,
+        notice: that.data.notice.concat(result.data),
+      })
+    }
+    wx.hideLoading()
+  }
+
 })
