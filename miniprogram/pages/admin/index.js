@@ -1,6 +1,7 @@
 const config = require('../../utils/config.js')
 const api = require('../../utils/api.js');
 const regeneratorRuntime = require('../../utils/runtime.js');
+const util = require('../../utils/util.js');
 Page({
 
   /**
@@ -9,7 +10,9 @@ Page({
   data: {
     isShow: false,
     formIds: [],
-    formIdCount: 0
+    formIdCount: 0,
+    isReleaseShow: false,
+    release: { releaseName: '', releaseDate: util.formatTime(new Date()), releaseContent: '' }
   },
 
   /**
@@ -33,12 +36,30 @@ Page({
     })
   },
   /**
+ * 隐藏
+ * @param {*} e 
+ */
+  hideReleaseModal(e) {
+    this.setData({
+      isReleaseShow: false
+    })
+  },
+  /**
    * 显示
    * @param {} e 
    */
   showFormModal(e) {
     this.setData({
       isShow: true
+    })
+  },
+  /**
+ * 显示
+ * @param {} e 
+ */
+  showReleaseModal(e) {
+    this.setData({
+      isReleaseShow: true
     })
   },
   /**
@@ -62,6 +83,65 @@ Page({
         formIds: that.data.formIds.concat(e.detail.formId),
       })
       console.info(that.data.formIds)
+    }
+  },
+
+  /**
+   * 保存发布版本
+   * @param {*} e 
+   */
+  formRelaeaseSubmit: async function (e) {
+    let that = this;
+    let releaseName = e.detail.value.releaseName;
+    let releaseDate = e.detail.value.releaseDate;
+    let releaseContent = e.detail.value.releaseContent;
+    if (releaseName === undefined ||
+      releaseName === "" ||
+      releaseDate === undefined ||
+      releaseDate === "" ||
+      releaseContent === undefined ||
+      releaseContent === "") {
+      wx.showToast({
+        title: '请填写正确的表单信息',
+        icon: 'none',
+        duration: 1500
+      })
+    }
+    else {
+      wx.showLoading({
+        title: '保存中...',
+      })
+
+      let log = {
+        releaseName: releaseName,
+        releaseDate: releaseDate,
+        releaseContent: releaseContent.split("\n")
+      }
+
+      let title = '小程序更新啦，赶紧来看看吧'
+
+      let res = await api.addReleaseLog(log,title)
+      wx.hideLoading()
+      console.info(res)
+      if (res.result) {
+        that.setData({
+          isReleaseShow: false,
+          release: { releaseName: '', releaseDate: util.formatTime(new Date()), releaseContent: '' }
+        })
+
+        wx.showToast({
+          title: '保存成功',
+          icon: 'none',
+          duration: 1500
+        })
+      }
+      else {
+        wx.showToast({
+          title: '保存出错，请查看云函数日志',
+          icon: 'none',
+          duration: 1500
+        })
+      }
     }
   },
   /**

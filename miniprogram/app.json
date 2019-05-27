@@ -6,7 +6,9 @@
     "pages/topic/topiclist/topiclist",
     "pages/detail/detail",
     "pages/mine/collection/collection",
-    "pages/admin/index"
+    "pages/admin/index",
+    "pages/mine/notice/notice",
+    "pages/mine/release/release"
   ],
   "window": {
     "backgroundTextStyle": "light",

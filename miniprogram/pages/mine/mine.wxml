@@ -20,6 +20,15 @@
       <text class='text-grey'>我的点赞</text>
     </view>
   </view>
+  <view class="cu-item arrow ">
+    <view class='content' bindtap='bindNotice' hover-class='none'>
+      <text class='icon-noticefill text-yellow'></text>
+      <text class='text-grey'>我的消息</text>
+    </view>
+    <view class='action'>
+      <view wx:if="{{showRedDot!='1'}}" class="cu-tag round bg-red sm"></view>
+    </view>
+  </view>
   <view class="cu-item arrow  margin-top-sm">
     <view class='content' bindtap="showQrcode">
       <text class='icon-refund text-red'></text>
@@ -36,6 +45,12 @@
     <view class='content' bindtap='showWechatCode' hover-class='none'>
       <text class='icon-creativefill text-orange'></text>
       <text class='text-grey'>联系作者</text>
+    </view>
+  </view>
+  <view class="cu-item arrow">
+    <view class='content' bindtap='showRelease' hover-class='none'>
+      <text class='icon-formfill text-blue'></text>
+      <text class='text-grey'>历史版本</text>
     </view>
   </view>
   <view wx:if="{{isAuthor}}" class="cu-item arrow  margin-top-sm">

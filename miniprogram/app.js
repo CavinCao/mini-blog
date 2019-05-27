@@ -1,14 +1,15 @@
-const Towxml = require('/towxml/main'); 
+const Towxml = require('/towxml/main');
 const config = require('/utils/config.js')
-App({           
+const util = require('/utils/util.js')
+App({
   onLaunch: function () {
-  
+
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       wx.cloud.init({
         traceUser: true,
-        env:config.env
+        env: config.env
       })
       var openid = wx.getStorageSync('openid');
       if (openid) {
@@ -27,20 +28,21 @@ App({
         })
       }
       console.info(this.globalData.openid)
+      this.bindLastLoginDate()
     }
   },
-  towxml:new Towxml(),
-  checkUserInfo: function(cb) {
+  towxml: new Towxml(),
+  checkUserInfo: function (cb) {
     let that = this
     if (that.globalData.userInfo) {
       typeof cb == "function" && cb(that.globalData.userInfo, true);
     } else {
       wx.getSetting({
-        success: function(res) {
+        success: function (res) {
           if (res.authSetting['scope.userInfo']) {
             // 已经授权，可以直接调用 getUserInfo 获取头像昵称
             wx.getUserInfo({
-              success: function(res) {
+              success: function (res) {
                 that.globalData.userInfo = JSON.parse(res.rawData);
                 typeof cb == "function" && cb(that.globalData.userInfo, true);
               }
@@ -52,8 +54,24 @@ App({
       })
     }
   },
+  /**
+   * 初始化最后登录时间
+   */
+  bindLastLoginDate: function () {
+    var lastLoginDate = wx.getStorageSync('lastLoginDate');
+    console.info(lastLoginDate)
+    if (!lastLoginDate || util.formatTime(new Date()) != lastLoginDate) {
+      wx.showTabBarRedDot({
+        index: 1,
+      })
+    }
+    this.globalData.lastLoginDate = util.formatTime(new Date())
+    console.info(this.globalData.lastLoginDate)
+    wx.setStorageSync('lastLoginDate', this.globalData.lastLoginDate);
+  },
   globalData: {
     openid: "",
-    userInfo: null
+    userInfo: null,
+    lastLoginDate: ""//最后登录时间
   }
 })

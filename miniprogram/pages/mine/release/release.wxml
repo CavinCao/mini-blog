@@ -1,0 +1,16 @@
+<import src="../../templates/nodata.wxml" />
+<view class="cu-timeline">
+    <view wx:for="{{logs}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}"  class="cu-item">
+        <view class="content">
+            <view class="cu-capsule radius">
+                <view class="cu-tag bg-cyan">{{item.content.releaseName}}</view>
+                <view class="cu-tag line-cyan">{{item.content.releaseDate}}</view>
+            </view>
+            <view class="{{id=='0'?'margin-top':''}}" wx:for="{{item.content.releaseContent}}" wx:key="id" wx:for-index="id" wx:for-item="childItem">{{childItem}}</view>
+        </view>
+    </view>
+</view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+  <template is="nodata" />
+</view>

@@ -24,7 +24,6 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: async function () {
-    console.info("xiala")
     let that = this;
     let page = 1
     that.setData({
