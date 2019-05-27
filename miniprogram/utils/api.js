@@ -90,6 +90,7 @@ function getPostDetail(id, timestamp) {
         data: {
             action: "getPostsDetail",
             id: id,
+            timestamp:timestamp
         }
     })
 }
