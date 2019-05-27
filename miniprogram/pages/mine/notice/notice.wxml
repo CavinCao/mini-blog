@@ -1,0 +1,14 @@
+<import src="../../../templates/nodata.wxml" />
+<scroll-view scroll-x class="bg-white nav fixed">
+    <view class='flex text-center'>
+        <block wx:for="{{navItems}}" wx:for-index="idx" data-data="{{item}}">
+            <view class="cu-item flex-sub {{item.index==tabCur?'text-green cur':''}}" bindtap='tabSelect' data-id="{{item.index}}">
+                {{item.name}}
+            </view>
+        </block>
+    </view>
+</scroll-view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+    <template is="nodata" />
+</view>

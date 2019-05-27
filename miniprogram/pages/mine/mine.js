@@ -145,6 +145,26 @@ Page({
   },
 
   /**
+   * 历史版本
+   * @param {} e 
+   */
+  showRelease:async function(e){
+    wx.navigateTo({
+      url: '../mine/release/release'
+    })
+  },
+
+  /**
+   * 我的消息
+   * @param {*} e 
+   */
+  bindNotice:async function(e){
+    wx.navigateTo({
+      url: '../mine/notice/notice'
+    })
+  },
+
+  /**
    * 验证是否是管理员
    */
   checkAuthor: async function (e) {

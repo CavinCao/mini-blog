@@ -21,6 +21,12 @@
             <text class='text-grey'>系统日志</text>
         </view>
     </view>
+    <view class="cu-item arrow">
+        <view class='content' bindtap='showReleaseModal'>
+            <text class='icon-formfill text-grey'></text>
+            <text class='text-grey'>版本发布</text>
+        </view>
+    </view>
 </view>
 <view class="cu-bar bg-white solid-bottom margin-top">
     <view class='action'>
@@ -72,5 +78,39 @@
                 <button class='cu-btn bg-green margin-left' bindtap='saveFormIds'>批量保存</button>
             </view>
         </view>
+    </view>
+</view>
+<!-- 版本发布窗口 -->
+<view class="cu-modal {{isReleaseShow?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>版本发布</view>
+            <view class='action' bindtap='hideReleaseModal'>
+                <text class='icon-close text-red'></text>
+            </view>
+        </view>
+        <form bindsubmit="formRelaeaseSubmit" report-submit="true">
+            <view class='padding-sm'>
+                <view class="cu-form-group text-left">
+                    <view class='title'>版本:</view>
+                    <input placeholder="请填写版本" class='radius' name='releaseName' value='{{release.releaseName}}'></input>
+                </view>
+                <view class="cu-form-group text-left">
+                    <view class='title'>日期:</view>
+                    <input placeholder="请填写日期" class='radius' name='releaseDate' value='{{release.releaseDate}}'></input>
+                </view>
+                <view class="cu-form-group text-left">
+                    <textarea placeholder="请输入迭代内容" maxlength="-1" name='releaseContent' value='{{release.releaseContent}}' placeholder-class='placeholder'></textarea>
+                </view>
+            </view>
+            <view class="cu-bar bg-white justify-end">
+                <view class='action'>
+                    <button class='cu-btn' bindtap='hideReleaseModal'>
+                        取消
+                    </button>
+                    <button form-type="submit" class='cu-btn margin-left bg-green'>保存</button>
+                </view>
+            </view>
+        </form>
     </view>
 </view>

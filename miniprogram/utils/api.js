@@ -269,6 +269,21 @@ function sendTemplateMessage(nickName, comment, blogId) {
     })
 }
 
+/**
+ * 新增版本日志
+ * @param {} log 
+ */
+function addReleaseLog(log)
+{
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "addReleaseLog",
+            log: log
+        }
+    })
+}
+
 module.exports = {
     getPostsList: getPostsList,
     getPostDetail: getPostDetail,
@@ -285,5 +300,6 @@ module.exports = {
     checkAuthor: checkAuthor,
     addFormIds: addFormIds,
     queryFormIds: queryFormIds,
-    sendTemplateMessage: sendTemplateMessage
+    sendTemplateMessage: sendTemplateMessage,
+    addReleaseLog:addReleaseLog
 }
