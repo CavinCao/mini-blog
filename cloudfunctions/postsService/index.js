@@ -42,9 +42,9 @@ exports.main = async (event, context) => {
  * @param {} event 
  */
 async function addPostQrCode(event) {
-  let scene = 'timestamp=' + event.timestamp;
+  //let scene = 'timestamp=' + event.timestamp;
   let result = await cloud.openapi.wxacode.getUnlimited({
-    scene: scene,
+    scene: event.postId,
     page: 'pages/detail/detail'
   })
 
@@ -192,27 +192,14 @@ async function deletePostCollectionOrZan(event) {
  */
 async function getPostsDetail(event) {
   console.info("启动getPostsDetail")
-  var data;
-  if (event.id != undefined) {
-    let post = await db.collection("mini_posts").doc(event.id).get()
-    if (post.code) {
-      return "";
-    }
-    if (!post.data) {
-      return "";
-    }
-    data = post.data
+  let post = await db.collection("mini_posts").doc(event.id).get()
+  if (post.code) {
+    return "";
   }
-  else {
-    let list = await db.collection("mini_posts").where({
-      timestamp: event.timestamp
-    }).get()
-    if (list.data.length === 0) {
-      return "";
-    }
-    data = list.data[0]
+  if (!post.data) {
+    return "";
   }
-
+  let data = post.data
 
   //获取文章时直接浏览量+1
   let task = db.collection('mini_posts').doc(event.id).update({
