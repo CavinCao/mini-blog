@@ -47,10 +47,11 @@ Page({
         });
       }
     });
-
     let blogId = options.id;
-    let timestamp = options.timestamp;
-    await that.getDetail(blogId, timestamp)
+    if(options.scene){
+      blogId=decodeURIComponent(options.scene);
+    }
+    await that.getDetail(blogId)
     await that.getPostRelated(that.data.post._id)
   },
   /**
@@ -129,12 +130,12 @@ Page({
   /**
    * 获取文章详情
    */
-  getDetail: async function (blogId, timestamp) {
+  getDetail: async function (blogId) {
     wx.showLoading({
       title: '加载中...',
     })
     let that = this
-    let postDetail = await api.getPostDetail(blogId, timestamp);
+    let postDetail = await api.getPostDetail(blogId);
     that.setData({
       post: postDetail.result
     })
