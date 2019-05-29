@@ -116,8 +116,7 @@ function getPostDetail(id) {
         name: 'postsService',
         data: {
             action: "getPostsDetail",
-            id: id,
-            timestamp:timestamp
+            id: id
         }
     })
 }

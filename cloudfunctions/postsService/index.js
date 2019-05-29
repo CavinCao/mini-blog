@@ -192,6 +192,7 @@ async function deletePostCollectionOrZan(event) {
  */
 async function getPostsDetail(event) {
   console.info("启动getPostsDetail")
+  console.info(event)
   let post = await db.collection("mini_posts").doc(event.id).get()
   if (post.code) {
     return "";
