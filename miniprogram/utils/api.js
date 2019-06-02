@@ -4,10 +4,19 @@ const db = wx.cloud.database()
 const _ = db.command
 
 /**
+ * 根据id获取文章明细
+ * @param {*} page 
+ */
+function getPostsById(id) {
+    return db.collection('mini_posts')
+        .doc(id)
+        .get()
+}
+/**
  * 获取消息列表
  * @param {*} page 
  */
-function getNoticeLogsList(page,openId) {
+function getNoticeLogsList(page, openId) {
     return db.collection('mini_logs')
         .orderBy('timestamp', 'desc')
         .skip((page - 1) * 10)
@@ -34,49 +43,38 @@ function getReleaseLogsList(page) {
  * 获取文章列表
  * @param {} page 
  */
-function getPostsList(page, filter) {
-    if (filter === '') {
-        return db.collection('mini_posts')
-            .where({
-                isShow: 1
-            })
-            .orderBy('createTime', 'desc')
-            .skip((page - 1) * 10)
-            .limit(10)
-            .field({
-                _id: true,
-                author: true,
-                createTime: true,
-                defaultImageUrl: true,
-                title: true,
-                totalComments: true,
-                totalVisits: true,
-                totalZans: true
-            }).get()
+function getPostsList(page, filter, isShow) {
+    let where = {}
+    if (filter !== '') {
+        where.title = db.RegExp({
+            regexp: filter,
+            options: 'i',
+        })
     }
-    else {
-        return db.collection('mini_posts')
-            .where({
-                title: db.RegExp({
-                    regexp: filter,
-                    options: 'i',
-                }),
-                isShow: 1
-            })
-            .orderBy('createTime', 'desc')
-            .skip((page - 1) * 10)
-            .limit(10)
-            .field({
-                _id: true,
-                author: true,
-                createTime: true,
-                defaultImageUrl: true,
-                title: true,
-                totalComments: true,
-                totalVisits: true,
-                totalZans: true
-            }).get()
+    if (isShow !== -1) {
+        where.isShow = isShow
     }
+
+    return db.collection('mini_posts')
+        .where(where)
+        .orderBy('createTime', 'desc')
+        .skip((page - 1) * 10)
+        .limit(10)
+        .field({
+            _id: true,
+            author: true,
+            createTime: true,
+            defaultImageUrl: true,
+            title: true,
+            totalComments: true,
+            totalVisits: true,
+            totalZans: true,
+            isShow: true,
+            classify: true,
+            label: true,
+            digest: true
+        }).get()
+
 }
 
 /**
@@ -300,13 +298,115 @@ function sendTemplateMessage(nickName, comment, blogId) {
  * 新增版本日志
  * @param {} log 
  */
-function addReleaseLog(log,title) {
+function addReleaseLog(log, title) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "addReleaseLog",
             log: log,
-            title:title
+            title: title
+        }
+    })
+}
+
+/**
+ * 更新文章状态
+ * @param {*} id 
+ * @param {*} isShow 
+ */
+function updatePostsShowStatus(id, isShow) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "updatePostsShowStatus",
+            id: id,
+            isShow: isShow
+        }
+    })
+}
+
+/**
+ * 更新文章专题
+ * @param {*} id 
+ * @param {*} isShow 
+ */
+function updatePostsClassify(id, classify) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "updatePostsClassify",
+            id: id,
+            classify: classify
+        }
+    })
+}
+
+/**
+ * 更新文章标签
+ * @param {*} id 
+ * @param {*} isShow 
+ */
+function updatePostsLabel(id, label) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "updatePostsLabel",
+            id: id,
+            label: label
+        }
+    })
+}
+
+/**
+ * 更新文章标签
+ * @param {*} id 
+ * @param {*} isShow 
+ */
+function upsertPosts(data) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "upsertPosts",
+            post: data
+        }
+    })
+}
+
+/**
+ * 新增基础标签
+ */
+function addBaseLabel(classify) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "addBaseLabel",
+            classify: classify
+        }
+    })
+}
+
+/**
+ * 新增基础主题
+ */
+function addBaseClassify(classify) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "addBaseClassify",
+            classify: classify
+        }
+    })
+}
+
+/**
+ * 新增基础主题
+ */
+function deleteConfigById(id) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "deleteConfigById",
+            id: id
         }
     })
 }
@@ -330,5 +430,13 @@ module.exports = {
     sendTemplateMessage: sendTemplateMessage,
     addReleaseLog: addReleaseLog,
     getReleaseLogsList: getReleaseLogsList,
-    getNoticeLogsList:getNoticeLogsList
+    getNoticeLogsList: getNoticeLogsList,
+    getPostsById: getPostsById,
+    deleteConfigById: deleteConfigById,
+    addBaseClassify: addBaseClassify,
+    addBaseLabel: addBaseLabel,
+    upsertPosts: upsertPosts,
+    updatePostsLabel: updatePostsLabel,
+    updatePostsClassify: updatePostsClassify,
+    updatePostsShowStatus: updatePostsShowStatus
 }

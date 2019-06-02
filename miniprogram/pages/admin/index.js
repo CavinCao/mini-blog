@@ -180,5 +180,14 @@ Page({
       })
     }
     wx.hideLoading()
+  },
+  /**
+   * 跳转文章编辑
+   * @param {*} e 
+   */
+  showArticle: async function(e){
+    wx.navigateTo({
+      url: '../admin/articleList/articleList'
+    })
   }
 })

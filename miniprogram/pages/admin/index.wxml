@@ -42,7 +42,7 @@
         </view>
     </view>
     <view class="cu-item arrow">
-        <view class='content' bindtap=''>
+        <view class='content' bindtap='showArticle'>
             <text class='icon-post text-grey'></text>
             <text class='text-grey'>文章管理</text>
         </view>

@@ -1,5 +1,7 @@
 @import "icon.wxss";
 @import "colorui.wxss";
+@import "editor.wxss";
+@import "editorIcon.wxss";
 /**app.wxss**/
 .container {
   display: flex;
