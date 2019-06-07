@@ -189,5 +189,24 @@ Page({
     wx.navigateTo({
       url: '../admin/articleList/articleList'
     })
+  },
+  /**
+   * 跳转标签列表
+   * @param {*} e 
+   */
+  showLabel:async function(e){
+    wx.navigateTo({
+      url: '../admin/labelList/labelList'
+    })
+  },
+
+  /**
+   * 跳转到评论列表
+   * @param {*} e 
+   */
+  showComment:async function(e){
+    wx.navigateTo({
+      url: '../admin/comment/comment'
+    })
   }
 })

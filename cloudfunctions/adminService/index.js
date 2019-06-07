@@ -47,6 +47,9 @@ exports.main = async (event, context) => {
     case 'deleteConfigById': {
       return deleteConfigById(event)
     }
+    case 'changeCommentFlagById': {
+      return changeCommentFlagById(event)
+    }
     default: break
   }
 }
@@ -231,6 +234,31 @@ async function addBaseClassify(event) {
 async function deleteConfigById(event) {
   try {
     await db.collection('mini_config').doc(event.id).remove()
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 根据ID删除评论
+ * @param {*} event 
+ */
+async function changeCommentFlagById(event) {
+  try {
+    let task1 = db.collection('mini_comments').doc(event.id).update({
+      data: {
+        flag: event.flag
+      }
+    })
+    let task2 = db.collection('mini_posts').doc(event.postId).update({
+      data: {
+        totalComments: _.inc(event.count)
+      }
+    })
+    await task1
+    await task2
     return true;
   } catch (e) {
     console.error(e)

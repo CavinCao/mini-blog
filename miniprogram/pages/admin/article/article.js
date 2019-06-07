@@ -6,7 +6,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-    placeholder:"赶快创作你的作品吧..."
+    placeholder:"赶快创作你的作品吧...",
+    post:{},
+    imgList:['http://mmbiz.qpic.cn/mmbiz_jpg/ibT18LpyNmXpSrE29ZnOldmRbPq0wnrMmqe2X1TphuiafHungXqrxFOgoRh5MqvHOxDpCZwYQc3jnIzFWibHw7NMA/0?wx_fmt=jpeg%22']
   },
 
   /**

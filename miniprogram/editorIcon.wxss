@@ -15,226 +15,226 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-redo:before {
+.cuIcon-redo:before {
   content: "\e627";
 }
 
-.icon-undo:before {
+.cuIcon-undo:before {
   content: "\e633";
 }
 
-.icon-indent:before {
+.cuIcon-indent:before {
   content: "\eb28";
 }
 
-.icon-outdent:before {
+.cuIcon-outdent:before {
   content: "\e6e8";
 }
 
-.icon-fontsize:before {
+.cuIcon-fontsize:before {
   content: "\e6fd";
 }
 
-.icon-format-header-1:before {
+.cuIcon-format-header-1:before {
   content: "\e860";
 }
 
-.icon-format-header-4:before {
+.cuIcon-format-header-4:before {
   content: "\e863";
 }
 
-.icon-format-header-5:before {
+.cuIcon-format-header-5:before {
   content: "\e864";
 }
 
-.icon-format-header-6:before {
+.cuIcon-format-header-6:before {
   content: "\e865";
 }
 
-.icon-clearup:before {
+.cuIcon-clearup:before {
   content: "\e64d";
 }
 
-.icon-preview:before {
+.cuIcon-preview:before {
   content: "\e631";
 }
 
-.icon-date:before {
+.cuIcon-date:before {
   content: "\e63e";
 }
 
-.icon-fontbgcolor:before {
+.cuIcon-fontbgcolor:before {
   content: "\e678";
 }
 
-.icon-clearedformat:before {
+.cuIcon-clearedformat:before {
   content: "\e67e";
 }
 
-.icon-font:before {
+.cuIcon-font:before {
   content: "\e684";
 }
 
-.icon-723bianjiqi_duanhouju:before {
+.cuIcon-723bianjiqi_duanhouju:before {
   content: "\e65f";
 }
 
-.icon-722bianjiqi_duanqianju:before {
+.cuIcon-722bianjiqi_duanqianju:before {
   content: "\e660";
 }
 
-.icon-text_color:before {
+.cuIcon-text_color:before {
   content: "\e72c";
 }
 
-.icon-format-header-2:before {
+.cuIcon-format-header-2:before {
   content: "\e75c";
 }
 
-.icon-format-header-3:before {
+.cuIcon-format-header-3:before {
   content: "\e75d";
 }
 
-.icon--checklist:before {
+.cuIcon--checklist:before {
   content: "\e664";
 }
 
-.icon-baocun:before {
+.cuIcon-baocun:before {
   content: "\ec09";
 }
 
-.icon-line-height:before {
+.cuIcon-line-height:before {
   content: "\e7f8";
 }
 
-.icon-quanping:before {
+.cuIcon-quanping:before {
   content: "\ec13";
 }
 
-.icon-direction-rtl:before {
+.cuIcon-direction-rtl:before {
   content: "\e66e";
 }
 
-.icon-direction-ltr:before {
+.cuIcon-direction-ltr:before {
   content: "\e66d";
 }
 
-.icon-selectall:before {
+.cuIcon-selectall:before {
   content: "\e62b";
 }
 
-.icon-fuzhi:before {
+.cuIcon-fuzhi:before {
   content: "\ec7a";
 }
 
-.icon-shanchu:before {
+.cuIcon-shanchu:before {
   content: "\ec7b";
 }
 
-.icon-bianjisekuai:before {
+.cuIcon-bianjisekuai:before {
   content: "\ec7c";
 }
 
-.icon-fengexian:before {
+.cuIcon-fengexian:before {
   content: "\ec7f";
 }
 
-.icon-dianzan:before {
+.cuIcon-dianzan:before {
   content: "\ec80";
 }
 
-.icon-charulianjie:before {
+.cuIcon-charulianjie:before {
   content: "\ec81";
 }
 
-.icon-charutupian:before {
+.cuIcon-charutupian:before {
   content: "\ec82";
 }
 
-.icon-wuxupailie:before {
+.cuIcon-wuxupailie:before {
   content: "\ec83";
 }
 
-.icon-juzhongduiqi:before {
+.cuIcon-juzhongduiqi:before {
   content: "\ec84";
 }
 
-.icon-yinyong:before {
+.cuIcon-yinyong:before {
   content: "\ec85";
 }
 
-.icon-youxupailie:before {
+.cuIcon-youxupailie:before {
   content: "\ec86";
 }
 
-.icon-youduiqi:before {
+.cuIcon-youduiqi:before {
   content: "\ec87";
 }
 
-.icon-zitidaima:before {
+.cuIcon-zitidaima:before {
   content: "\ec88";
 }
 
-.icon-xiaolian:before {
+.cuIcon-xiaolian:before {
   content: "\ec89";
 }
 
-.icon-zitijiacu:before {
+.cuIcon-zitijiacu:before {
   content: "\ec8a";
 }
 
-.icon-zitishanchuxian:before {
+.cuIcon-zitishanchuxian:before {
   content: "\ec8b";
 }
 
-.icon-zitishangbiao:before {
+.cuIcon-zitishangbiao:before {
   content: "\ec8c";
 }
 
-.icon-zitibiaoti:before {
+.cuIcon-zitibiaoti:before {
   content: "\ec8d";
 }
 
-.icon-zitixiahuaxian:before {
+.cuIcon-zitixiahuaxian:before {
   content: "\ec8e";
 }
 
-.icon-zitixieti:before {
+.cuIcon-zitixieti:before {
   content: "\ec8f";
 }
 
-.icon-zitiyanse:before {
+.cuIcon-zitiyanse:before {
   content: "\ec90";
 }
 
-.icon-zuoduiqi:before {
+.cuIcon-zuoduiqi:before {
   content: "\ec91";
 }
 
-.icon-zitiyulan:before {
+.cuIcon-zitiyulan:before {
   content: "\ec92";
 }
 
-.icon-zitixiabiao:before {
+.cuIcon-zitixiabiao:before {
   content: "\ec93";
 }
 
-.icon-zuoyouduiqi:before {
+.cuIcon-zuoyouduiqi:before {
   content: "\ec94";
 }
 
-.icon-duigoux:before {
+.cuIcon-duigoux:before {
   content: "\ec9e";
 }
 
-.icon-guanbi:before {
+.cuIcon-guanbi:before {
   content: "\eca0";
 }
 
-.icon-shengyin_shiti:before {
+.cuIcon-shengyin_shiti:before {
   content: "\eca5";
 }
 
-.icon-Character-Spacing:before {
+.cuIcon-Character-Spacing:before {
   content: "\e964";
 }

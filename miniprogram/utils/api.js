@@ -4,6 +4,19 @@ const db = wx.cloud.database()
 const _ = db.command
 
 /**
+ * 获取评论列表
+ */
+function getCommentsList(page, flag) {
+    return db.collection('mini_comments')
+        .where({
+            flag: flag
+        })
+        .orderBy('timestamp', 'desc')
+        .skip((page - 1) * 10)
+        .limit(10)
+        .get()
+}
+/**
  * 根据id获取文章明细
  * @param {*} page 
  */
@@ -85,7 +98,8 @@ function getPostsList(page, filter, isShow) {
 function getPostComments(page, postId) {
     return db.collection('mini_comments')
         .where({
-            postId: postId
+            postId: postId,
+            flag:0
         })
         .orderBy('timestamp', 'desc')
         .skip((page - 1) * 10)
@@ -411,6 +425,24 @@ function deleteConfigById(id) {
     })
 }
 
+/**
+ * 更新评论状态
+ * @param {*} id 
+ * @param {*} flag 
+ */
+function changeCommentFlagById(id, flag, postId,count) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "changeCommentFlagById",
+            id: id,
+            flag: flag,
+            postId: postId,
+            count:count
+        }
+    })
+}
+
 module.exports = {
     getPostsList: getPostsList,
     getPostDetail: getPostDetail,
@@ -438,5 +470,7 @@ module.exports = {
     upsertPosts: upsertPosts,
     updatePostsLabel: updatePostsLabel,
     updatePostsClassify: updatePostsClassify,
-    updatePostsShowStatus: updatePostsShowStatus
+    updatePostsShowStatus: updatePostsShowStatus,
+    getCommentsList: getCommentsList,
+    changeCommentFlagById: changeCommentFlagById
 }

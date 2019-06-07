@@ -1,0 +1,75 @@
+<view class="VerticalBox">
+    <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="0" style="height:calc(100vh)">
+        <view class="cu-item {{index==TabCur?'text-green cur':''}}" wx:for="{{20}}" wx:key bindtap='tabSelect' data-id="{{index}}">
+            Tab{{index +1}}
+        </view>
+        <view>新增</view>
+    </scroll-view>
+    <scroll-view class="VerticalMain" scroll-y scroll-with-animation style="height:calc(100vh)" scroll-into-view="main-id-{{TabCur}}" bindscroll="VerticalMain">
+        <view class="padding-top padding-lr" wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}">
+            <view class='cu-bar solid-bottom bg-white'>
+                <view class='action'>
+                    <text class='cuIcon-title text-green'></text>
+                    Tab{{index +1}}
+                </view>
+            </view>
+            <view class="cu-list menu menu-avatar">
+                <view class="cu-item">
+                    <view class="cu-avatar round lg" style="background-image:url(https://image.weilanwl.com/img/square-1.jpg);"></view>
+                    <view class='content'>
+                        <view class='text-grey'>文晓港</view>
+                        <view class='text-gray text-sm'>
+                            <text class='cuIcon-infofill text-red'></text>
+                            消息未送达
+                        </view>
+                    </view>
+                    <view class='action'>
+                        <view class='text-grey text-xs'>22:20</view>
+                        <view class="cu-tag round bg-grey sm">5</view>
+                    </view>
+                </view>
+                <view class="cu-item">
+                    <view class="cu-avatar round lg" style="background-image:url(https://image.weilanwl.com/img/square-2.jpg);">
+                        <view class="cu-tag badge">99+</view>
+                    </view>
+                    <view class='content'>
+                        <view class='text-grey'>
+                            文晓港
+                            <view class="cu-tag round bg-orange sm">SVIP</view>
+                        </view>
+                        <view class='text-gray text-sm'>
+                            <text class='cuIcon-redpacket_fill text-red'></text>
+                            收到红包
+                        </view>
+                    </view>
+                    <view class='action'>
+                        <view class='text-grey text-xs'>22:20</view>
+                        <view class='cuIcon-notice_forbid_fill text-gray'></view>
+                    </view>
+                </view>
+                <view class="cu-item ">
+                    <view class="cu-avatar radius lg" style="background-image:url(https://image.weilanwl.com/img/square-3.jpg);"></view>
+                    <view class='content'>
+                        <view>喵星人互动群</view>
+                        <view class='text-gray text-sm'>喵星酱：喵喵喵！</view>
+                    </view>
+                    <view class='action'>
+                        <view class='text-grey text-xs'>22:20</view>
+                        <view class="cu-tag round bg-red sm">5</view>
+                    </view>
+                </view>
+                <view class="cu-item grayscale">
+                    <view class="cu-avatar radius lg" style="background-image:url(https://image.weilanwl.com/img/square-3.jpg);"></view>
+                    <view class='content'>
+                        <view>喵星人互动群</view>
+                        <view class='text-gray text-sm'>喵星酱：喵喵喵！</view>
+                    </view>
+                    <view class='action'>
+                        <view class='text-grey text-xs'>22:20</view>
+                        <view class="cu-tag round bg-red sm">5</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </scroll-view>
+</view>

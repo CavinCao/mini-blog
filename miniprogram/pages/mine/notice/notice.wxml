@@ -2,7 +2,7 @@
 <view class="cu-list menu  menu-avatar">
     <view class="cu-item" wx:for="{{notice}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" data-path="{{item.path}}" bindtap="bindDetail" >
         <view class="cu-avatar round lg">
-            <text class='icon-{{item.icon}} text-{{item.color}}'></text>
+            <text class='cuIcon-{{item.icon}} text-{{item.color}}'></text>
         </view>
         <view class='content'>
             <view>{{item.tag}}</view>

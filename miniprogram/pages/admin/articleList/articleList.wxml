@@ -4,7 +4,7 @@
     <form bindsubmit='bindconfirm'>
         <view class="cu-bar search bg-white">
             <view class='search-form round'>
-                <text class="icon-search"></text>
+                <text class="cuIcon-search"></text>
                 <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
             </view>
             <view class='action'>
@@ -15,7 +15,7 @@
 </view>
 <!-- 文章列表 -->
 <view class="cu-card article no-card margin-top-self">
-    <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow">
+    <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
         <view class="title text-cut ">{{item.title}}</view>
         <view class="content">
             <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>
@@ -42,7 +42,7 @@
 </view>
 <!-- 悬浮新增按钮-->
 <view class="round-click">
-   <navigator url='{{articlePath}}' > <text class="icon-writefill"></text></navigator >
+   <navigator url='{{articlePath}}' > <text class="cuIcon-writefill"></text></navigator >
 </view>
 <!-- 是否展示文章设置窗口 -->
 <view class="cu-modal {{isShowModel?'show':''}}">
@@ -50,7 +50,7 @@
     <view class="cu-bar bg-white justify-end">
       <view class='content'>{{showModelTitle}}</view>
       <view class='action' bindtap='hideShowModal'>
-        <text class='icon-close text-red'></text>
+        <text class='cuIcon-close text-red'></text>
       </view>
     </view>
     <view class='padding-xl'>

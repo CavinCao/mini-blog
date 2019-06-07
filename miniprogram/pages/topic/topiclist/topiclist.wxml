@@ -17,10 +17,10 @@
       <view class="desc">
         <view class='text-content '> 这是一个伪铲屎官为了给自己的程序凑字数瞎几把乱写的一堆文字，了解一下就OK！一个伪铲屎官为了给自己的程序凑字数瞎几把乱写的一堆文字，了解一下就OKヾ(=･ω･=)o</view>
         <view class='text-gray text-sm text-right'>
-          <text class="icon-timefill"></text> 2019-01-01
-          <text class="icon-attentionfill"></text> 10000
-          <text class="icon-appreciatefill"></text> 200
-          <text class="icon-messagefill"></text> 20
+          <text class="cuIcon-timefill"></text> 2019-01-01
+          <text class="cuIcon-attentionfill"></text> 10000
+          <text class="cuIcon-appreciatefill"></text> 200
+          <text class="cuIcon-messagefill"></text> 20
         </view>
       </view>
 
