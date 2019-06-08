@@ -85,9 +85,6 @@ Page({
     let isShow = e.currentTarget.dataset.isshow
     let postId = e.currentTarget.dataset.postid
 
-    console.info(isShow)
-    console.info(postId)
-
     that.setData({
       isShowModel: true,
       showModelContent: isShow == 1 ? "是否确认将文章设置为[前端不展示]" : "是否确认将文章设置为[前端展示]",

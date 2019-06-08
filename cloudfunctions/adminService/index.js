@@ -50,6 +50,9 @@ exports.main = async (event, context) => {
     case 'changeCommentFlagById': {
       return changeCommentFlagById(event)
     }
+    case 'getLabelList':{
+      return getLabelList(event)
+    }
     default: break
   }
 }
@@ -182,7 +185,7 @@ async function upsertPosts(event) {
 async function addBaseLabel(event) {
   let key = "basePostsLabels"
   let collection = "mini_config"
-  let result = await db.collection.where({
+  let result = await db.collection(collection).where({
     key: key,
     value: event.labelName
   }).get()
@@ -208,7 +211,7 @@ async function addBaseLabel(event) {
 async function addBaseClassify(event) {
   let key = "basePostsClassify"
   let collection = "mini_config"
-  let result = await db.collection.where({
+  let result = await db.collection(collection).where({
     key: key,
     value: event.classify
   }).get()
@@ -264,4 +267,40 @@ async function changeCommentFlagById(event) {
     console.error(e)
     return false;
   }
+}
+
+/**
+ * 获取所有label集合
+ * @param {*} event 
+ */
+async function getLabelList(event){
+  const MAX_LIMIT = 100
+  const countResult = await db.collection('mini_config').where({
+    key:'basePostsLabels'
+  }).count()
+  const total = countResult.total
+  if(total===0)
+  {
+    return {
+      data: [],
+      errMsg: "no label data",
+    }
+  }
+  // 计算需分几次取
+  const batchTimes = Math.ceil(total / 100)
+  // 承载所有读操作的 promise 的数组
+  const tasks = []
+  for (let i = 0; i < batchTimes; i++) {
+    const promise = db.collection('mini_config').where({
+      key:'basePostsLabels'
+    }).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+    tasks.push(promise)
+  }
+  // 等待所有
+  return (await Promise.all(tasks)).reduce((acc, cur) => {
+    return {
+      data: acc.data.concat(cur.data),
+      errMsg: acc.errMsg,
+    }
+  })
 }

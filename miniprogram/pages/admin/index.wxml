@@ -105,7 +105,7 @@
                     <view class='title'>日期:</view>
                     <input placeholder="请填写日期" class='radius' name='releaseDate' value='{{release.releaseDate}}'></input>
                 </view>
-                <view class="cu-form-group text-left">
+                <view wx:if="{{isReleaseShow}}" class="cu-form-group text-left">
                     <textarea placeholder="请输入迭代内容" maxlength="-1" name='releaseContent' value='{{release.releaseContent}}' placeholder-class='placeholder'></textarea>
                 </view>
             </view>

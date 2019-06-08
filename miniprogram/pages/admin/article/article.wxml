@@ -110,20 +110,19 @@
 <!-- 文章详情维护（底部保存按钮） -->
 <view class='box'>
     <view class="cu-bar foot bg-white tabbar border shop">
-    <button class="action" open-type="contact">
-      <view class="cuIcon-service text-green">
-        <view class="cu-tag badge"></view>
-      </view>
-      首页
-    </button>
-    <view class="action">
-      <view class="cuIcon-cart">
-        <view class="cu-tag badge">99</view>
-      </view>
-      全部清空
+        <button class="action" open-type="contact">
+            <view class="cuIcon-service text-green">
+                <view class="cu-tag badge"></view>
+            </view>
+            首页
+        </button>
+        <view class="action">
+            <view class="cuIcon-cart">
+                <view class="cu-tag badge">99</view>
+            </view>
+            全部清空
+        </view>
+        <view class="bg-orange submit">保存为草稿</view>
+        <view class="bg-red submit">保存并发布</view>
     </view>
-    <view class="bg-orange submit">保存为草稿</view>
-    <view class="bg-red submit">保存并发布</view>
-  </view>
 </view>
-

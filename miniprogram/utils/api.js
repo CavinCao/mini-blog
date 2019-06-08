@@ -389,12 +389,12 @@ function upsertPosts(data) {
 /**
  * 新增基础标签
  */
-function addBaseLabel(classify) {
+function addBaseLabel(labelName) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "addBaseLabel",
-            classify: classify
+            labelName: labelName
         }
     })
 }
@@ -443,6 +443,19 @@ function changeCommentFlagById(id, flag, postId,count) {
     })
 }
 
+/**
+ * 获取label集合
+ */
+function getLabelList()
+{
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "getLabelList"
+        }
+    })
+}
+
 module.exports = {
     getPostsList: getPostsList,
     getPostDetail: getPostDetail,
@@ -472,5 +485,6 @@ module.exports = {
     updatePostsClassify: updatePostsClassify,
     updatePostsShowStatus: updatePostsShowStatus,
     getCommentsList: getCommentsList,
-    changeCommentFlagById: changeCommentFlagById
+    changeCommentFlagById: changeCommentFlagById,
+    getLabelList:getLabelList
 }
