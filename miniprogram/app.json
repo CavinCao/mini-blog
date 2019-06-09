@@ -12,7 +12,8 @@
     "pages/admin/article/article",
     "pages/admin/articleList/articleList",
     "pages/admin/labelList/labelList",
-    "pages/admin/comment/comment"
+    "pages/admin/comment/comment",
+    "pages/admin/classify/classify"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "专题管理",
+  "backgroundTextStyle": "dark",
+  "enablePullDownRefresh": true
+}

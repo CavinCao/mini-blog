@@ -53,6 +53,9 @@ exports.main = async (event, context) => {
     case 'getLabelList':{
       return getLabelList(event)
     }
+    case 'getClassifyList':{
+      return getClassifyList(event)
+    }
     default: break
   }
 }
@@ -211,9 +214,13 @@ async function addBaseLabel(event) {
 async function addBaseClassify(event) {
   let key = "basePostsClassify"
   let collection = "mini_config"
+  let classifyData={
+    classifyName:event.classifyName,
+    classifyDesc:event.classifyDesc
+  }
   let result = await db.collection(collection).where({
     key: key,
-    value: event.classify
+    value: _.eq(classifyData)
   }).get()
   if (result.data.length > 0) {
     return false
@@ -223,7 +230,7 @@ async function addBaseClassify(event) {
       data: {
         key: key,
         timestamp: Date.now(),
-        value: event.classify
+        value: classifyData
       }
     });
     return true;
@@ -293,6 +300,42 @@ async function getLabelList(event){
   for (let i = 0; i < batchTimes; i++) {
     const promise = db.collection('mini_config').where({
       key:'basePostsLabels'
+    }).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+    tasks.push(promise)
+  }
+  // 等待所有
+  return (await Promise.all(tasks)).reduce((acc, cur) => {
+    return {
+      data: acc.data.concat(cur.data),
+      errMsg: acc.errMsg,
+    }
+  })
+}
+
+/**
+ * 获取所有label集合
+ * @param {*} event 
+ */
+async function getClassifyList(event){
+  const MAX_LIMIT = 100
+  const countResult = await db.collection('mini_config').where({
+    key:'basePostsClassify'
+  }).count()
+  const total = countResult.total
+  if(total===0)
+  {
+    return {
+      data: [],
+      errMsg: "no classify data",
+    }
+  }
+  // 计算需分几次取
+  const batchTimes = Math.ceil(total / 100)
+  // 承载所有读操作的 promise 的数组
+  const tasks = []
+  for (let i = 0; i < batchTimes; i++) {
+    const promise = db.collection('mini_config').where({
+      key:'basePostsClassify'
     }).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
     tasks.push(promise)
   }

@@ -48,14 +48,14 @@
         </view>
     </view>
     <view class="cu-item arrow">
-        <view class='content' bindtap=''>
+        <view class='content' bindtap='showClassify'>
             <text class='cuIcon-form text-grey'></text>
-            <text class='text-grey'>主题管理</text>
+            <text class='text-grey'>专题管理</text>
         </view>
     </view>
     <view class="cu-item arrow">
         <view class='content' bindtap='showLabel'>
-            <text class='cuIcon-form text-grey'></text>
+            <text class='cuIcon-tagfill text-grey'></text>
             <text class='text-grey'>标签管理</text>
         </view>
     </view>

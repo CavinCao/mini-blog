@@ -6,26 +6,28 @@ Page({
    * 页面的初始数据
    */
   data: {
-    curLabelName: "",
-    labelList: [],
-    isLabelModelShow: false
+    classifyList: [],
+    classifyName: "",
+    classifyDesc: "",
+    isClassifyModelShow: false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    await this.getLabelList()
+    await this.getClassifyList()
   },
+
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: async function () {
+  onPullDownRefresh:async function () {
     let that = this;
     that.setData({
-      labelList: []
+      classifyList: []
     })
-    await this.getLabelList()
+    await this.getClassifyList()
     wx.stopPullDownRefresh();
   },
 
@@ -36,46 +38,46 @@ Page({
 
   },
   /**
-   * 获取label集合
+   * 获取专题集合
    * @param {*} e 
    */
-  getLabelList: async function () {
+  getClassifyList: async function () {
     let that = this
-    let labelList = await api.getLabelList()
-    console.info(labelList)
+    let classifyList = await api.getClassifyList()
+    console.info(classifyList)
     that.setData({
-      labelList: labelList.result.data
+      classifyList: classifyList.result.data
     })
   },
-
   /**
     * 显示
     * @param {} e 
   */
-  showLabelModal(e) {
+  showClassifyModal(e) {
     this.setData({
-      isLabelModelShow: true
+      isClassifyModelShow: true
     })
   },
   /**
     * 隐藏
     * @param {*} e 
   */
-  hideLabelModal(e) {
+  hideClassifyModal(e) {
     this.setData({
-      isLabelModelShow: false
+      isClassifyModelShow: false
     })
   },
   /**
    * 保存标签
    * @param {*} e 
    */
-  formLabelSubmit: async function (e) {
+  formClassifySubmit: async function (e) {
     let that = this;
-    let labelName = e.detail.value.labelName;
-    if (labelName === undefined || labelName === "") {
+    let classifyName = e.detail.value.classifyName;
+    let classifyDesc=e.detail.value.classifyDesc;
+    if (classifyName === undefined || classifyName === "") {
       wx.showToast({
-        title: '请填写正确的标签',
+        title: '请填写正确的专题',
         icon: 'none',
         duration: 1500
       })
@@ -85,13 +87,14 @@ Page({
         title: '保存中...',
       })
 
-      let res = await api.addBaseLabel(labelName)
+      let res = await api.addBaseClassify(classifyName,classifyDesc)
       console.info(res)
       wx.hideLoading()
       if (res.result) {
         that.setData({
-          isLabelModelShow: false,
-          labelName: ""
+          isClassifyModelShow: false,
+          classifyName: "",
+          classifyDesc:""
         })
 
         that.onPullDownRefresh()
@@ -111,28 +114,4 @@ Page({
       }
     }
   },
-
-  /**
-   * 删除标签
-   * @param {*} e 
-   */
-  deleteLabelById: async function (e) {
-    let labelName = e.currentTarget.dataset.labelname
-    let labelId = e.currentTarget.id
-    let that = this
-    wx.showModal({
-      title: '提示',
-      content: '是否确认删除[' + labelName + ']标签',
-      success(res) {
-        if (res.confirm) {
-          api.deleteConfigById(labelId).then(res => {
-            return that.onPullDownRefresh()
-          }).then(res => { })
-          console.log(res)
-        } else if (res.cancel) {
-          console.log('用户点击取消')
-        }
-      }
-    })
-  }
 })

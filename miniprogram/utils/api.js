@@ -99,7 +99,7 @@ function getPostComments(page, postId) {
     return db.collection('mini_comments')
         .where({
             postId: postId,
-            flag:0
+            flag: 0
         })
         .orderBy('timestamp', 'desc')
         .skip((page - 1) * 10)
@@ -402,12 +402,13 @@ function addBaseLabel(labelName) {
 /**
  * 新增基础主题
  */
-function addBaseClassify(classify) {
+function addBaseClassify(classifyName,classifyDesc) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "addBaseClassify",
-            classify: classify
+            classifyName: classifyName,
+            classifyDesc: classifyDesc
         }
     })
 }
@@ -430,7 +431,7 @@ function deleteConfigById(id) {
  * @param {*} id 
  * @param {*} flag 
  */
-function changeCommentFlagById(id, flag, postId,count) {
+function changeCommentFlagById(id, flag, postId, count) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
@@ -438,7 +439,7 @@ function changeCommentFlagById(id, flag, postId,count) {
             id: id,
             flag: flag,
             postId: postId,
-            count:count
+            count: count
         }
     })
 }
@@ -446,12 +447,23 @@ function changeCommentFlagById(id, flag, postId,count) {
 /**
  * 获取label集合
  */
-function getLabelList()
-{
+function getLabelList() {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "getLabelList"
+        }
+    })
+}
+
+/**
+ * 获取label集合
+ */
+function getClassifyList() {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "getClassifyList"
         }
     })
 }
@@ -486,5 +498,6 @@ module.exports = {
     updatePostsShowStatus: updatePostsShowStatus,
     getCommentsList: getCommentsList,
     changeCommentFlagById: changeCommentFlagById,
-    getLabelList:getLabelList
+    getLabelList: getLabelList,
+    getClassifyList: getClassifyList
 }
