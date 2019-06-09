@@ -6,98 +6,168 @@ Page({
    * 页面的初始数据
    */
   data: {
-    placeholder:"赶快创作你的作品吧...",
-    post:{},
-    imgList:['http://mmbiz.qpic.cn/mmbiz_jpg/ibT18LpyNmXpSrE29ZnOldmRbPq0wnrMmqe2X1TphuiafHungXqrxFOgoRh5MqvHOxDpCZwYQc3jnIzFWibHw7NMA/0?wx_fmt=jpeg%22']
+    placeholder: "赶快创作你的作品吧...",
+    post: {},
+    imgList: []
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
+    let that = this;
+    let blogId = options.id;
 
-  },
+    console.info(blogId)
 
-  /**
-   * 初始化富文本框
-   */
-  onEditorReady:async function() {
-    const that = this
     wx.createSelectorQuery().select('#editor').context(function (res) {
       that.editorCtx = res.context
     }).exec()
+    if (blogId !== undefined) {
+      let result = await api.getPostsById(blogId)
+      that.setData({
+        post: result.data,
+        imgList: that.data.imgList.concat(result.data.defaultImageUrl),
+      });
 
-    let result=await api.getPostsById('ee3099285ccee97e0ca03888750d4603')
-    console.info(result.data)
-    that.editorCtx.setContents({
-      html:result.data.content,
-      success:  (res)=> {
-        console.log(res)
+      that.editorCtx.setContents({
+        html: result.data.content,
+        success: (res) => {
+          console.log(res)
+        },
+        fail: (res) => {
+          console.log(res)
+        }
+      })
+    }
+  },
+
+  /**
+   * 文章变化
+   * @param {*} e 
+   */
+  changePostDetail: function (e) {
+    let that = this;
+    let post = that.data.post
+    console.info(e)
+    switch (e.target.id) {
+      case 'postTitle': {
+        post.title = e.detail.value
+        break
+      }
+      case 'postClassify': {
+        post.classify = e.detail.value
+        break
+      }
+      case 'postDigest': {
+        post.digest = e.detail.value
+        break
+      }
+    }
+
+    that.setData({
+      post: post
+    })
+  },
+
+  /**
+   * 除内容之外保存
+   * @param {*} e 
+   */
+  savePostExceptContent: async function (e) {
+
+    wx.showLoading({
+      title: '保存中...',
+    })
+
+    let that = this;
+    let post = that.data.post
+
+    let newPost = {
+      title: post.title,
+      digest: post.digest
+    }
+
+    await api.upsertPosts(post._id === undefined ? "" : post._id, newPost)
+
+    wx.hideLoading()
+    wx.showToast({
+      title: '保存成功',
+      icon: 'none',
+      duration: 1500
+    })
+  },
+  /**
+   * 保存文章
+   * @param {*} e 
+   */
+  savePost: async function (e) {
+
+    wx.showLoading({
+      title: '保存中...',
+    })
+
+    let that = this;
+    let post = that.data.post
+    that.editorCtx.getContents({
+      success: (res) => {
+        let newPost = {
+          content: res.html,
+          title: post.title,
+          digest: post.digest
+        }
+        api.upsertPosts(post._id === undefined ? "" : post._id, newPost).then(res => {
+          console.info(res)
+        })
       },
-      fail:(res)=> {
-        console.log(res)
-      }
+    })
+
+    wx.hideLoading()
+    wx.showToast({
+      title: '保存成功',
+      icon: 'none',
+      duration: 1500
     })
   },
+  undo() {
+    this.editorCtx.undo()
+  },
+  redo() {
+    this.editorCtx.redo()
+  },
+  format(e) {
+    let { name, value } = e.target.dataset
+    if (!name) return
+    // console.log('format', name, value)
+    this.editorCtx.format(name, value)
 
-  showTest:async function(){
-    const that = this
-    let result=await api.getPostsById('ee3099285ccee97e0ca03888750d4603')
-    console.info(result.data)
-    that.editorCtx.setContents({
-      html:"43243243243",
+  },
+  onStatusChange(e) {
+    const formats = e.detail
+    this.setData({ formats })
+  },
+  insertDivider() {
+    this.editorCtx.insertDivider({
       success: function () {
-        console.log('insert image success')
+        console.log('insert divider success')
       }
     })
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
+  clear() {
+    this.editorCtx.clear({
+      success: function (res) {
+        console.log("clear success")
+      }
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
+  removeFormat() {
+    this.editorCtx.removeFormat()
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
+  insertDate() {
+    const date = new Date()
+    const formatDate = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+    this.editorCtx.insertText({
+      text: formatDate
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
 })

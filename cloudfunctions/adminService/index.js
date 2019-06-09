@@ -171,7 +171,7 @@ async function upsertPosts(event) {
     }
     else {
       await db.collection(collection).doc(event.id).update({
-        data: data
+        data: event.post
       });
     }
     return true;

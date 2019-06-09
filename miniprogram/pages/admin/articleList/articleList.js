@@ -51,9 +51,9 @@ Page({
     await this.getPostsList(filter, -1)
   },
   /**
- * 搜索功能
- * @param {} e 
- */
+   * 搜索功能
+   * @param {} e 
+   */
   bindconfirm: async function (e) {
     let that = this;
     console.log('e.detail.value', e.detail.value.searchContent)
@@ -173,5 +173,15 @@ Page({
       })
     }
     wx.hideLoading()
-  }
+  },
+
+  /**
+   * 点击文章明细
+   */
+  bindPostDetail: function (e) {
+    let blogId = e.currentTarget.id;
+    wx.navigateTo({
+      url: '../article/article?id=' + blogId
+    })
+  },
 })

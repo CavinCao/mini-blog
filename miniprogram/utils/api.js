@@ -376,11 +376,12 @@ function updatePostsLabel(id, label) {
  * @param {*} id 
  * @param {*} isShow 
  */
-function upsertPosts(data) {
+function upsertPosts(id,data) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "upsertPosts",
+            id:id,
             post: data
         }
     })
