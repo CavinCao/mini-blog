@@ -8,6 +8,22 @@
     {
       "action": "disallow",
       "page": "pages/admin/articleList/articleList"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/article/article"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/classify/classify"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/comment/comment"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/labelList/labelList"
     }
   ]
 }
