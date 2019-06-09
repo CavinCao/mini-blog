@@ -22,7 +22,7 @@
             <view class="desc">
                 <view class='text-content '>{{item.digest}}</view>
                 <view>
-                    <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item._id}}" bindtap='showModal'>
+                    <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item._id}}" catchtap='showModal'>
                         {{item.isShow==1?"已展示":"隐藏中"}}
                     </view>
                     <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light'>
