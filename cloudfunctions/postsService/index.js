@@ -37,6 +37,7 @@ exports.main = async (event, context) => {
     default: break
   }
 }
+
 /**
  * 新增文章二维码
  * @param {} event 

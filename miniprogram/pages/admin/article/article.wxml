@@ -1,0 +1,124 @@
+<!-- 文章基本信息维护 -->
+<form bindsubmit="formClassifySubmit">
+    <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange '></text>
+            文章基本信息
+        </view>
+    </view>
+    <view class="cu-form-group align-start">
+        <view class="title">标题</view>
+        <textarea maxlength="-1" value='{{post.title}}' placeholder="请输入文章标题" id="postTitle" bindblur="changePostDetail" ></textarea>
+    </view>
+    <view class="cu-form-group">
+        <view class='title'>前台展示</view>
+        <switch></switch>
+    </view>
+    <view class="cu-form-group">
+        <view class='title'>加入专题</view>
+        <input placeholder="" class='radius' name='input' id="postClassify" value='{{post.classify}}'></input>
+        <button class='cu-btn bg-green shadow'>选择</button>
+    </view>
+    <view class="cu-form-group">
+        <view class='title'>添加标签</view>
+        <input placeholder="" class='radius' name='input'></input>
+        <button class='cu-btn bg-green shadow'>选择</button>
+    </view>
+    <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange '></text>
+            文章简介
+        </view>
+    </view>
+    <view class="cu-form-group">
+        <textarea id="postDigest" placeholder="一句话介绍" maxlength="-1" placeholder-class='placeholder' value='{{post.digest}}'></textarea>
+    </view>
+    <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange '></text>
+            文章首图
+        </view>
+    </view>
+    <view wx:if="{{imgList.length>0}}" class="cu-card dynamic no-card">
+        <view class="cu-item shadow solids-bottom padding-bottom">
+            <view class="grid col-1 flex-sub padding-lr">
+                <view class="bg-img only-img text-right" style="background-image:url({{imgList[0]}})">
+                    <view class="cu-tag bg-red" catchtap="DelImg" data-index="{{index}}">
+                        <text class="cuIcon-close"></text>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view wx:if="{{imgList.length===0}}" class="cu-form-group padding-top">
+        <view class="grid col-4  grid-square flex-sub">
+            <view class="solids" bindtap="ChooseImage">
+                <text class="cuIcon-cameraadd"></text>
+            </view>
+        </view>
+    </view>
+    <!-- 文章详情维护（富文本） -->
+    <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange '></text>
+            文章内容
+        </view>
+    </view>
+    <view class="container bg-white">
+        <view class="page-body">
+            <view class='wrapper'>
+                <view class='toolbar' bindtap="format">
+                    <i class="iconfont cuIcon-zitijiacu {{formats.bold ? 'ql-active' : ''}}" data-name="bold"></i>
+                    <i class="iconfont cuIcon-zitixieti {{formats.italic ? 'ql-active' : ''}}" data-name="italic"></i>
+                    <i class="iconfont cuIcon-zitixiahuaxian {{formats.underline ? 'ql-active' : ''}}" data-name="underline"></i>
+                    <i class="iconfont cuIcon-zitishanchuxian {{formats.strike ? 'ql-active' : ''}}" data-name="strike"></i>
+                    <i class="iconfont cuIcon-zuoduiqi {{formats.align === 'left' ? 'ql-active' : ''}}" data-name="align" data-value="left"></i>
+                    <i class="iconfont cuIcon-juzhongduiqi {{formats.align === 'center' ? 'ql-active' : ''}}" data-name="align" data-value="center"></i>
+                    <i class="iconfont cuIcon-youduiqi {{formats.align === 'right' ? 'ql-active' : ''}}" data-name="align" data-value="right"></i>
+                    <i class="iconfont cuIcon-zuoyouduiqi {{formats.align === 'justify' ? 'ql-active' : ''}}" data-name="align" data-value="justify"></i>
+                    <i class="iconfont cuIcon-line-height {{formats.lineHeight ? 'ql-active' : ''}}" data-name="lineHeight" data-value="2"></i>
+                    <i class="iconfont cuIcon-Character-Spacing {{formats.letterSpacing ? 'ql-active' : ''}}" data-name="letterSpacing" data-value="2em"></i>
+                    <i class="iconfont cuIcon-722bianjiqi_duanqianju {{formats.marginTop ? 'ql-active' : ''}}" data-name="marginTop" data-value="20px"></i>
+                    <i class="iconfont cuIcon-723bianjiqi_duanhouju {{formats.micon-previewarginBottom ? 'ql-active' : ''}}" data-name="marginBottom" data-value="20px"></i>
+                    <i class="iconfont cuIcon-clearedformat" bindtap="removeFormat"></i>
+                    <i class="iconfont cuIcon-font {{formats.fontFamily ? 'ql-active' : ''}}" data-name="fontFamily" data-value="Pacifico"></i>
+                    <i class="iconfont cuIcon-fontsize {{formats.fontSize === '24px' ? 'ql-active' : ''}}" data-name="fontSize" data-value="24px"></i>
+                    <i class="iconfont cuIcon-text_color {{formats.color === '#0000ff' ? 'ql-active' : ''}}" data-name="color" data-value="#0000ff"></i>
+                    <i class="iconfont cuIcon-fontbgcolor {{formats.backgroundColor === '#00ff00' ? 'ql-active' : ''}}" data-name="backgroundColor" data-value="#00ff00"></i>
+                    <i class="iconfont cuIcon-date" bindtap="insertDate"></i>
+                    <i class="iconfont cuIcon--checklist" data-name="list" data-value="check"></i>
+                    <i class="iconfont cuIcon-youxupailie {{formats.list === 'ordered' ? 'ql-active' : ''}}" data-name="list" data-value="ordered"></i>
+                    <i class="iconfont cuIcon-wuxupailie {{formats.list === 'bullet' ? 'ql-active' : ''}}" data-name="list" data-value="bullet"></i>
+                    <i class="iconfont cuIcon-undo" bindtap="undo"></i>
+                    <i class="iconfont cuIcon-redo" bindtap="redo"></i>
+                    <i class="iconfont cuIcon-outdent" data-name="indent" data-value="-1"></i>
+                    <i class="iconfont cuIcon-indent" data-name="indent" data-value="+1"></i>
+                    <i class="iconfont cuIcon-fengexian" bindtap="insertDivider"></i>
+                    <i class="iconfont cuIcon-charutupian" bindtap="insertImage"></i>
+                    <i class="iconfont cuIcon-format-header-1 {{formats.header === 1 ? 'ql-active' : ''}}" data-name="header" data-value="{{1}}"></i>
+                    <i class="iconfont cuIcon-zitixiabiao {{formats.script === 'sub' ? 'ql-active' : ''}}" data-name="script" data-value="sub"></i>
+                    <i class="iconfont cuIcon-zitishangbiao {{formats.script === 'super' ? 'ql-active' : ''}}" data-name="script" data-value="super"></i>
+                    <!-- <i class="iconfont cuIcon-quanping"></i> -->
+                    <i class="iconfont cuIcon-shanchu" bindtap="clear"></i>
+                    <i class="iconfont cuIcon-direction-rtl {{formats.direction === 'rtl' ? 'ql-active' : ''}}" data-name="direction" data-value="rtl"></i>
+                </view>
+                <editor id="editor" class="ql-container" placeholder="{{placeholder}}" showImgSize showImgToolbar showImgResize bindstatuschange="onStatusChange" read-only="{{readOnly}}" bindready=""></editor>
+            </view>
+        </view>
+    </view>
+    <!-- 文章详情维护（底部保存按钮） -->
+    <view class='box'>
+        <view class="cu-bar foot bg-white tabbar border shop">
+            <view class="action">
+                <view class="cuIcon-back"></view>
+                返回
+            </view>
+            <view class="action">
+                <view class="cuIcon-delete"></view>
+                全部清空
+            </view>
+            <view class="bg-orange submit" bindtap="savePostExceptContent">除内容之外保存</view>
+            <view class="bg-green submit" bindtap="savePost">全部保存</view>
+        </view>
+    </view>
+</form>

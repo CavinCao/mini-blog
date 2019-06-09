@@ -11,12 +11,50 @@ cloud.init()
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  //admin服务都要验证一下权限
+  if (event.action !== 'checkAuthor') {
+    let result = await checkAuthor(event)
+    if (!result) {
+      return false;
+    }
+  }
+
   switch (event.action) {
     case 'checkAuthor': {
       return checkAuthor(event)
     }
     case 'addReleaseLog': {
       return addReleaseLog(event)
+    }
+    case 'updatePostsShowStatus': {
+      return updatePostsShowStatus(event)
+    }
+    case 'updatePostsClassify': {
+      return updatePostsClassify(event)
+    }
+    case 'updatePostsLabel': {
+      return updatePostsLabel(event)
+    }
+    case 'upsertPosts': {
+      return upsertPosts(event)
+    }
+    case 'addBaseLabel': {
+      return addBaseLabel(event)
+    }
+    case 'addBaseClassify': {
+      return addBaseClassify(event)
+    }
+    case 'deleteConfigById': {
+      return deleteConfigById(event)
+    }
+    case 'changeCommentFlagById': {
+      return changeCommentFlagById(event)
+    }
+    case 'getLabelList':{
+      return getLabelList(event)
+    }
+    case 'getClassifyList':{
+      return getClassifyList(event)
     }
     default: break
   }
@@ -63,4 +101,249 @@ async function addReleaseLog(event) {
     return false;
   }
 
+}
+
+/**
+ * 更新文章展示状态
+ * @param {*} event 
+ */
+async function updatePostsShowStatus(event) {
+  try {
+    await db.collection('mini_posts').doc(event.id).update({
+      data: {
+        isShow: event.isShow
+      }
+    })
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 更新文章专题名称
+ * @param {*} event 
+ */
+async function updatePostsClassify(event) {
+  try {
+    await db.collection('mini_posts').doc(event.id).update({
+      data: {
+        classify: event.classify
+      }
+    })
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 更新文章专题名称
+ * @param {*} event 
+ */
+async function updatePostsLabel(event) {
+  try {
+    await db.collection('mini_posts').doc(event.id).update({
+      data: {
+        label: event.label
+      }
+    })
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 新增or更新文章
+ * @param {*} event 
+ */
+async function upsertPosts(event) {
+  try {
+    let collection = "mini_posts"
+    if (event.id === "") {
+      await db.collection(collection).add({
+        data: event.post
+      });
+    }
+    else {
+      await db.collection(collection).doc(event.id).update({
+        data: event.post
+      });
+    }
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 新增基础标签
+ * @param {*} event 
+ */
+async function addBaseLabel(event) {
+  let key = "basePostsLabels"
+  let collection = "mini_config"
+  let result = await db.collection(collection).where({
+    key: key,
+    value: event.labelName
+  }).get()
+  if (result.data.length > 0) {
+    return false
+  }
+  else {
+    await db.collection(collection).add({
+      data: {
+        key: key,
+        timestamp: Date.now(),
+        value: event.labelName
+      }
+    });
+    return true;
+  }
+}
+
+/**
+ * 新增基础专题
+ * @param {} event 
+ */
+async function addBaseClassify(event) {
+  let key = "basePostsClassify"
+  let collection = "mini_config"
+  let classifyData={
+    classifyName:event.classifyName,
+    classifyDesc:event.classifyDesc
+  }
+  let result = await db.collection(collection).where({
+    key: key,
+    value: _.eq(classifyData)
+  }).get()
+  if (result.data.length > 0) {
+    return false
+  }
+  else {
+    await db.collection(collection).add({
+      data: {
+        key: key,
+        timestamp: Date.now(),
+        value: classifyData
+      }
+    });
+    return true;
+  }
+}
+
+/**
+ * 根据id删除配置表数据
+ * @param {*} event 
+ */
+async function deleteConfigById(event) {
+  try {
+    await db.collection('mini_config').doc(event.id).remove()
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 根据ID删除评论
+ * @param {*} event 
+ */
+async function changeCommentFlagById(event) {
+  try {
+    let task1 = db.collection('mini_comments').doc(event.id).update({
+      data: {
+        flag: event.flag
+      }
+    })
+    let task2 = db.collection('mini_posts').doc(event.postId).update({
+      data: {
+        totalComments: _.inc(event.count)
+      }
+    })
+    await task1
+    await task2
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+/**
+ * 获取所有label集合
+ * @param {*} event 
+ */
+async function getLabelList(event){
+  const MAX_LIMIT = 100
+  const countResult = await db.collection('mini_config').where({
+    key:'basePostsLabels'
+  }).count()
+  const total = countResult.total
+  if(total===0)
+  {
+    return {
+      data: [],
+      errMsg: "no label data",
+    }
+  }
+  // 计算需分几次取
+  const batchTimes = Math.ceil(total / 100)
+  // 承载所有读操作的 promise 的数组
+  const tasks = []
+  for (let i = 0; i < batchTimes; i++) {
+    const promise = db.collection('mini_config').where({
+      key:'basePostsLabels'
+    }).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+    tasks.push(promise)
+  }
+  // 等待所有
+  return (await Promise.all(tasks)).reduce((acc, cur) => {
+    return {
+      data: acc.data.concat(cur.data),
+      errMsg: acc.errMsg,
+    }
+  })
+}
+
+/**
+ * 获取所有label集合
+ * @param {*} event 
+ */
+async function getClassifyList(event){
+  const MAX_LIMIT = 100
+  const countResult = await db.collection('mini_config').where({
+    key:'basePostsClassify'
+  }).count()
+  const total = countResult.total
+  if(total===0)
+  {
+    return {
+      data: [],
+      errMsg: "no classify data",
+    }
+  }
+  // 计算需分几次取
+  const batchTimes = Math.ceil(total / 100)
+  // 承载所有读操作的 promise 的数组
+  const tasks = []
+  for (let i = 0; i < batchTimes; i++) {
+    const promise = db.collection('mini_config').where({
+      key:'basePostsClassify'
+    }).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+    tasks.push(promise)
+  }
+  // 等待所有
+  return (await Promise.all(tasks)).reduce((acc, cur) => {
+    return {
+      data: acc.data.concat(cur.data),
+      errMsg: acc.errMsg,
+    }
+  })
 }

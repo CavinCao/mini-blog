@@ -11,10 +11,10 @@
         <view class="bg-img only-img" style="background-image:url({{post.defaultImageUrl}})" />
       </view>
       <view class='text-gray text-sm text-right padding'>
-        <text class="icon-timefill" /> {{post.createTime}}
-        <text class="icon-attentionfill" /> {{post.totalVisits}}
-        <text class="icon-appreciatefill" /> {{post.totalZans}}
-        <text class="icon-messagefill" /> {{post.totalComments}}
+        <text class="cuIcon-timefill" /> {{post.createTime}}
+        <text class="cuIcon-attentionfill" /> {{post.totalVisits}}
+        <text class="cuIcon-appreciatefill" /> {{post.totalZans}}
+        <text class="cuIcon-messagefill" /> {{post.totalComments}}
       </view>
     </view>
   </view>
@@ -27,7 +27,7 @@
 <view class="bg-white">
   <view class="cu-bar bg-white">
     <view class='action'>
-      <text class='icon-titles text-orange '></text> 共{{post.totalComments}}条评论
+      <text class='cuIcon-titles text-orange '></text> 共{{post.totalComments}}条评论
     </view>
   </view>
   <!-- 数据不存在 -->
@@ -53,7 +53,7 @@
         <view class='flex justify-between'>
           <view class='text-gray text-df'>{{item.createDate}}</view>
           <view>
-            <text class="icon-messagefill text-gray margin-left-sm"></text>
+            <text class="cuIcon-messagefill text-gray margin-left-sm"></text>
             <text class="text-gray margin-left-xs">{{item.childComment.length}}</text>
           </view>
         </view>
@@ -68,7 +68,7 @@
     <view class="cu-bar input">
       <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
       <view class='action'>
-        <text class='icon-roundaddfill text-grey' bindtap='showMenuBox'></text>
+        <text class='cuIcon-roundaddfill text-grey' bindtap='showMenuBox'></text>
       </view>
       <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
       <button class='cu-btn bg-green shadow-blur' formType="submit">发送</button>
@@ -76,24 +76,24 @@
   </form>
   <view class="cu-list grid col-5 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
     <view class="cu-item item">
-      <view class='icon-share text-olive' style="margin-top:0;"></view>
+      <view class='cuIcon-share text-olive' style="margin-top:0;"></view>
       <text>转发</text>
       <button class="share-button" open-type="share"></button>
     </view>
     <view class="cu-item item" catchtap="onCreatePoster">
-      <view class='icon-pic text-olive' style="margin-top:0;"></view>
+      <view class='cuIcon-pic text-olive' style="margin-top:0;"></view>
       <text>海报</text>
     </view>
     <view class="cu-item item" bindtap='postCollection'>
-      <view class='icon-{{collection.icon}} text-olive' style="margin-top:0;"></view>
+      <view class='cuIcon-{{collection.icon}} text-olive' style="margin-top:0;"></view>
       <text>{{collection.text}}</text>
     </view>
     <view class="cu-item item" bindtap='postZan'>
-      <view class='icon-{{zan.icon}} text-olive' style="margin-top:0;"></view>
+      <view class='cuIcon-{{zan.icon}} text-olive' style="margin-top:0;"></view>
       <text>{{zan.text}}</text>
     </view>
     <view class="cu-item item" bindtap='showQrcode'>
-      <view class='icon-refund text-olive' style="margin-top:0;"></view>
+      <view class='cuIcon-refund text-olive' style="margin-top:0;"></view>
       <text>赞赏</text>
     </view>
   </view>
@@ -108,7 +108,7 @@
     <view class="cu-bar bg-white justify-end">
       <view class='content'>海报分享</view>
       <view class='action' bindtap='hideModal'>
-        <text class='icon-close text-red'></text>
+        <text class='cuIcon-close text-red'></text>
       </view>
     </view>
     <view>

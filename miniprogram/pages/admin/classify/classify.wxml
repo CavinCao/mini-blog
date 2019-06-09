@@ -1,0 +1,54 @@
+<!-- 设置列表 -->
+<view class="cu-bar bg-white solid-bottom margin-top">
+    <view class='action'>
+        <text class='cuIcon-titles text-orange '></text>
+        专题列表
+    </view>
+</view>
+<view class="cu-list menu card-menu margin-top" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" bindlongpress='deleteLabelById'>
+    <view class="cu-item">
+        <view class="content padding-tb-sm">
+            <view>
+                <text class="cuIcon-title text-orange "></text>
+                {{item.value.classifyName}}
+            </view>
+            <view class="text-gray text-sm">
+                {{item.value.classifyDesc}}
+            </view>
+        </view>
+    </view>
+</view>
+<view class="box">
+    <view class="cu-bar btn-group foot">
+        <button class="cu-btn text-green line-green shadow">返回</button>
+        <button class="cu-btn bg-green shadow-blur" bindtap='showClassifyModal'>新增专题</button>
+    </view>
+</view>
+<!-- 新增专题窗口 -->
+<view class="cu-modal {{isClassifyModelShow?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>新增专题</view>
+            <view class='action' bindtap='hideClassifyModal'>
+                <text class='cuIcon-close text-red'></text>
+            </view>
+        </view>
+        <form bindsubmit="formClassifySubmit" report-submit="true">
+            <view class='padding-sm'>
+                <view class="cu-form-group text-left">
+                    <view class='title'>专题名称:</view>
+                    <input placeholder="请填写名称" class='radius' name='classifyName' value='{{classifyName}}'></input>
+                </view>
+                <view wx:if="{{isClassifyModelShow}}" class="cu-form-group text-left">
+                    <textarea placeholder="请输入专题描述" maxlength="-1" name='classifyDesc' value='{{classifyDesc}}' placeholder-class='placeholder'></textarea>
+                </view>
+            </view>
+            <view class="cu-bar bg-white justify-end">
+                <view class='action'>
+                    <button class='cu-btn' bindtap='hideClassifyModal'>取消</button>
+                    <button form-type="submit" class='cu-btn margin-left bg-green'>保存</button>
+                </view>
+            </view>
+        </form>
+    </view>
+</view>

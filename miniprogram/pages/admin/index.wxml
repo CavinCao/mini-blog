@@ -1,14 +1,14 @@
 <!-- 设置列表 -->
 <view class="cu-bar bg-white solid-bottom margin-top">
     <view class='action'>
-        <text class='icon-titles text-orange '></text>
+        <text class='cuIcon-titles text-orange '></text>
         全局配置
     </view>
 </view>
 <view class="cu-list menu shadow-lg">
     <view class="cu-item arrow">
         <view class='content' bindtap='showFormModal'>
-            <text class='icon-cascades text-grey'></text>
+            <text class='cuIcon-cascades text-grey'></text>
             <text class='text-grey'>管理员FormId</text>
         </view>
         <view class='action'>
@@ -17,40 +17,46 @@
     </view>
     <view class="cu-item arrow">
         <view class='content' bindtap=''>
-            <text class='icon-messagefill text-grey'></text>
+            <text class='cuIcon-messagefill text-grey'></text>
             <text class='text-grey'>系统日志</text>
         </view>
     </view>
     <view class="cu-item arrow">
         <view class='content' bindtap='showReleaseModal'>
-            <text class='icon-formfill text-grey'></text>
+            <text class='cuIcon-formfill text-grey'></text>
             <text class='text-grey'>版本发布</text>
         </view>
     </view>
 </view>
 <view class="cu-bar bg-white solid-bottom margin-top">
     <view class='action'>
-        <text class='icon-titles text-orange '></text>
+        <text class='cuIcon-titles text-orange '></text>
         博客管理
     </view>
 </view>
 <view class="cu-list menu shadow-lg">
     <view class="cu-item arrow">
-        <view class='content' bindtap=''>
-            <text class='icon-comment text-grey'></text>
+        <view class='content' bindtap='showComment'>
+            <text class='cuIcon-comment text-grey'></text>
             <text class='text-grey'>评论管理</text>
         </view>
     </view>
     <view class="cu-item arrow">
-        <view class='content' bindtap=''>
-            <text class='icon-post text-grey'></text>
+        <view class='content' bindtap='showArticle'>
+            <text class='cuIcon-post text-grey'></text>
             <text class='text-grey'>文章管理</text>
         </view>
     </view>
     <view class="cu-item arrow">
-        <view class='content' bindtap=''>
-            <text class='icon-form text-grey'></text>
-            <text class='text-grey'>主题管理</text>
+        <view class='content' bindtap='showClassify'>
+            <text class='cuIcon-form text-grey'></text>
+            <text class='text-grey'>专题管理</text>
+        </view>
+    </view>
+    <view class="cu-item arrow">
+        <view class='content' bindtap='showLabel'>
+            <text class='cuIcon-tagfill text-grey'></text>
+            <text class='text-grey'>标签管理</text>
         </view>
     </view>
 </view>
@@ -60,7 +66,7 @@
         <view class="cu-bar bg-white justify-end">
             <view class='content'>生成FormId</view>
             <view class='action' bindtap='hideFormModal'>
-                <text class='icon-close text-red'></text>
+                <text class='cuIcon-close text-red'></text>
             </view>
         </view>
         <view class='padding-xl'>
@@ -86,7 +92,7 @@
         <view class="cu-bar bg-white justify-end">
             <view class='content'>版本发布</view>
             <view class='action' bindtap='hideReleaseModal'>
-                <text class='icon-close text-red'></text>
+                <text class='cuIcon-close text-red'></text>
             </view>
         </view>
         <form bindsubmit="formRelaeaseSubmit" report-submit="true">
@@ -105,9 +111,7 @@
             </view>
             <view class="cu-bar bg-white justify-end">
                 <view class='action'>
-                    <button class='cu-btn' bindtap='hideReleaseModal'>
-                        取消
-                    </button>
+                    <button class='cu-btn' bindtap='hideReleaseModal'>取消</button>
                     <button form-type="submit" class='cu-btn margin-left bg-green'>保存</button>
                 </view>
             </view>

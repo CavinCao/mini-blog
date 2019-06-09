@@ -120,7 +120,7 @@ Page({
 
       let title = '小程序更新啦，赶紧来看看吧'
 
-      let res = await api.addReleaseLog(log,title)
+      let res = await api.addReleaseLog(log, title)
       wx.hideLoading()
       console.info(res)
       if (res.result) {
@@ -180,5 +180,43 @@ Page({
       })
     }
     wx.hideLoading()
+  },
+  /**
+   * 跳转文章编辑
+   * @param {*} e 
+   */
+  showArticle: async function (e) {
+    wx.navigateTo({
+      url: '../admin/articleList/articleList'
+    })
+  },
+  /**
+   * 跳转标签列表
+   * @param {*} e 
+   */
+  showLabel: async function (e) {
+    wx.navigateTo({
+      url: '../admin/labelList/labelList'
+    })
+  },
+
+  /**
+   * 跳转到评论列表
+   * @param {*} e 
+   */
+  showComment: async function (e) {
+    wx.navigateTo({
+      url: '../admin/comment/comment'
+    })
+  },
+
+  /**
+ * 跳转到专题列表
+ * @param {*} e 
+ */
+  showClassify: async function (e) {
+    wx.navigateTo({
+      url: '../admin/classify/classify'
+    })
   }
 })

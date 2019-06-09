@@ -1,0 +1,64 @@
+<import src="../../../templates/nodata.wxml" />
+<!-- 搜索栏 -->
+<view class='box'>
+    <form bindsubmit='bindconfirm'>
+        <view class="cu-bar search bg-white">
+            <view class='search-form round'>
+                <text class="cuIcon-search"></text>
+                <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
+            </view>
+            <view class='action'>
+                <button class='cu-btn bg-green shadow-blur round' form-type='submit'>搜索</button>
+            </view>
+        </view>
+    </form>
+</view>
+<!-- 文章列表 -->
+<view class="cu-card article no-card margin-top-self">
+    <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
+        <view class="title text-cut ">{{item.title}}</view>
+        <view class="content">
+            <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>
+            <view class="desc">
+                <view class='text-content '>{{item.digest}}</view>
+                <view>
+                    <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item._id}}" bindtap='showModal'>
+                        {{item.isShow==1?"已展示":"隐藏中"}}
+                    </view>
+                    <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light'>
+                        {{item.classify==0?"无专题":"有专题"}}
+                    </view>
+                    <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light'>
+                        {{item.label.length==0?"无标签":"有标签"}}
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+    <template is="nodata" />
+</view>
+<!-- 悬浮新增按钮-->
+<view class="round-click">
+   <navigator url='{{articlePath}}' > <text class="cuIcon-writefill"></text></navigator >
+</view>
+<!-- 是否展示文章设置窗口 -->
+<view class="cu-modal {{isShowModel?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class='content'>{{showModelTitle}}</view>
+      <view class='action' bindtap='hideShowModal'>
+        <text class='cuIcon-close text-red'></text>
+      </view>
+    </view>
+    <view class='padding-xl'>
+      {{showModelContent}}
+    </view>
+    <view class="cu-bar bg-white">
+      <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>取消</view>
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='saveShowModal'>确定</view>
+    </view>
+  </view>
+</view>

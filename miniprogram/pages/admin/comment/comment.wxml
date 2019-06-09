@@ -1,0 +1,59 @@
+<import src="../../../templates/nodata.wxml" />
+<scroll-view scroll-x class="bg-white nav fixed">
+    <view class='flex text-center'>
+        <block wx:for="{{navItems}}" wx:for-index="idx" data-data="{{item}}">
+            <view class="cu-item flex-sub {{item.index==tabCur?'text-green cur':''}}" bindtap='tabSelect' data-id="{{item.index}}">
+                {{item.name}}
+            </view>
+        </block>
+    </view>
+</scroll-view>
+<view class="cu-list menu-avatar margin-top-self ">
+    <view class="cu-item {{curId==item._id?'move-cur':''}}" wx:for="{{comments}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" data-comment="{{item.comment}}" data-flag="{{item.flag}}" bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd">
+        <view class="cu-avatar round lg" style="background-image:url({{item.cAvatarUrl}});"></view>
+        <view class="content">
+            <view class="text-grey">{{item.cNickName}}</view>
+            <view class="text-gray text-sm flex">
+                <text class="text-cut">{{item.comment}}</text>
+            </view>
+        </view>
+        <view class="action">
+            <view class="text-grey text-xs">{{item.createDate}}</view>
+            <view class="cu-tag round bg-grey sm">{{item.childComment.length}}</view>
+        </view>
+        <view class="move">
+            <view class="bg-{{btnColor}}" data-count="{{item.childComment.length+1}}" data-postId="{{item.postId}}" id="{{item._id}}" bindtap='changeCommentFlagById'>{{btnName}}</view>
+        </view>
+    </view>
+</view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+    <template is="nodata" />
+</view>
+<!-- 评论处理窗口 -->
+<view class="cu-modal {{isCommentShow?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>评论操作</view>
+            <view class='action' bindtap='hideCommentModal'>
+                <text class='cuIcon-close text-red'></text>
+            </view>
+        </view>
+        <view class='padding-sm'>
+            <view class="cu-form-group">
+                <view class="title">评论状态：</view>
+                <view wx:if="{{curFlag===1}}" class="cu-tag round bg-red light">已隐藏</view>
+                <view wx:if="{{curFlag===0}}" class="cu-tag round bg-green light">已显示</view>
+            </view>
+            <view wx:if="{{isCommentShow}}" class="cu-form-group text-left">
+                <textarea placeholder="评论内容" maxlength="-1" name='releaseContent' value='评论内容：{{curComment}}' placeholder-class='placeholder'></textarea>
+            </view>
+        </view>
+        <view class="cu-bar bg-white justify-end">
+            <view class='action'>
+                <button class='cu-btn' bindtap='hideCommentModal'>取消</button>
+                <button class='cu-btn margin-left bg-green' bindtap='deleteCommentModal'>删除</button>
+            </view>
+        </view>
+    </view>
+</view>

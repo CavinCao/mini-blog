@@ -4,6 +4,10 @@
     {
       "action": "disallow",
       "page": "pages/admin/index"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/articleList/articleList"
     }
   ]
 }

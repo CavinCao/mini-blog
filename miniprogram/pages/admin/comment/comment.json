@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "评论列表",
+  "backgroundTextStyle": "dark",
+  "enablePullDownRefresh": true
+}

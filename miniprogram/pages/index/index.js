@@ -11,7 +11,7 @@ Page({
     filter: "",
     nodata: false,
     nomore: false,
-    defaultSearchValue:""
+    defaultSearchValue: ""
   },
 
   /**
@@ -32,7 +32,7 @@ Page({
       filter: "",
       nomore: false,
       nodata: false,
-      defaultSearchValue:""
+      defaultSearchValue: ""
     })
     await this.getPostsList("")
     wx.stopPullDownRefresh();
@@ -91,7 +91,7 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getPostsList(page, filter)
+    let result = await api.getPostsList(page, filter, 1)
     if (result.data.length === 0) {
       that.setData({
         nomore: true

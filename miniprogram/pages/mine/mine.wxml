@@ -10,19 +10,19 @@
 <view class="cu-list menu margin-top-sm shadow-lg">
   <view class="cu-item arrow">
     <view class='content' bindtap='bindCollect'>
-      <text class='icon-favorfill text-grey'></text>
+      <text class='cuIcon-favorfill text-grey'></text>
       <text class='text-grey'>我的收藏</text>
     </view>
   </view>
   <view class="cu-item arrow ">
     <view class='content' bindtap='bindZan' hover-class='none'>
-      <text class='icon-appreciatefill text-green'></text>
+      <text class='cuIcon-appreciatefill text-green'></text>
       <text class='text-grey'>我的点赞</text>
     </view>
   </view>
   <view class="cu-item arrow ">
     <view class='content' bindtap='bindNotice' hover-class='none'>
-      <text class='icon-noticefill text-yellow'></text>
+      <text class='cuIcon-noticefill text-yellow'></text>
       <text class='text-grey'>我的消息</text>
     </view>
     <view class='action'>
@@ -31,31 +31,31 @@
   </view>
   <view class="cu-item arrow  margin-top-sm">
     <view class='content' bindtap="showQrcode">
-      <text class='icon-refund text-red'></text>
+      <text class='cuIcon-refund text-red'></text>
       <text class='text-grey'>打赏支持</text>
     </view>
   </view>
   <view class="cu-item arrow">
     <button class='cu-btn content' open-type='feedback'>
-      <text class='icon-writefill text-cyan'></text>
+      <text class='cuIcon-writefill text-cyan'></text>
       <text class='text-grey'>意见反馈</text>
     </button>
   </view>
   <view class="cu-item arrow">
     <view class='content' bindtap='showWechatCode' hover-class='none'>
-      <text class='icon-creativefill text-orange'></text>
+      <text class='cuIcon-creativefill text-orange'></text>
       <text class='text-grey'>联系作者</text>
     </view>
   </view>
   <view class="cu-item arrow">
     <view class='content' bindtap='showRelease' hover-class='none'>
-      <text class='icon-formfill text-blue'></text>
+      <text class='cuIcon-formfill text-blue'></text>
       <text class='text-grey'>历史版本</text>
     </view>
   </view>
   <view wx:if="{{isAuthor}}" class="cu-item arrow  margin-top-sm">
     <view class='content' bindtap="showAdmin">
-      <text class='icon-settings text-gary'></text>
+      <text class='cuIcon-settings text-gary'></text>
       <text class='text-grey'>后台管理</text>
     </view>
   </view>

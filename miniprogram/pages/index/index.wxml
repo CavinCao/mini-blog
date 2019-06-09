@@ -4,7 +4,7 @@
   <form bindsubmit='bindconfirm'>
     <view class="cu-bar search bg-white">
       <view class='search-form round'>
-        <text class="icon-search"></text>
+        <text class="cuIcon-search"></text>
         <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
       </view>
       <view class='action'>
@@ -15,19 +15,19 @@
 </view>
 <!-- 文章列表 -->
 <view class="cu-card dynamic no-card">
-  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow">
+  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
     <view class='text-content margin-top-sm'>{{item.title}}</view>
     <view class="grid col-1 flex-sub padding-lr">
       <view class="bg-img only-img" style="background-image:url({{item.defaultImageUrl}})"></view>
     </view>
     <view class='text-gray text-sm text-right padding'>
-      <text class="icon-timefill"></text>
+      <text class="cuIcon-timefill"></text>
       {{item.createTime}}
-      <text class="icon-attentionfill" />
+      <text class="cuIcon-attentionfill" />
       {{item.totalVisits}}
-      <text class="icon-appreciatefill" />
+      <text class="cuIcon-appreciatefill" />
       {{item.totalZans}}
-      <text class="icon-messagefill" />
+      <text class="cuIcon-messagefill" />
       {{item.totalComments}}
     </view>
   </view>

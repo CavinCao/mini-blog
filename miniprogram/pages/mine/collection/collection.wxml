@@ -11,7 +11,7 @@
 
 <!--文章列表-->
 <view class="cu-card article no-card margin-top-self">
-  <view wx:for="{{postRelated}}"  wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.postId}}" bindtap="bindPostDetail"  class="cu-item shadow">
+  <view wx:for="{{postRelated}}"  wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.postId}}" bindtap="bindPostDetail"  class="cu-item shadow solids-bottom">
     <view class="title text-cut ">{{item.postTitle}}</view>
     <view class="content">
       <image src="{{item.postUrl}}" mode="aspectFill"></image>
