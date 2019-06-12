@@ -1,48 +1,50 @@
 <import src="../../../templates/nodata.wxml" />
 <!-- 搜索栏 -->
 <view class='box'>
-    <form bindsubmit='bindconfirm'>
-        <view class="cu-bar search bg-white">
-            <view class='search-form round'>
-                <text class="cuIcon-search"></text>
-                <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
-            </view>
-            <view class='action'>
-                <button class='cu-btn bg-green shadow-blur round' form-type='submit'>搜索</button>
-            </view>
-        </view>
-    </form>
+  <form bindsubmit='bindconfirm'>
+    <view class="cu-bar search bg-white">
+      <view class='search-form round'>
+        <text class="cuIcon-search"></text>
+        <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
+      </view>
+      <view class='action'>
+        <button class='cu-btn bg-green shadow-blur round' form-type='submit'>搜索</button>
+      </view>
+    </view>
+  </form>
 </view>
 <!-- 文章列表 -->
 <view class="cu-card article no-card margin-top-self">
-    <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
-        <view class="title text-cut ">{{item.title}}</view>
-        <view class="content">
-            <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>
-            <view class="desc">
-                <view class='text-content '>{{item.digest}}</view>
-                <view>
-                    <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item._id}}" catchtap='showModal'>
-                        {{item.isShow==1?"已展示":"隐藏中"}}
-                    </view>
-                    <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light'>
-                        {{item.classify==0?"无专题":"有专题"}}
-                    </view>
-                    <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light' data-label="{{item.label}}" data-postid="{{item._id}}" catchtap='showLabelModal'>
-                        {{item.label.length==0?"无标签":"有标签"}}
-                    </view>
-                </view>
-            </view>
+  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
+    <view class="title text-cut ">{{item.title}}</view>
+    <view class="content">
+      <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>
+      <view class="desc">
+        <view class='text-content '>{{item.digest}}</view>
+        <view>
+          <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item._id}}" catchtap='showModal'>
+            {{item.isShow==1?"已展示":"隐藏中"}}
+          </view>
+          <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light' data-classify="{{item.classify}}" data-postid="{{item._id}}" catchtap='showClassifyModal'>
+            {{item.classify==0?"无专题":"有专题"}}
+          </view>
+          <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light' data-label="{{item.label}}" data-postid="{{item._id}}" catchtap='showLabelModal'>
+            {{item.label.length==0?"无标签":"有标签"}}
+          </view>
         </view>
+      </view>
     </view>
+  </view>
 </view>
 <!-- 数据不存在 -->
 <view wx:if="{{nodata}}">
-    <template is="nodata" />
+  <template is="nodata" />
 </view>
 <!-- 悬浮新增按钮-->
 <view class="round-click">
-   <navigator url='{{articlePath}}' > <text class="cuIcon-writefill"></text></navigator >
+  <navigator url='{{articlePath}}'>
+    <text class="cuIcon-writefill"></text>
+  </navigator>
 </view>
 <!-- 是否展示文章设置窗口 -->
 <view class="cu-modal {{isShowModel?'show':''}}">
@@ -69,13 +71,36 @@
       <view class="action text-grey" bindtap="hideLabelModal">取消</view>
       <view class="action text-green" bindtap="saveLabelModal">提交</view>
     </view>
-      <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 800rpx)">
-    <view class="grid col-4 padding-sm">
-     <view class="padding-xs" wx:for="{{otherLabels}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  >
-        <button class="cu-btn orange block {{item.checked?'bg-orange':'line-orange'}}" bindtap="chooseLabelCheckbox" data-checked="{{item.checked}}" data-value="{{item.name}}"> {{item.name}}
-        </button>
+    <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 800rpx)">
+      <view class="grid col-4 padding-sm">
+        <view class="padding-xs" wx:for="{{otherLabels}}" wx:key="idx" wx:for-index="idx" wx:for-item="item">
+          <button class="cu-btn orange block {{item.checked?'bg-orange':'line-orange'}}" bindtap="chooseLabelCheckbox" data-checked="{{item.checked}}" data-value="{{item.name}}"> {{item.name}}
+          </button>
+        </view>
       </view>
+    </scroll-view>
+  </view>
+</view>
+<!-- 展示专题选项 -->
+<view class="cu-modal bottom-modal {{isShowClassifyModel?'show':''}}" bindtap="hideClassifyModal">
+  <view class="cu-dialog " catchtap>
+    <view class="cu-bar bg-white ">
+      <view class="action text-grey" bindtap="hideClassifyModal">取消</view>
+      <view class="action text-green" bindtap="saveClassifyModal">提交</view>
     </view>
-      </scroll-view>
+    <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 800rpx)">
+      <view class="cu-dialog" >
+        <radio-group class="block" bindchange="radioClassifyChange">
+          <view class="cu-list menu text-left">
+            <view class="cu-item" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}">
+              <label class="flex justify-between align-center flex-sub">
+                <view class="flex-sub">{{item.name}}</view>
+                <radio checked="{{item.checked}}" value="{{item.name}}" class="round"></radio>
+              </label>
+            </view>
+          </view>
+        </radio-group>
+      </view>
+    </scroll-view>
   </view>
 </view>
