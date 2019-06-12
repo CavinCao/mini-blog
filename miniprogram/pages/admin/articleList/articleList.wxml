@@ -28,7 +28,7 @@
                     <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light'>
                         {{item.classify==0?"无专题":"有专题"}}
                     </view>
-                    <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light'>
+                    <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light' data-label="{{item.label}}" data-postid="{{item._id}}" catchtap='showLabelModal'>
                         {{item.label.length==0?"无标签":"有标签"}}
                     </view>
                 </view>
@@ -60,5 +60,22 @@
       <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>取消</view>
       <view class='action margin-0 flex-sub text-green solid-left' bindtap='saveShowModal'>确定</view>
     </view>
+  </view>
+</view>
+<!-- 展示标签选项 -->
+<view class="cu-modal bottom-modal {{isShowLabelModel?'show':''}}" bindtap="hideLabelModal">
+  <view class="cu-dialog" catchtap>
+    <view class="cu-bar bg-white">
+      <view class="action text-grey" bindtap="hideLabelModal">取消</view>
+      <view class="action text-green" bindtap="saveLabelModal">提交</view>
+    </view>
+      <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 800rpx)">
+    <view class="grid col-4 padding-sm">
+     <view class="padding-xs" wx:for="{{otherLabels}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  >
+        <button class="cu-btn orange block {{item.checked?'bg-orange':'line-orange'}}" bindtap="chooseLabelCheckbox" data-checked="{{item.checked}}" data-value="{{item.name}}"> {{item.name}}
+        </button>
+      </view>
+    </view>
+      </scroll-view>
   </view>
 </view>
