@@ -20,7 +20,8 @@ Page({
     hotItems: ["浏览最多", "评论最多", "点赞最多", "收藏最多"],
     hotCur: 0,
     labelList: [],
-    labelCur: "全部"
+    labelCur: "全部",
+    whereItem:[]//下拉查询条件
   },
 
   /**
@@ -51,8 +52,9 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: async function () {
+    let whereItem=this.data.whereItem
     let filter = this.data.filter
-    await this.getPostsList(filter, 'createTime')
+    await this.getPostsList(whereItem[0],whereItem[1],whereItem[2])
   },
 
   /**
@@ -83,7 +85,8 @@ Page({
       posts: [],
       filter: e.detail.value,
       nomore: false,
-      nodata: false
+      nodata: false,
+      whereItem:[e.detail.value, 'createTime','']
     })
     await this.getPostsList(e.detail.value, 'createTime')
   },
@@ -107,7 +110,8 @@ Page({
           showLabels: false,
           defaultSearchValue: "",
           posts: [],
-          page: 1
+          page: 1,
+          whereItem:['', 'createTime','']
         })
 
         await that.getPostsList("", 'createTime')
@@ -123,7 +127,8 @@ Page({
           defaultSearchValue: "",
           page: 1,
           nomore: false,
-          nodata: false
+          nodata: false,
+          whereItem:['', 'totalVisits','']
         })
         await that.getPostsList("", "totalVisits")
         break
@@ -184,7 +189,8 @@ Page({
       defaultSearchValue: "",
       page: 1,
       nomore: false,
-      nodata: false
+      nodata: false,
+      whereItem:['', orderBy,'']
     })
     await that.getPostsList("", orderBy)
   },
@@ -203,7 +209,8 @@ Page({
       defaultSearchValue: "",
       page: 1,
       nomore: false,
-      nodata: false
+      nodata: false,
+      whereItem:['', 'createTime',labelCur == "全部" ? "" : labelCur]
     })
 
     await that.getPostsList("", "createTime", labelCur == "全部" ? "" : labelCur)

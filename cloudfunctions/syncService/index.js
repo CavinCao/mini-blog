@@ -12,7 +12,7 @@ const APPSCREAT = process.env.AppSecret
 // 云函数入口函数
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-  await syncWechatPosts(true)
+  await syncWechatPosts(false)
   //TODO:暂时注释：2019-05-09(cloud.openapi.wxacode.getUnlimited)云调用暂不支持云端测试和定时触发器，只能由小程序端触发
   //await syncPostQrCode()
 }
@@ -99,10 +99,19 @@ async function syncWechatPosts(isUpdate) {
           continue
         }
 
+        //移除公众号代码片段序号
+        let content = posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g, '')
+        //替换图片data-url
+        content = content.replace(/data-src/g, "src")
+
+        //替换新媒体管家样式问题
+        content = content.replace(/<span style="color:rgba(0, 0, 0, 0);"><span style="line-height: inherit;margin-right: auto;margin-left: auto;border-radius: 4px;">/g, "")
+
+
         let id = existPost.data[0]._id;
         await db.collection(collection).doc(id).update({
           data: {
-            content: posts.item[index].content.news_item[0].content,
+            content: content,
             author: posts.item[index].content.news_item[0].author,
             title: posts.item[index].content.news_item[0].title,
             defaultImageUrl: posts.item[index].content.news_item[0].thumb_url,
