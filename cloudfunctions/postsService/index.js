@@ -122,6 +122,12 @@ async function addPostCollection(event) {
     type: event.type
   }).get();
 
+  let task = db.collection('mini_posts').doc(event.postId).update({
+    data: {
+      totalCollection: _.inc(1)
+    }
+  });
+
   if (postRelated.data.length === 0) {
     let date = new Date().toFormat("YYYY-MM-DD")
     let result = await db.collection('mini_posts_related').add({
@@ -137,6 +143,9 @@ async function addPostCollection(event) {
     })
     console.info(result)
   }
+
+  let result = await task;
+  console.info(result)
 }
 
 /**

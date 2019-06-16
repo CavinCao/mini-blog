@@ -13,7 +13,8 @@
     "pages/admin/articleList/articleList",
     "pages/admin/labelList/labelList",
     "pages/admin/comment/comment",
-    "pages/admin/classify/classify"
+    "pages/admin/classify/classify",
+    "pages/detail/original"
   ],
   "window": {
     "backgroundTextStyle": "light",

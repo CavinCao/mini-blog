@@ -21,7 +21,7 @@
   <view>
     <template is="entry" data="{{...post.content}}" />
   </view>
-  <view class="margin-xs padding-sm"></view>
+  <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
 </view>
 <!-- 评论列表 -->
 <view class="bg-white">

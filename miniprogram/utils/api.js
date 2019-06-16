@@ -56,7 +56,7 @@ function getReleaseLogsList(page) {
  * 获取文章列表
  * @param {} page 
  */
-function getPostsList(page, filter, isShow) {
+function getPostsList(page, filter, isShow, orderBy, label) {
     let where = {}
     if (filter !== '') {
         where.title = db.RegExp({
@@ -68,9 +68,20 @@ function getPostsList(page, filter, isShow) {
         where.isShow = isShow
     }
 
+    if (orderBy == undefined || orderBy == "") {
+        orderBy = "createTime"
+    }
+
+    if (label != undefined && label != "") {
+        where.label = db.RegExp({
+            regexp: label,
+            options: 'i',
+        })
+    }
+
     return db.collection('mini_posts')
         .where(where)
-        .orderBy('createTime', 'desc')
+        .orderBy(orderBy, 'desc')
         .skip((page - 1) * 10)
         .limit(10)
         .field({
@@ -376,12 +387,12 @@ function updatePostsLabel(id, label) {
  * @param {*} id 
  * @param {*} isShow 
  */
-function upsertPosts(id,data) {
+function upsertPosts(id, data) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "upsertPosts",
-            id:id,
+            id: id,
             post: data
         }
     })
@@ -403,7 +414,7 @@ function addBaseLabel(labelName) {
 /**
  * 新增基础主题
  */
-function addBaseClassify(classifyName,classifyDesc) {
+function addBaseClassify(classifyName, classifyDesc) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {

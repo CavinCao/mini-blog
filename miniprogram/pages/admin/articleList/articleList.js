@@ -15,8 +15,14 @@ Page({
     isShowModel: false,
     showModelTitle: "文章是否显示",
     showModelContent: "",
-    showCurPostId: "",
+    showCurPostId: "",//当前操作的文章id
     showCurStatus: 0,
+    selectedLabels: [],
+    otherLabels: [],
+    isShowLabelModel: false,
+    isShowClassifyModel: false,
+    classifyList: [],
+    showCurClassify: ""
   },
 
   /**
@@ -77,6 +83,24 @@ Page({
     })
   },
   /**
+   * 设置隐藏
+   * @param {*} e 
+   */
+  hideLabelModal: function (e) {
+    this.setData({
+      isShowLabelModel: false
+    })
+  },
+  /**
+   * 设置隐藏
+   * @param {*} e 
+   */
+  hideClassifyModal: function (e) {
+    this.setData({
+      isShowClassifyModel: false
+    })
+  },
+  /**
    * 显示设置文章窗口
    * @param {*} e 
    */
@@ -91,6 +115,248 @@ Page({
       showCurPostId: postId,
       showCurStatus: isShow
     })
+  },
+
+  /**
+   * 显示设置文章标签窗口
+   * @param {*} e 
+   */
+  showLabelModal: async function (e) {
+    wx.showLoading({
+      title: '标签加载中...',
+    })
+
+    let that = this
+    let postId = e.currentTarget.dataset.postid
+    let label = e.currentTarget.dataset.label
+    let labelList = await api.getLabelList()
+    let otherLabels = []
+    if (label.length > 0) {
+      for (var i = 0; i < label.length; i++) {
+        otherLabels.push({
+          name: label[i],
+          checked: true
+        })
+      }
+    }
+
+    for (var index in labelList.result.data) {
+      let labelRes = otherLabels.filter((a) => labelList.result.data[index].value == a.name)
+      if (labelRes.length > 0) { continue; }
+
+      otherLabels.push({
+        name: labelList.result.data[index].value,
+        checked: false
+      })
+    }
+
+    that.setData({
+      isShowLabelModel: true,
+      selectedLabels: label,
+      otherLabels: otherLabels,
+      showCurPostId: postId
+    })
+
+    wx.hideLoading()
+
+  },
+
+  /**
+   * 显示设置专题标签窗口
+   * @param {*} e 
+   */
+  showClassifyModal: async function (e) {
+    wx.showLoading({
+      title: '专题加载中...',
+    })
+
+    let that = this
+    let postId = e.currentTarget.dataset.postid
+    let curClassify = e.currentTarget.dataset.classify == 0 ? "" : e.currentTarget.dataset.classify
+    let classifyList = await api.getClassifyList()
+    let classify = []
+    if (curClassify != "") {
+      classify.push({
+        name: curClassify,
+        checked: true
+      })
+    }
+
+    for (var index in classifyList.result.data) {
+
+      if (curClassify == classifyList.result.data[index].value.classifyName) {
+        continue;
+      }
+
+      classify.push({
+        name: classifyList.result.data[index].value.classifyName,
+        checked: false
+      })
+    }
+
+    that.setData({
+      isShowClassifyModel: true,
+      classifyList: classify,
+      showCurClassify: curClassify,
+      showCurPostId: postId
+    })
+
+    wx.hideLoading()
+  },
+
+  /**
+   * 选择标签
+   * @param {} e 
+   */
+  chooseLabelCheckbox(e) {
+    let that = this
+    let selectedLabels = that.data.selectedLabels
+    let otherLabels = that.data.otherLabels;
+    let name = e.currentTarget.dataset.value;
+    let checked = e.currentTarget.dataset.checked;
+
+    for (let i = 0; i < otherLabels.length; i++) {
+      if (otherLabels[i].name == name) {
+        otherLabels[i].checked = !otherLabels[i].checked;
+        break
+      }
+    }
+    if (checked) {
+      var index = selectedLabels.indexOf(name);
+      if (index > -1) {
+        selectedLabels.splice(index, 1);
+      }
+    }
+    else {
+      selectedLabels.push(name)
+    }
+
+    that.setData({
+      otherLabels: otherLabels,
+      selectedLabels: selectedLabels
+    })
+  },
+
+  /**
+   * 专题选择变化事件
+   * @param {*} e 
+   */
+  radioClassifyChange:function(e)
+  {
+    let curClassify=e.detail.value
+    console.info(curClassify)
+    this.setData({
+      showCurClassify: curClassify
+    })
+  },
+
+  /**
+   * 保存标签信息
+   * @param {*} e 
+   */
+  saveLabelModal: async function (e) {
+    wx.showLoading({
+      title: '保存中...',
+    })
+
+    try {
+      let that = this
+      let postId = that.data.showCurPostId
+      let newPost = {
+        label: that.data.selectedLabels
+      }
+
+      let res = await api.upsertPosts(postId === undefined ? "" : postId, newPost)
+      if (res.result) {
+        that.setData({
+          isShowLabelModel: false,
+          selectedLabels: [],
+          otherLabels: [],
+          showCurPostId: ""
+        })
+
+        await that.onPullDownRefresh()
+
+        wx.showToast({
+          title: '设置成功',
+          icon: 'success',
+          duration: 1500
+        })
+      }
+      else {
+        wx.showToast({
+          title: '操作发生未知异常',
+          duration: 1500
+        })
+      }
+    }
+    catch (err) {
+      wx.showToast({
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
+        duration: 1500
+      })
+      console.info(err)
+    }
+    finally {
+      wx.hideLoading()
+    }
+
+  },
+
+  /**
+   * 保存专题信息
+   * @param {*} e 
+   */
+  saveClassifyModal:async function(e){
+    wx.showLoading({
+      title: '保存中...',
+    })
+
+    try {
+      let that = this
+      let postId = that.data.showCurPostId
+      console.info(postId)
+      console.info(that.data.showCurClassify)
+      let newPost = {
+        classify: that.data.showCurClassify
+      }
+
+      let res = await api.upsertPosts(postId === undefined ? "" : postId, newPost)
+      if (res.result) {
+        that.setData({
+          isShowClassifyModel: false,
+          showCurClassify: "",
+          classifyList: [],
+          showCurPostId: ""
+        })
+
+        await that.onPullDownRefresh()
+
+        wx.showToast({
+          title: '设置成功',
+          icon: 'success',
+          duration: 1500
+        })
+      }
+      else {
+        wx.showToast({
+          title: '操作发生未知异常',
+          duration: 1500
+        })
+      }
+    }
+    catch (err) {
+      wx.showToast({
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
+        duration: 1500
+      })
+      console.info(err)
+    }
+    finally {
+      wx.hideLoading()
+    }
   },
   /**
    * 前端是否展示

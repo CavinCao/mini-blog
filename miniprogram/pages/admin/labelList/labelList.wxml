@@ -16,7 +16,6 @@
         <button class="cu-btn bg-green shadow-blur" bindtap='showLabelModal'>新增标签</button>
     </view>
 </view>
-
 <!-- 新增标签窗口 -->
 <view class="cu-modal {{isLabelModelShow?'show':''}}">
     <view class="cu-dialog">
@@ -40,5 +39,27 @@
                 </view>
             </view>
         </form>
+    </view>
+</view>
+<!-- 标签关联文章窗体 -->
+<view class="cu-modal drawer-modal justify-end {{isLabelRelatedShow?'show':''}}" bindtap="hideLabelRelatedModal">
+    <view class="cu-dialog basis-lg" catchtap style="top:{{0}}px;height:calc(100vh - {{0}}px)">
+        <view class="cu-list menu sm-border card-menu margin-top">
+            <view class="cu-item">
+                <view class="content padding-tb-sm">
+                    <view>
+                        <text class="cuIcon-clothesfill text-blue margin-right-xs"></text>
+                        多行Item多行Item多行Item多行Item多行Item多行Item
+                    </view>
+                    <view class="text-gray text-sm">
+                        <text class="cuIcon-infofill margin-right-xs"></text>
+                        小目标还没有实现！小目标还没有实现！小目标还没有实现！小目标还没有实现！ 小目标还没有实现！
+                    </view>
+                </view>
+                <view class="action">
+                    <checkbox></checkbox>
+                </view>
+            </view>
+        </view>
     </view>
 </view>
