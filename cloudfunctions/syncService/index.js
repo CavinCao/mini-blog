@@ -12,7 +12,7 @@ const APPSCREAT = process.env.AppSecret
 // 云函数入口函数
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
-  await syncWechatPosts(false)
+  await syncWechatPosts(true)
   //TODO:暂时注释：2019-05-09(cloud.openapi.wxacode.getUnlimited)云调用暂不支持云端测试和定时触发器，只能由小程序端触发
   //await syncPostQrCode()
 }
@@ -84,7 +84,9 @@ async function syncWechatPosts(isUpdate) {
           classify: 0,//分类
           contentType: "html",
           digest: posts.item[index].content.news_item[0].digest,//摘要
-          isShow: 1//是否展示
+          isShow: 1,//是否展示
+          originalUrl: posts.item[index].content.news_item[0].url,
+          totalCollection: 10 + Math.floor(Math.random() * 40)
         }
 
         await db.collection(collection).add({
@@ -103,13 +105,15 @@ async function syncWechatPosts(isUpdate) {
             content: posts.item[index].content.news_item[0].content,
             author: posts.item[index].content.news_item[0].author,
             title: posts.item[index].content.news_item[0].title,
-            defaultImageUrl: posts.item[index].content.news_item[0].thumb_url
+            defaultImageUrl: posts.item[index].content.news_item[0].thumb_url,
+            originalUrl: posts.item[index].content.news_item[0].url,
+            totalCollection: 10 + Math.floor(Math.random() * 40)
           }
         });
 
       }
     }
-    if (maxCount > 0) {
+    if (offset > maxCount) {
       return;
     }
     offset = offset + count

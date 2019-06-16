@@ -48,8 +48,8 @@ Page({
       }
     });
     let blogId = options.id;
-    if(options.scene){
-      blogId=decodeURIComponent(options.scene);
+    if (options.scene) {
+      blogId = decodeURIComponent(options.scene);
     }
     await that.getDetail(blogId)
     await that.getPostRelated(that.data.post._id)
@@ -648,4 +648,15 @@ Page({
       }
     });
   },
+
+  /**
+   * 跳转原文
+   */
+  showoriginalUrl: function () {
+    let url = this.data.post.originalUrl
+    let data = escape(url)
+    wx.navigateTo({
+      url: '../detail/original?url=' + data
+    })
+  }
 })

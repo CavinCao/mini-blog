@@ -10,7 +10,14 @@
 		"nodeModules": true,
 		"autoAudits": false,
 		"uglifyFileName": false,
-		"checkInvalidKey": true
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
 	},
 	"appid": "wx5642e868dfc28bb0",
 	"projectname": "mini-blog",
