@@ -21,7 +21,7 @@ Page({
     hotCur: 0,
     labelList: [],
     labelCur: "全部",
-    whereItem:[]//下拉查询条件
+    whereItem:['', 'createTime','']//下拉查询条件
   },
 
   /**
