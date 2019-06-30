@@ -13,6 +13,7 @@ Page({
     nomore: false,
     articlePath: "../article/article",
     isShowModel: false,
+    isShowDeleteModel: false,
     showModelTitle: "文章是否显示",
     showModelContent: "",
     showCurPostId: "",//当前操作的文章id
@@ -22,39 +23,96 @@ Page({
     isShowLabelModel: false,
     isShowClassifyModel: false,
     classifyList: [],
-    showCurClassify: ""
+    showCurClassify: "",
+    navItems: [{ name: '已展示', index: 1 }, { name: '未展示', index: 2 }, { name: '有专题', index: 3 }, { name: '无专题', index: 4 }, { name: '有标签', index: 5 }, { name: '无标签', index: 6 }],
+    tabCur: 1,
+    scrollLeft: 0,
+    where: {isShow: 1}
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    await this.getPostsList('')
+    let where = {
+      isShow: 1
+    }
+    await this.getPostsList(where)
   },
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: async function () {
-    let that = this;
-    let page = 1
-    that.setData({
-      page: page,
-      posts: [],
-      filter: "",
-      nomore: false,
-      nodata: false,
-      defaultSearchValue: ""
-    })
-    await this.getPostsList("")
-    wx.stopPullDownRefresh();
-  },
+
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: async function () {
-    let filter = this.data.filter
-    await this.getPostsList(filter, -1)
+    let where = this.data.where
+    await this.getPostsList(where)
+  },
+
+    /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh:async function () {
+    let that = this;
+    let page = 1
+    that.setData({
+      page: page,
+      posts: [],
+      nomore: false,
+      nodata: false
+    })
+    await this.getPostsList(that.data.where)
+    wx.stopPullDownRefresh();
+  },
+
+  /**
+* tab切换
+* @param {} e 
+*/
+  tabSelect: async function (e) {
+    let that = this;
+    let tabCur = e.currentTarget.dataset.id
+    let where = {}
+    that.setData({
+      tabCur: e.currentTarget.dataset.id,
+      scrollLeft: (e.currentTarget.dataset.id - 1) * 60,
+      nomore: false,
+      nodata: false,
+      defaultSearchValue: "",
+      posts: [],
+      page: 1
+    })
+    switch (tabCur) {
+      case 1: {
+        where.isShow = 1
+        break
+      }
+      case 2: {
+        where.isShow = 0
+        break
+      }
+      case 3: {
+        where.hasClassify = 1;
+        break
+      }
+      case 4: {
+        where.hasClassify = 2;
+        break;
+      }
+      case 5: {
+        where.hasLabel = 1;
+        break;
+      }
+      case 6: {
+        where.hasLabel = 2;
+        break
+      }
+    }
+
+    that.setData({
+      where: where
+    })
+    await that.getPostsList(where)
   },
   /**
    * 搜索功能
@@ -100,6 +158,11 @@ Page({
       isShowClassifyModel: false
     })
   },
+  hideShowDeleteModal: function (e) {
+    this.setData({
+      isShowDeleteModel: false
+    })
+  },
   /**
    * 显示设置文章窗口
    * @param {*} e 
@@ -114,6 +177,16 @@ Page({
       showModelContent: isShow == 1 ? "是否确认将文章设置为[前端不展示]" : "是否确认将文章设置为[前端展示]",
       showCurPostId: postId,
       showCurStatus: isShow
+    })
+  },
+
+  showDeleteModal: function (e) {
+    let that = this
+    let postId = e.currentTarget.dataset.postid
+
+    that.setData({
+      isShowDeleteModel: true,
+      showCurPostId: postId
     })
   },
 
@@ -241,9 +314,8 @@ Page({
    * 专题选择变化事件
    * @param {*} e 
    */
-  radioClassifyChange:function(e)
-  {
-    let curClassify=e.detail.value
+  radioClassifyChange: function (e) {
+    let curClassify = e.detail.value
     console.info(curClassify)
     this.setData({
       showCurClassify: curClassify
@@ -308,7 +380,7 @@ Page({
    * 保存专题信息
    * @param {*} e 
    */
-  saveClassifyModal:async function(e){
+  saveClassifyModal: async function (e) {
     wx.showLoading({
       title: '保存中...',
     })
@@ -408,10 +480,57 @@ Page({
 
 
   },
+    /**
+   * 前端是否展示
+   * @param {*} e 
+   */
+  deleteShowModal: async function (e) {
+
+    wx.showLoading({
+      title: '加载中...',
+    })
+    try {
+      let that = this;
+      let res = await api.deletePostById(that.data.showCurPostId)
+      console.info(res)
+      if (res.result) {
+        that.setData({
+          isShowDeleteModel: false,
+          showCurPostId: "",
+        })
+
+        await that.onPullDownRefresh()
+
+        wx.showToast({
+          title: '设置成功',
+          icon: 'success',
+          duration: 1500
+        })
+      }
+      else {
+        wx.showToast({
+          title: '操作发生未知异常',
+          duration: 1500
+        })
+      }
+    } catch (err) {
+      wx.showToast({
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
+        duration: 1500
+      })
+      console.info(err)
+    }
+    finally {
+      wx.hideLoading()
+    }
+
+
+  },
   /**
     * 获取文章列表
   */
-  getPostsList: async function (filter, isShow) {
+  getPostsList: async function (filter) {
     wx.showLoading({
       title: '加载中...',
     })
@@ -421,7 +540,7 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getPostsList(page, filter, isShow)
+    let result = await api.getNewPostsList(page, filter)
     if (result.data.length === 0) {
       that.setData({
         nomore: true

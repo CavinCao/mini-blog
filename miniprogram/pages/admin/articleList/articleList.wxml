@@ -5,13 +5,20 @@
     <view class="cu-bar search bg-white">
       <view class='search-form round'>
         <text class="cuIcon-search"></text>
-        <input type="text" placeholder="搜索感兴趣的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
+        <input type="text" placeholder="搜索要操作的文章" value="{{defaultSearchValue}}" name="searchContent" confirm-type="search"></input>
       </view>
       <view class='action'>
         <button class='cu-btn bg-green shadow-blur round' form-type='submit'>搜索</button>
       </view>
     </view>
   </form>
+  <scroll-view scroll-x class="bg-white nav solid-bottom">
+    <view class="flex text-center">
+      <view wx:for="{{navItems}}" wx:for-index="idx" data-data="{{item}}" class="cu-item flex-sub {{item.index==tabCur?'text-green cur':''}}" bindtap='tabSelect' data-id="{{item.index}}">
+        {{item.name}}
+      </view>
+    </view>
+  </scroll-view>
 </view>
 <!-- 文章列表 -->
 <view class="cu-card article no-card margin-top-self">
@@ -31,6 +38,9 @@
           <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light' data-label="{{item.label}}" data-postid="{{item._id}}" catchtap='showLabelModal'>
             {{item.label.length==0?"无标签":"有标签"}}
           </view>
+          <view class='cu-tag bg-red  light' data-postid="{{item._id}}" catchtap='showDeleteModal'>
+            删除
+          </view>
         </view>
       </view>
     </view>
@@ -40,7 +50,7 @@
 <view wx:if="{{nodata}}">
   <template is="nodata" />
 </view>
-<!-- 悬浮新增按钮-->
+<!-- 悬浮新增按钮 -->
 <view class="round-click">
   <navigator url='{{articlePath}}'>
     <text class="cuIcon-writefill"></text>
@@ -55,9 +65,7 @@
         <text class='cuIcon-close text-red'></text>
       </view>
     </view>
-    <view class='padding-xl'>
-      {{showModelContent}}
-    </view>
+    <view class='padding-xl'>{{showModelContent}}</view>
     <view class="cu-bar bg-white">
       <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>取消</view>
       <view class='action margin-0 flex-sub text-green solid-left' bindtap='saveShowModal'>确定</view>
@@ -74,7 +82,8 @@
     <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 800rpx)">
       <view class="grid col-4 padding-sm">
         <view class="padding-xs" wx:for="{{otherLabels}}" wx:key="idx" wx:for-index="idx" wx:for-item="item">
-          <button class="cu-btn orange block {{item.checked?'bg-orange':'line-orange'}}" bindtap="chooseLabelCheckbox" data-checked="{{item.checked}}" data-value="{{item.name}}"> {{item.name}}
+          <button class="cu-btn orange block {{item.checked?'bg-orange':'line-orange'}}" bindtap="chooseLabelCheckbox" data-checked="{{item.checked}}" data-value="{{item.name}}">
+            {{item.name}}
           </button>
         </view>
       </view>
@@ -89,10 +98,10 @@
       <view class="action text-green" bindtap="saveClassifyModal">提交</view>
     </view>
     <scroll-view class="VerticalNav nav" scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 800rpx)">
-      <view class="cu-dialog" >
+      <view class="cu-dialog">
         <radio-group class="block" bindchange="radioClassifyChange">
           <view class="cu-list menu text-left">
-            <view class="cu-item" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}">
+            <view class="cu-item" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item._id}}">
               <label class="flex justify-between align-center flex-sub">
                 <view class="flex-sub">{{item.name}}</view>
                 <radio checked="{{item.checked}}" value="{{item.name}}" class="round"></radio>
@@ -102,5 +111,21 @@
         </radio-group>
       </view>
     </scroll-view>
+  </view>
+</view>
+<!-- 删除文章设置窗口 -->
+<view class="cu-modal {{isShowDeleteModel?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class='content'>删除文章</view>
+      <view class='action' bindtap='hideShowDeleteModal'>
+        <text class='cuIcon-close text-red'></text>
+      </view>
+    </view>
+    <view class='padding-xl'>是否确认删除文章，删除后将无法恢复</view>
+    <view class="cu-bar bg-white">
+      <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowDeleteModal'>取消</view>
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='deleteShowModal'>确定</view>
+    </view>
   </view>
 </view>

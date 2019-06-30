@@ -1,10 +1,13 @@
-<view class="bg-white">
-<view class="cu-card">
-  <view class="cu-item bg-img shadow-blur" style="background-image:url({{item.img}})" bindtap="toChild" data-url="{{item.url}}" wx:for="{{list}}" wx:key>
-    <view class="cardTitle">
-      {{item.title}}
+<view class="cu-list menu card-menu margin-top" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" data-tname="{{item.value.classifyName}}" bindtap='openTopicPosts'>
+    <view class="cu-item">
+        <view class="content padding-tb-sm">
+            <view>
+                <text class="cuIcon-title text-orange "></text>
+                {{item.value.classifyName}}
+            </view>
+            <view class="text-gray text-sm">
+                {{item.value.classifyDesc}}
+            </view>
+        </view>
     </view>
-  </view>
-</view>
-<view class='cu-tabbar-height'></view>
 </view>

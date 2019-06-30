@@ -35,6 +35,12 @@
         "text": "首页"
       },
       {
+        "pagePath": "pages/topic/topic",
+        "iconPath": "/images/tab/function.png",
+        "selectedIconPath": "/images/tab/function_clicked.png",
+        "text": "专题"
+      },
+      {
         "pagePath": "pages/mine/mine",
         "iconPath": "/images/tab/mine.png",
         "selectedIconPath": "/images/tab/mine_clicked.png",
