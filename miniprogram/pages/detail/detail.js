@@ -658,5 +658,21 @@ Page({
     wx.navigateTo({
       url: '../detail/original?url=' + data
     })
+  },
+  /**
+   * towxml点击事件
+   * @param {} e 
+   */
+  __bind_tap: function (e) {
+    try {
+      if (e.target.dataset._el.attr.src != undefined) {
+        wx.previewImage({
+          urls: [e.target.dataset._el.attr.src],
+        });
+      }
+    }
+    catch (e) {
+      console.info(e)
+    }
   }
 })

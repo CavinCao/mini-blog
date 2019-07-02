@@ -3,26 +3,20 @@
     <view class="cu-bar bg-white solid-bottom margin-top">
         <view class='action'>
             <text class='cuIcon-titles text-orange '></text>
-            文章基本信息
+            文章标题
         </view>
     </view>
     <view class="cu-form-group align-start">
-        <view class="title">标题</view>
-        <textarea maxlength="-1" value='{{post.title}}' placeholder="请输入文章标题" id="postTitle" bindblur="changePostDetail" ></textarea>
+        <textarea maxlength="-1" value='{{post.title}}' placeholder="请输入文章标题" id="postTitle" bindblur="changePostDetail"></textarea>
     </view>
-    <view class="cu-form-group">
-        <view class='title'>前台展示</view>
-        <switch></switch>
+        <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange '></text>
+            文章链接
+        </view>
     </view>
-    <view class="cu-form-group">
-        <view class='title'>加入专题</view>
-        <input placeholder="" class='radius' name='input' id="postClassify" value='{{post.classify}}'></input>
-        <button class='cu-btn bg-green shadow'>选择</button>
-    </view>
-    <view class="cu-form-group">
-        <view class='title'>添加标签</view>
-        <input placeholder="" class='radius' name='input'></input>
-        <button class='cu-btn bg-green shadow'>选择</button>
+    <view class="cu-form-group align-start">
+        <textarea maxlength="-1" value='{{post.originalUrl}}' placeholder="请输入文章链接" id="postOriginalUrl" bindblur="changePostDetail"></textarea>
     </view>
     <view class="cu-bar bg-white solid-bottom margin-top">
         <view class='action'>
@@ -106,19 +100,40 @@
             </view>
         </view>
     </view>
+    <view style="padding:50rpx"></view>
     <!-- 文章详情维护（底部保存按钮） -->
     <view class='box'>
         <view class="cu-bar foot bg-white tabbar border shop">
-            <view class="action">
+            <view class="action" bindtap="showArticleList">
                 <view class="cuIcon-back"></view>
                 返回
             </view>
-            <view class="action">
+            <view class="action" bindtap="clearAll">
                 <view class="cuIcon-delete"></view>
                 全部清空
             </view>
-            <view class="bg-orange submit" bindtap="savePostExceptContent">除内容之外保存</view>
+            <view class="bg-orange submit" bindtap="savePostExceptContent">除内容以外保存</view>
             <view class="bg-green submit" bindtap="savePost">全部保存</view>
         </view>
     </view>
 </form>
+<!-- 保存成功后窗口 -->
+<view class="cu-modal {{isShowModel?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>保存完成</view>
+            <view class='action' bindtap='hideShowModal'>
+                <text class='cuIcon-close text-red'></text>
+            </view>
+        </view>
+        <view class='padding-xl'>文章已经处理成功啦～</view>
+        <view class="cu-bar bg-white">
+            <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>
+                留在本页
+            </view>
+            <view class='action margin-0 flex-sub text-green solid-left' bindtap='showArticleList'>
+                返回列表
+            </view>
+        </view>
+    </view>
+</view>

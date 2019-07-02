@@ -56,6 +56,9 @@ exports.main = async (event, context) => {
     case 'getClassifyList': {
       return getClassifyList(event)
     }
+    case 'deletePostById':{
+      return deletePostById(event)
+    }
     default: break
   }
 }
@@ -65,7 +68,9 @@ exports.main = async (event, context) => {
  * @param {} event 
  */
 async function checkAuthor(event) {
-  if (event.userInfo.openId == process.env.author) {
+  let authors = process.env.author
+  if (authors.indexOf(event.userInfo.openId) != -1) {
+    //if (event.userInfo.openId == process.env.author) {
     return true;
   }
   return false;
@@ -244,6 +249,17 @@ async function addBaseClassify(event) {
 async function deleteConfigById(event) {
   try {
     await db.collection('mini_config').doc(event.id).remove()
+    return true;
+  } catch (e) {
+    console.error(e)
+    return false;
+  }
+}
+
+async function deletePostById(event)
+{
+  try {
+    await db.collection('mini_posts').doc(event.id).remove()
     return true;
   } catch (e) {
     console.error(e)
