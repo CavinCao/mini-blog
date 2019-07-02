@@ -28,7 +28,7 @@ App({
         })
       }
       console.info(this.globalData.openid)
-      this.bindLastLoginDate()
+      //this.bindLastLoginDate()
     }
   },
   towxml: new Towxml(),

@@ -125,7 +125,9 @@
     <view class='padding-xl'>是否确认删除文章，删除后将无法恢复</view>
     <view class="cu-bar bg-white">
       <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowDeleteModal'>取消</view>
-      <view class='action margin-0 flex-sub text-green solid-left' bindtap='deleteShowModal'>确定</view>
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='deleteShowModal'>
+        确定
+      </view>
     </view>
   </view>
 </view>

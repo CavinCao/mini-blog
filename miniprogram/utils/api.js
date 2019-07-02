@@ -545,6 +545,27 @@ function getClassifyList() {
     })
 }
 
+/**
+ * 上传文件
+ */
+function uploadFile(cloudPath, filePath) {
+    return wx.cloud.uploadFile({
+        cloudPath: cloudPath,
+        filePath: filePath, // 文件路径
+    })
+}
+
+/**
+ * 获取打赏码
+ */
+function getTempUrl(fileID) {
+    return wx.cloud.getTempFileURL({
+        fileList: [{
+            fileID: fileID
+        }]
+    })
+}
+
 module.exports = {
     getPostsList: getPostsList,
     getPostDetail: getPostDetail,
@@ -578,5 +599,7 @@ module.exports = {
     getLabelList: getLabelList,
     getClassifyList: getClassifyList,
     getNewPostsList: getNewPostsList,
-    deletePostById: deletePostById
+    deletePostById: deletePostById,
+    uploadFile: uploadFile,
+    getTempUrl:getTempUrl
 }

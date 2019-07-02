@@ -27,13 +27,21 @@ Page({
     navItems: [{ name: '已展示', index: 1 }, { name: '未展示', index: 2 }, { name: '有专题', index: 3 }, { name: '无专题', index: 4 }, { name: '有标签', index: 5 }, { name: '无标签', index: 6 }],
     tabCur: 1,
     scrollLeft: 0,
-    where: {isShow: 1}
+    where: { isShow: 1 }
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: async function (options) {
+  onShow: async function (options) {
+    let that = this;
+    let page = 1
+    that.setData({
+      page: page,
+      posts: [],
+      nomore: false,
+      nodata: false
+    })
     let where = {
       isShow: 1
     }
@@ -49,10 +57,10 @@ Page({
     await this.getPostsList(where)
   },
 
-    /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh:async function () {
+  /**
+ * 页面相关事件处理函数--监听用户下拉动作
+ */
+  onPullDownRefresh: async function () {
     let that = this;
     let page = 1
     that.setData({
@@ -480,10 +488,10 @@ Page({
 
 
   },
-    /**
-   * 前端是否展示
-   * @param {*} e 
-   */
+  /**
+ * 前端是否展示
+ * @param {*} e 
+ */
   deleteShowModal: async function (e) {
 
     wx.showLoading({
