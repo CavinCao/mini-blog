@@ -87,6 +87,30 @@ function getNewPostsList(page, filter, orderBy) {
         where.label = _.eq([])
     }
 
+    //不包含某个标签
+    if (filter.containLabel == 2) {
+        where.label =_.nin([filter.label])
+    }
+
+    //包含某个标签
+    if (filter.containLabel == 1) {
+        where.label = db.RegExp({
+            regexp: filter.label,
+            options: 'i',
+        })
+    }
+
+    //不包含某个主题
+    if (filter.containClassify == 2) {
+        where.label = _.neq(filter.classify)
+    }
+
+    //包含某个主题
+    if (filter.containClassify == 1) {
+        where.label = _.eq(filter.classify)
+    }
+
+
     return db.collection('mini_posts')
         .where(where)
         .orderBy(orderBy, 'desc')
@@ -546,6 +570,36 @@ function getClassifyList() {
 }
 
 /**
+ * 获取label集合
+ */
+function updateBatchPostsClassify(classify,operate,posts) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "updateBatchPostsClassify",
+            posts:posts,
+            operate:operate,
+            classify:classify
+        }
+    })
+}
+
+/**
+ * 获取label集合
+ */
+function updateBatchPostsLabel(label,operate,posts) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "updateBatchPostsLabel",
+            posts:posts,
+            operate:operate,
+            label:label
+        }
+    })
+}
+
+/**
  * 上传文件
  */
 function uploadFile(cloudPath, filePath) {
@@ -601,5 +655,7 @@ module.exports = {
     getNewPostsList: getNewPostsList,
     deletePostById: deletePostById,
     uploadFile: uploadFile,
-    getTempUrl:getTempUrl
+    getTempUrl: getTempUrl,
+    updateBatchPostsLabel:updateBatchPostsLabel,
+    updateBatchPostsClassify:updateBatchPostsClassify
 }

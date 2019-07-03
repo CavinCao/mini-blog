@@ -114,4 +114,38 @@ Page({
       }
     }
   },
+
+  /**
+   * 删除专题
+   * @param {} e 
+   */
+  deleteClassifyById:async function(e){
+    let classify = e.currentTarget.dataset.classify
+    let classifyId = e.currentTarget.id
+    let that = this
+    wx.showModal({
+      title: '提示',
+      content: '是否确认删除[' + classify + ']专题',
+      success(res) {
+        if (res.confirm) {
+          api.deleteConfigById(classifyId).then(res => {
+            return that.onPullDownRefresh()
+          }).then(res => { })
+          console.log(res)
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
+  /**
+   * 返回上一页
+   * @param {*} e 
+   */
+  goback:async function(e)
+  {
+    wx.navigateBack({
+      delta: 1
+    })
+  }
 })

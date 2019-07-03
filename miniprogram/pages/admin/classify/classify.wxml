@@ -5,7 +5,7 @@
         专题列表
     </view>
 </view>
-<view class="cu-list menu card-menu margin-top" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" bindlongpress='deleteLabelById'>
+<view class="cu-list menu card-menu margin-top" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" data-classify="{{item.value.classifyName}}" bindlongpress='deleteClassifyById'>
     <view class="cu-item">
         <view class="content padding-tb-sm">
             <view>
@@ -20,7 +20,7 @@
 </view>
 <view class="box">
     <view class="cu-bar btn-group foot">
-        <button class="cu-btn text-green line-green shadow">返回</button>
+        <button class="cu-btn text-green line-green shadow" bindtap='goback'>返回</button>
         <button class="cu-btn bg-green shadow-blur" bindtap='showClassifyModal'>新增专题</button>
     </view>
 </view>

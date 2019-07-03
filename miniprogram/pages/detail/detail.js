@@ -28,7 +28,8 @@ Page({
     toOpenId: "",
     nodata_str: "暂无评论，赶紧抢沙发吧",
     isShowPosterModal: false,//是否展示海报弹窗
-    posterImageUrl: ""//海报地址
+    posterImageUrl: "",//海报地址
+    showBanner:true
   },
 
   /**
@@ -674,5 +675,17 @@ Page({
     catch (e) {
       console.info(e)
     }
+  },
+  adError(err) {
+    console.log('Banner 广告加载失败', err)
+    this.setData({
+      showBanner:false
+    })
+  },
+  adClose() {
+    console.log('Banner 广告关闭')
+    this.setData({
+      showBanner:false
+    })
   }
 })

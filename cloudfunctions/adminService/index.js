@@ -56,8 +56,14 @@ exports.main = async (event, context) => {
     case 'getClassifyList': {
       return getClassifyList(event)
     }
-    case 'deletePostById':{
+    case 'deletePostById': {
       return deletePostById(event)
+    }
+    case 'updateBatchPostsLabel': {
+      return updateBatchPostsLabel(event)
+    }
+    case 'updateBatchPostsClassify': {
+      return updateBatchPostsClassify(event)
     }
     default: break
   }
@@ -256,8 +262,7 @@ async function deleteConfigById(event) {
   }
 }
 
-async function deletePostById(event)
-{
+async function deletePostById(event) {
   try {
     await db.collection('mini_posts').doc(event.id).remove()
     return true;
@@ -360,4 +365,68 @@ async function getClassifyList(event) {
       errMsg: acc.errMsg,
     }
   })
+}
+
+/**
+ * 批量保存标签信息
+ * @param {*} event 
+ */
+async function updateBatchPostsLabel(event) {
+  console.info(event)
+  for (let i = 0; i < event.posts.length; i++) {
+    let result = await db.collection('mini_posts').doc(event.posts[i]).get()
+    let oldLabels = result.data.label
+    if (event.operate == 'add') {
+      if (oldLabels.indexOf(event) > -1) {
+        continue
+      }
+      await db.collection('mini_posts').doc(event.posts[i]).update({
+        data: {
+          label: _.push([event.label])
+        }
+      })
+    }
+    else if (event.operate == 'delete') {
+
+      var index = oldLabels.indexOf(event);
+      if (index == -1) {
+        continue
+      }
+      oldLabels.splice(index, 1);
+
+      await db.collection('mini_posts').doc(event.posts[i]).update({
+        data: {
+          label: oldLabels
+        }
+      })
+    }
+  }
+
+  return true;
+}
+
+/**
+ * 批量保存主题信息
+ * @param {*} event 
+ */
+async function updateBatchPostsClassify(event) {
+  for (let i = 0; i < event.posts.length; i++) {
+    let result = await db.collection('mini_posts').doc(event.posts[i]).get()
+    if (event.operate == 'add') {
+      await db.collection('mini_posts').doc(event.posts[i]).update({
+        data: {
+          classify: event.classify
+        }
+      })
+    }
+    else if (event.operate == 'delete') {
+      await db.collection('mini_posts').doc(event.posts[i]).update({
+        data: {
+          classify: ""
+        }
+      })
+    }
+  }
+
+  return true;
 }
