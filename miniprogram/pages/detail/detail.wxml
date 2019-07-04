@@ -11,10 +11,14 @@
         <view class="bg-img only-img" style="background-image:url({{post.defaultImageUrl}})" />
       </view>
       <view class='text-gray text-sm text-right padding'>
-        <text class="cuIcon-timefill" /> {{post.createTime}}
-        <text class="cuIcon-attentionfill" /> {{post.totalVisits}}
-        <text class="cuIcon-appreciatefill" /> {{post.totalZans}}
-        <text class="cuIcon-messagefill" /> {{post.totalComments}}
+        <text class="cuIcon-timefill" />
+        {{post.createTime}}
+        <text class="cuIcon-attentionfill" />
+        {{post.totalVisits}}
+        <text class="cuIcon-appreciatefill" />
+        {{post.totalZans}}
+        <text class="cuIcon-messagefill" />
+        {{post.totalComments}}
       </view>
     </view>
   </view>
@@ -23,11 +27,17 @@
   </view>
   <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
 </view>
+<view wx:if="{{showBanner}}" class="cu-item">
+  <view class="content">
+    <ad binderror="adError" bindclose="adClose" unit-id="adunit-9b6188843da06444"></ad>
+  </view>
+</view>
 <!-- 评论列表 -->
-<view class="bg-white">
+<view class="bg-white margin-top-xs">
   <view class="cu-bar bg-white">
     <view class='action'>
-      <text class='cuIcon-titles text-orange '></text> 共{{post.totalComments}}条评论
+      <text class='cuIcon-titles text-orange '></text>
+      共{{post.totalComments}}条评论
     </view>
   </view>
   <!-- 数据不存在 -->
@@ -115,9 +125,7 @@
       <image style='height:800rpx;' mode="aspectFit" src="{{posterImageUrl}}" bindtap="posterImageClick"></image>
     </view>
     <view class="cu-bar bg-white">
-      <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>
-        取消
-      </view>
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>取消</view>
       <view class='action margin-0 flex-sub  solid-left' bindtap='savePosterImage'>保存本地</view>
     </view>
   </view>

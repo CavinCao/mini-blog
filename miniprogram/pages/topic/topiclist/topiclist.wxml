@@ -7,7 +7,7 @@
       <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>
       <view class="desc">
         <view class='text-content '>{{item.digest}}</view>
-        <view>
+        <view class="text-gray">
           <text class="cuIcon-timefill"></text>
           {{item.createTime}}
           <text class="cuIcon-attentionfill" />

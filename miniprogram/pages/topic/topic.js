@@ -39,12 +39,16 @@ Page({
    * @param {*} e 
    */
   getClassifyList: async function () {
+    wx.showLoading({
+      title: '加载中...',
+    })
     let that = this
     let classifyList = await api.getClassifyList()
     console.info(classifyList)
     that.setData({
       classifyList: classifyList.result.data
     })
+    wx.hideLoading()
   },
 
   /**

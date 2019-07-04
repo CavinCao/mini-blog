@@ -6,13 +6,13 @@
     </view>
 </view>
 <view class="padding-sm flex flex-wrap">
-    <view class="padding-xs" wx:for="{{labelList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-labelname="{{item.value}}" id="{{item._id}}" bindlongpress='deleteLabelById'>
+    <view class="padding-xs" wx:for="{{labelList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-labelname="{{item.value}}" id="{{item._id}}" bindtap="showLabelRelatedModal" bindlongpress='deleteLabelById'>
         <view class="cu-tag line-orange">{{item.value}}</view>
     </view>
 </view>
 <view class="box">
     <view class="cu-bar btn-group foot">
-        <button class="cu-btn text-green line-green shadow">返回</button>
+        <button class="cu-btn text-green line-green shadow" bindtap='goback'>返回</button>
         <button class="cu-btn bg-green shadow-blur" bindtap='showLabelModal'>新增标签</button>
     </view>
 </view>
@@ -42,24 +42,34 @@
     </view>
 </view>
 <!-- 标签关联文章窗体 -->
-<view class="cu-modal drawer-modal justify-end {{isLabelRelatedShow?'show':''}}" bindtap="hideLabelRelatedModal">
-    <view class="cu-dialog basis-lg" catchtap style="top:{{0}}px;height:calc(100vh - {{0}}px)">
-        <view class="cu-list menu sm-border card-menu margin-top">
-            <view class="cu-item">
-                <view class="content padding-tb-sm">
-                    <view>
-                        <text class="cuIcon-clothesfill text-blue margin-right-xs"></text>
-                        多行Item多行Item多行Item多行Item多行Item多行Item
+<view class="cu-modal {{isLabelRelatedShow?'show':''}}" bindtap="hideLabelRelatedModal">
+    <view class="cu-dialog" catchtap>
+        <scroll-view scroll-x class="bg-white nav ">
+            <view class='flex text-center'>
+                <block wx:for="{{navItems}}" wx:for-index="idx" data-data="{{item}}">
+                    <view class="cu-item flex-sub {{item.index==tabCur?'text-green cur':''}}" bindtap='tabSelect' data-id="{{item.index}}">
+                        {{item.name}}
                     </view>
-                    <view class="text-gray text-sm">
-                        <text class="cuIcon-infofill margin-right-xs"></text>
-                        小目标还没有实现！小目标还没有实现！小目标还没有实现！小目标还没有实现！ 小目标还没有实现！
-                    </view>
-                </view>
-                <view class="action">
-                    <checkbox></checkbox>
-                </view>
+                </block>
             </view>
+        </scroll-view>
+        <scroll-view scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 475rpx)" bindscrolltolower="bindscrolltolower">
+            <checkbox-group class="block" bindchange="checkboxChange">
+                <view class="cu-list menu text-left">
+                    <view class="cu-item" wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item._id}}">
+                        <label class="flex justify-between align-center flex-sub">
+                            <view class="flex-sub">{{item.title}}</view>
+                            <checkbox value="{{item._id}}" class="round"></checkbox>
+                        </label>
+                    </view>
+                </view>
+            </checkbox-group>
+        </scroll-view>
+        <view class="cu-bar bg-white">
+            <view class="action margin-0 flex-sub solid-left" bindtap="hideLabelRelatedModal">
+                取消
+            </view>
+            <view class="action margin-0 flex-sub text-green solid-left" bindtap="savePostsRelatedLabel">{{btnName}}</view>
         </view>
     </view>
 </view>
