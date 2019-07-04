@@ -28,7 +28,7 @@
   <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
 </view>
 <view wx:if="{{showBanner}}" class="cu-item">
-  <view class="content">
+  <view class="content padding-right-xs padding-left-xs">
     <ad binderror="adError" bindclose="adClose" unit-id="adunit-9b6188843da06444"></ad>
   </view>
 </view>

@@ -21,7 +21,8 @@ Page({
     page: 1,
     filter: {},
     posts: [],
-    checkedList: []
+    checkedList: [],
+    canOperate: true
   },
 
   /**
@@ -124,7 +125,8 @@ Page({
       nodata: false,
       page: 1,
       posts: [],
-      checkedList: []
+      checkedList: [],
+      canOperate: true
     })
 
     await that.getPostsList(filter)
@@ -261,6 +263,9 @@ Page({
         posts: that.data.posts.concat(result.data),
       })
     }
+    that.setData({
+      canOperate: true
+    })
     wx.hideLoading()
   },
 
@@ -269,7 +274,17 @@ Page({
    */
   bindscrolltolower: async function () {
     let that = this;
-    that.getPostsList(that.data.filter)
+    if(!that.data.canOperate)
+    {
+      return;
+    }
+
+    that.setData({
+      canOperate: false
+    })
+
+    await that.getPostsList(that.data.filter)
+
   },
 
   /**
@@ -312,7 +327,7 @@ Page({
           isClassifyRelatedShow: false,
           checkedList: [],
           tabCur: 1,
-          scrollLeft: 0,
+          scrollLeft: 0
         })
       }
       else {

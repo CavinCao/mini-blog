@@ -19,7 +19,8 @@ Page({
     page: 1,
     filter: {},
     posts: [],
-    checkedList: []
+    checkedList: [],
+    canOperate: true
   },
 
   /**
@@ -122,7 +123,8 @@ Page({
       nodata: false,
       page: 1,
       posts: [],
-      checkedList: []
+      checkedList: [],
+      canOperate: true
     })
 
     await that.getPostsList(filter)
@@ -258,6 +260,9 @@ Page({
         posts: that.data.posts.concat(result.data),
       })
     }
+    that.setData({
+      canOperate: true
+    })
     wx.hideLoading()
   },
 
@@ -266,6 +271,14 @@ Page({
    */
   bindscrolltolower: async function () {
     let that = this;
+    if(!that.data.canOperate)
+    {
+      return;
+    }
+
+    that.setData({
+      canOperate: false
+    })
     that.getPostsList(that.data.filter)
   },
 
