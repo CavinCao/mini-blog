@@ -102,12 +102,12 @@ function getNewPostsList(page, filter, orderBy) {
 
     //不包含某个主题
     if (filter.containClassify == 2) {
-        where.label = _.neq(filter.classify)
+        where.classify = _.neq(filter.classify)
     }
 
     //包含某个主题
     if (filter.containClassify == 1) {
-        where.label = _.eq(filter.classify)
+        where.classify = _.eq(filter.classify)
     }
 
 
