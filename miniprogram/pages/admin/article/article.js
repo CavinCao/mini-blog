@@ -180,7 +180,7 @@ Page({
         digest: post.digest, //摘要
         title: post.title,
         timestamp: new Date().getTime(),
-        content: contentHtml,
+        content: res.html,
         originalUrl: post.originalUrl
       }
     }
