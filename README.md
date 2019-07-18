@@ -3,6 +3,12 @@
 
 ## 相关使用和文章介绍
 
+- [[mini-blog]第一次部署过程中的问题点总结(最近很多人在问)](https://mp.weixin.qq.com/s/GLNSHdWIowwdb5_GHPJkmg)
+
+- [[mini-blog]小程序最近两个迭代版本总结，来看看更新了哪些内容吧](https://mp.weixin.qq.com/s/gmoHSnvw0E6Wld3PewDJNA)
+
+- [[mini-blog][v1.6.0]体现后台管理功能的价值时刻到了——丰富文章的筛选](https://mp.weixin.qq.com/s/TDeBq9oDFxgEIB4vATM3nA)
+
 - [公众号文章同步至云数据库实现](https://www.bug2048.com/wechat20190421/)
 
 - [[mini-blog]基于云开发的博客小程序诞生](https://www.bug2048.com/wechat20190429/)
@@ -15,7 +21,8 @@
 
 - [基于云开发的小程序海报功能的实现](https://www.bug2048.com/wechat20190512/)
 
-- [[mini-blog]小程序后台管理功能的实现](https://www.bug2048.com/wechat20190610/)
+- [[mini-blog]小程序后台管理功能的实现](https://mp.weixin.qq.com/s/0Wy0RMfsbsl1mpvxN8bPrg)
+
 
 ## 当前进度与计划
 
