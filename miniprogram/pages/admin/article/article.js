@@ -18,6 +18,16 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+
+    //没有权限直接返回首页
+    let res = await api.checkAuthor();
+    if (!res.result)
+    {
+      wx.switchTab({
+        url: '/pages/index/index'
+      })
+    }
+
     let that = this;
     let blogId = options.id;
 
