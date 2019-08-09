@@ -171,7 +171,7 @@ Page({
         digest: post.digest, //摘要
         isShow: 0, //是否展示
         originalUrl: "",
-        content: res.html,
+        content: res,
         totalCollection: 10 + Math.floor(Math.random() * 40)
       }
     }

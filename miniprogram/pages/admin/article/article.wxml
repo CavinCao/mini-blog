@@ -9,7 +9,7 @@
     <view class="cu-form-group align-start">
         <textarea maxlength="-1" value='{{post.title}}' placeholder="请输入文章标题" id="postTitle" bindblur="changePostDetail"></textarea>
     </view>
-        <view class="cu-bar bg-white solid-bottom margin-top">
+    <view class="cu-bar bg-white solid-bottom margin-top">
         <view class='action'>
             <text class='cuIcon-titles text-orange '></text>
             文章链接
@@ -25,7 +25,7 @@
         </view>
     </view>
     <view class="cu-form-group">
-        <textarea id="postDigest" placeholder="一句话介绍" maxlength="-1" placeholder-class='placeholder' value='{{post.digest}}'></textarea>
+        <textarea id="postDigest" placeholder="一句话介绍" maxlength="-1" placeholder-class='placeholder' value='{{post.digest}}' bindblur="changePostDetail"></textarea>
     </view>
     <view class="cu-bar bg-white solid-bottom margin-top">
         <view class='action'>
@@ -128,9 +128,7 @@
         </view>
         <view class='padding-xl'>文章已经处理成功啦～</view>
         <view class="cu-bar bg-white">
-            <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>
-                留在本页
-            </view>
+            <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>留在本页</view>
             <view class='action margin-0 flex-sub text-green solid-left' bindtap='showArticleList'>
                 返回列表
             </view>
