@@ -11,6 +11,6 @@
   "dependencies": {
     "date-utils": "^1.2.21",
     "towxml": "^2.1.4",
-    "wx-server-sdk": "latest"
+    "wx-server-sdk": "^0.8.1"
   }
 }
