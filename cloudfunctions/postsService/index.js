@@ -116,8 +116,9 @@ async function addPostChildComment(event) {
  */
 async function addPostCollection(event) {
   console.info("处理addPostCollection方法开始")
+  console.info(event)
   let postRelated = await db.collection('mini_posts_related').where({
-    openId: event.userInfo.openId,
+    openId: event.openId == undefined ? event.userInfo.openId : event.openId,
     postId: event.postId,
     type: event.type
   }).get();
@@ -132,7 +133,7 @@ async function addPostCollection(event) {
     let date = new Date().toFormat("YYYY-MM-DD")
     let result = await db.collection('mini_posts_related').add({
       data: {
-        openId: event.userInfo.openId,
+        openId: event.openId == undefined ? event.userInfo.openId : event.openId,
         postId: event.postId,
         postTitle: event.postTitle,
         postUrl: event.postUrl,
@@ -155,7 +156,7 @@ async function addPostCollection(event) {
 async function addPostZan(event) {
 
   let postRelated = await db.collection('mini_posts_related').where({
-    openId: event.userInfo.openId,
+    openId: event.openId == undefined ? event.userInfo.openId : event.openId,
     postId: event.postId,
     type: event.type
   }).get();
@@ -169,7 +170,7 @@ async function addPostZan(event) {
   if (postRelated.data.length === 0) {
     await db.collection('mini_posts_related').add({
       data: {
-        openId: event.userInfo.openId,
+        openId: event.openId == undefined ? event.userInfo.openId : event.openId,
         postId: event.postId,
         postTitle: event.postTitle,
         postUrl: event.postUrl,
@@ -190,7 +191,7 @@ async function addPostZan(event) {
 async function deletePostCollectionOrZan(event) {
   //TODO:文章喜欢总数就不归还了？
   let result = await db.collection('mini_posts_related').where({
-    openId: event.userInfo.openId,
+    openId: event.openId == undefined ? event.userInfo.openId : event.openId,
     postId: event.postId,
     type: event.type
   }).remove()
