@@ -21,13 +21,81 @@ exports.main = async (event, context) => {
     case 'removeExpireFormId': {
       return removeExpireFormId(event)
     }
-    case 'queryFormIds': {
-      return queryFormIds(event)
+    case 'querySubscribeCount': {
+      return querySubscribeCount(event)
     }
     case 'addFormIds': {
       return addFormIds(event)
     }
+    case 'sendSubscribeMessage': {
+      return sendSubscribeMessage(event)
+    }
+    case 'getTemplateList': {
+      return getTemplateList(event)
+    }
+    case 'addSubscribeCount': {
+      return addSubscribeCount(event)
+    }
     default: break
+  }
+}
+
+/**
+ * 发送订阅消息
+ * @param {} event 
+ */
+async function sendSubscribeMessage(event) {
+
+  console.info(event)
+  var openId = ""
+  if (event.tOpenId == "") {
+    openId = process.env.author
+  }
+  else if (event.tOpenId == event.cOpenId) {
+    openId = process.env.author
+  }
+  else{
+    openId=event.tOpenId
+  }
+
+  var templateInfo = await db.collection('mini_subcribute').where({
+    openId: openId,
+    templateId: event.templateId
+  }).limit(1).get()
+
+  if (templateInfo.code) {
+    return;
+  }
+  if (!templateInfo.data.length) {
+    return;
+  }
+
+  let nickName=event.nickName.replace(/\d+/g,'')
+
+  await db.collection('mini_subcribute').doc(templateInfo.data[0]['_id']).remove()
+
+  try {
+    const result = await cloud.openapi.subscribeMessage.send({
+      touser: openId,
+      page: event.page,
+      data: {
+        name1: {
+          value: nickName
+        },
+        thing2: {
+          value: event.content
+        },
+        time3: {
+          value: event.createDate
+        }
+      },
+      templateId: event.templateId
+    })
+    console.log(result)
+    return result
+  } catch (err) {
+    console.log(err)
+    return err
   }
 }
 
@@ -81,19 +149,14 @@ async function sendTemplateMessage(event) {
  * 获取总的formIds和过期的formIds
  * @param {} event 
  */
-async function queryFormIds(event) {
+async function querySubscribeCount(event) {
   var data = {}
-  var formIdsResult = await db.collection('mini_formids').where({
-    openId: process.env.author // 填入当前用户 openid
+  var formIdsResult = await db.collection('mini_subcribute').where({
+    openId: process.env.author, // 填入当前用户 openid
+    templateId: event.templateId,
   }).count()
 
-  /*var formIdsExpireResult = await db.collection('mini_formids').where({
-    openId: process.env.author, // 填入当前用户 openid
-    timestamp: _.lt(new Date().removeDays(7).getTime())
-  }).count()*/
-
   data.formIds = formIdsResult.total
-  //data.expireFromIds = formIdsExpireResult.total
   return data;
 }
 
@@ -115,23 +178,17 @@ async function removeExpireFormId(event) {
  * 新增formId
  * @param {} event 
  */
-async function addFormIds(event) {
+async function addSubscribeCount(event) {
   try {
 
-    let removeRes = await db.collection('mini_formids').where({
-      timestamp: _.lt(new Date().removeDays(7).getTime())
-    }).remove()
-
-    console.info(removeRes)
-
-    for (var i = 0; i < event.formIds.length; i++) {
+    for (var i = 0; i < event.templateIds.length; i++) {
       let data = {
         openId: event.userInfo.openId,
-        formId: event.formIds[i],
+        templateId: event.templateIds[i],
         timestamp: new Date().getTime()
       }
 
-      let res = await db.collection('mini_formids').add({
+      let res = await db.collection('mini_subcribute').add({
         data: data
       })
       console.info(res)
@@ -140,5 +197,18 @@ async function addFormIds(event) {
   } catch (e) {
     console.error(e)
     return false;
+  }
+}
+
+/**
+ * 获取当前帐号下的个人模板列表
+ * @param {*} event 
+ */
+async function getTemplateList(event) {
+  try {
+    const result = await cloud.openapi.subscribeMessage.getTemplateList()
+    return result
+  } catch (err) {
+    return err
   }
 }

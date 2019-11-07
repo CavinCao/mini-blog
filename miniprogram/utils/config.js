@@ -28,9 +28,12 @@ var postRelatedType = {
     }
 };
 
+var subcributeTemplateId="BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg"
+
 module.exports = {
     postRelatedType: postRelatedType,
     moneyUrl:moneyUrl,
     wechatUrl:wechatUrl,
-    env:env
+    env:env,
+    subcributeTemplateId:subcributeTemplateId
 }

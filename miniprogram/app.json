@@ -14,7 +14,8 @@
     "pages/admin/labelList/labelList",
     "pages/admin/comment/comment",
     "pages/admin/classify/classify",
-    "pages/detail/original"
+    "pages/detail/original",
+    "pages/admin/subscribe/subscribe"
   ],
   "window": {
     "backgroundTextStyle": "light",

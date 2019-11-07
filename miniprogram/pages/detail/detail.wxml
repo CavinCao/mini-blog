@@ -73,17 +73,17 @@
   <view style="padding:50rpx"></view>
 </view>
 <!-- 底部功能 -->
-<view class="comment-fixed">
-  <form catchsubmit="formSubmit" report-submit="true">
+<view class="comment-fixed">-
+  <!--<form catchsubmit="formSubmit" report-submit="true">-->
     <view class="cu-bar input">
       <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
       <view class='action'>
         <text class='cuIcon-roundaddfill text-grey' bindtap='showMenuBox'></text>
       </view>
-      <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
-      <button class='cu-btn bg-green shadow-blur' formType="submit">发送</button>
+      <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" bindinput='commentInput' name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
+      <button class='cu-btn bg-green shadow-blur' bindtap="formSubmit">发送</button>
     </view>
-  </form>
+  <!--</form>-->
   <view class="cu-list grid col-5 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
     <view class="cu-item item">
       <view class='cuIcon-share text-olive' style="margin-top:0;"></view>

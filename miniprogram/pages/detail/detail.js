@@ -29,7 +29,7 @@ Page({
     nodata_str: "暂无评论，赶紧抢沙发吧",
     isShowPosterModal: false,//是否展示海报弹窗
     posterImageUrl: "",//海报地址
-    showBanner:true
+    showBanner: true
   },
 
   /**
@@ -294,22 +294,19 @@ Page({
       }
     }
   },
+
+  commentInput: function (e) {
+    this.setData({
+      commentContent: e.detail.value
+    })
+  },
+
+
   /**
-   * 提交评论
-   * @param {} e 
-   */
-  formSubmit: async function (e) {
-    let that = this;
-    let commentPage = 1
-    let content = e.detail.value.inputComment;
-    if (content == undefined || content.length == 0) {
-      wx.showToast({
-        title: '请输入内容',
-        icon: 'none',
-        duration: 1500
-      })
-      return
-    }
+ * 获取订阅消息
+ */
+  submitContent: async function (content, commentPage,accept) {
+    let that = this
     try {
       wx.showLoading({
         title: '加载中...',
@@ -326,7 +323,7 @@ Page({
           childComment: [],
           flag: 0
         }
-        await api.addPostComment(data)
+        await api.addPostComment(data,accept)
       }
       else {
         var childData = [{
@@ -340,9 +337,9 @@ Page({
           tOpenId: that.data.toOpenId,
           flag: 0
         }]
-        await api.addPostChildComment(that.data.commentId, that.data.post._id, childData)
+        await api.addPostChildComment(that.data.commentId, that.data.post._id, childData,accept)
       }
-      let messageResultTask = api.sendTemplateMessage(that.data.userInfo.nickName, content, that.data.post._id)
+
       let commentList = await api.getPostComments(commentPage, that.data.post._id)
       if (commentList.data.length === 0) {
         that.setData({
@@ -371,8 +368,6 @@ Page({
           toOpenId: ""
         })
       }
-      let messageResult = await messageResultTask;
-      console.info(messageResult)
 
       wx.showToast({
         title: '提交成功',
@@ -391,6 +386,43 @@ Page({
     finally {
       wx.hideLoading()
     }
+  },
+
+  /**
+   * 提交评论
+   * @param {} e 
+   */
+  formSubmit: function (e) {
+
+    let that = this;
+    let commentPage = 1
+    let content = that.data.commentContent;
+    console.info(content)
+    if (content == undefined || content.length == 0) {
+      wx.showToast({
+        title: '请输入内容',
+        icon: 'none',
+        duration: 1500
+      })
+      return
+    }
+
+    wx.requestSubscribeMessage({
+      tmplIds: [config.subcributeTemplateId],
+      success(res) {
+        console.info(res)
+        console.info(res[config.subcributeTemplateId])
+        that.submitContent(content, commentPage,res[config.subcributeTemplateId]).then((res) => { console.info(res) })
+      },
+      fail(res) {
+        console.info(res)
+        wx.showToast({
+          title: '程序有一点点小异常，操作失败啦',
+          icon: 'none',
+          duration: 1500
+        })
+      }
+    })
   },
   /**
   * 点击评论内容回复
@@ -679,13 +711,13 @@ Page({
   adError(err) {
     console.log('Banner 广告加载失败', err)
     this.setData({
-      showBanner:false
+      showBanner: false
     })
   },
   adClose() {
     console.log('Banner 广告关闭')
     this.setData({
-      showBanner:false
+      showBanner: false
     })
   }
 })

@@ -21,7 +21,7 @@
 	},
 	"appid": "wx5642e868dfc28bb0",
 	"projectname": "mini-blog",
-	"libVersion": "2.7.0",
+	"libVersion": "2.8.3",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",

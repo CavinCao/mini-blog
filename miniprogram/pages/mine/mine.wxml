@@ -1,10 +1,10 @@
 <import src="../../templates/login/login.wxml" />
 <view class="bg-white">
   <view class="flex padding justify-center">
-    <view class="cu-avatar xl margin-top-xl round" style="background-image:url({{userInfo.avatarUrl}});"></view>
+    <open-data style="width:128rpx;height:128rpx" class="margin-top-xl" type="userAvatarUrl"></open-data>
   </view>
   <view class="flex padding justify-center">
-    <view>{{userInfo.nickName}}</view>
+    <view><open-data type="userNickName"></open-data></view>
   </view>
 </view>
 <view class="cu-list menu margin-top-sm shadow-lg">

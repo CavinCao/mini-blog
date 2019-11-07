@@ -19,18 +19,6 @@ Page({
    */
   onLoad: async function (options) {
     let that = this;
-    app.checkUserInfo(function (userInfo, isLogin) {
-      if (!isLogin) {
-        that.setData({
-          showLogin: true
-        })
-      } else {
-        that.setData({
-          userInfo: userInfo
-        });
-      }
-    });
-
     let showRedDot = wx.getStorageSync('showRedDot');
     console.info(showRedDot)
 
@@ -38,8 +26,6 @@ Page({
     that.setData({
       showRedDot: showRedDot
     });
-
-
     await that.checkAuthor()
   },
 

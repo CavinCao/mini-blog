@@ -7,6 +7,7 @@ const _ = db.command
 const dateUtils = require('date-utils')
 
 const towxml = new Towxml();
+const COMMENT_TEMPLATE_ID='BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg'
 
 cloud.init()
 
@@ -78,6 +79,12 @@ async function addPostQrCode(event) {
 async function addPostComment(event) {
 
   console.info("处理addPostComment")
+
+  if(process.env.author==event.commentContent.cOpenId)
+  {
+    event.commentContent.cNickName="作者"
+  }
+
   let task = db.collection('mini_posts').doc(event.commentContent.postId).update({
     data: {
       totalComments: _.inc(1)
@@ -86,7 +93,35 @@ async function addPostComment(event) {
   await db.collection("mini_comments").add({
     data: event.commentContent
   });
+
   let result = await task;
+
+  //如果同意
+  if(event.accept=='accept')
+  {
+    await db.collection("mini_subcribute").add({
+      data: {
+        templateId:COMMENT_TEMPLATE_ID,
+        openId:event.commentContent.cOpenId,
+        timestamp: new Date().getTime()
+      }
+    });
+  }
+
+  //发送消息
+  await cloud.callFunction({
+    name: 'messageService',
+    data: {
+      action: "sendSubscribeMessage",
+      tOpenId: "",
+      page: 'pages/detail/detail?id=' + event.commentContent.postId,
+      nickName: event.commentContent.cNickName,
+      content:event.commentContent.comment,
+      createDate:event.commentContent.createDate,
+      templateId:COMMENT_TEMPLATE_ID,
+      cOpenId:event.commentContent.cOpenId
+    }
+  })
   console.info(result)
 }
 
@@ -102,12 +137,44 @@ async function addPostChildComment(event) {
     }
   });
 
+  if(process.env.author==event.comments[0].cOpenId)
+  {
+    event.comments[0].cNickName="作者"
+  }
+
   await db.collection('mini_comments').doc(event.id).update({
     data: {
       childComment: _.push(event.comments)
     }
   })
   await task;
+
+  //如果同意
+  if(event.accept=='accept')
+  {
+    await db.collection("mini_subcribute").add({
+      data: {
+        templateId:COMMENT_TEMPLATE_ID,
+        openId:event.comments[0].cOpenId,
+        timestamp: new Date().getTime()
+      }
+    });
+  }
+
+  //发送消息
+  await cloud.callFunction({
+    name: 'messageService',
+    data: {
+      action: "sendSubscribeMessage",
+      tOpenId: event.comments[0].tOpenId,
+      page: 'pages/detail/detail?id=' + event.postId,
+      nickName: event.comments[0].cNickName,
+      content:event.comments[0].comment,
+      createDate:event.comments[0].createDate,
+      templateId:COMMENT_TEMPLATE_ID,
+      cOpenId:event.comments[0].cOpenId
+    }
+  })
 }
 
 /**

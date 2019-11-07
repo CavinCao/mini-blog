@@ -257,12 +257,13 @@ function deletePostCollectionOrZan(postId, type) {
 /**
  * 新增评论
  */
-function addPostComment(commentContent) {
+function addPostComment(commentContent,accept) {
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {
             action: "addPostComment",
-            commentContent: commentContent
+            commentContent: commentContent,
+            accept:accept
         }
     })
 }
@@ -290,14 +291,15 @@ function addPostZan(data) {
  * @param {} id 
  * @param {*} comments 
  */
-function addPostChildComment(id, postId, comments) {
+function addPostChildComment(id, postId, comments,accept) {
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {
             action: "addPostChildComment",
             id: id,
             comments: comments,
-            postId: postId
+            postId: postId,
+            accept:accept
         }
     })
 }
@@ -357,11 +359,31 @@ function checkAuthor() {
 /**
  * 查询可用的formId数量
  */
-function queryFormIds() {
+function querySubscribeCount(templateId) {
     return wx.cloud.callFunction({
         name: 'messageService',
         data: {
-            action: "queryFormIds"
+            action: "querySubscribeCount",
+            templateId:templateId
+        }
+    })
+}
+
+function getTemplateList(){
+    return wx.cloud.callFunction({
+        name: 'messageService',
+        data: {
+            action: "getTemplateList"
+        }
+    })
+}
+
+function addSubscribeCount(templateIds){
+    return wx.cloud.callFunction({
+        name: 'messageService',
+        data: {
+            action: "addSubscribeCount",
+            templateIds:templateIds
         }
     })
 }
@@ -635,7 +657,7 @@ module.exports = {
     addPostQrCode: addPostQrCode,
     checkAuthor: checkAuthor,
     addFormIds: addFormIds,
-    queryFormIds: queryFormIds,
+    querySubscribeCount: querySubscribeCount,
     sendTemplateMessage: sendTemplateMessage,
     addReleaseLog: addReleaseLog,
     getReleaseLogsList: getReleaseLogsList,
@@ -657,5 +679,7 @@ module.exports = {
     uploadFile: uploadFile,
     getTempUrl: getTempUrl,
     updateBatchPostsLabel:updateBatchPostsLabel,
-    updateBatchPostsClassify:updateBatchPostsClassify
+    updateBatchPostsClassify:updateBatchPostsClassify,
+    getTemplateList:getTemplateList,
+    addSubscribeCount:addSubscribeCount
 }

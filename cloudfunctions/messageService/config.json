@@ -7,7 +7,9 @@
         "templateMessage.deleteTemplate",
         "templateMessage.getTemplateList",
         "templateMessage.getTemplateLibraryById",
-        "templateMessage.getTemplateLibraryList"
+        "templateMessage.getTemplateLibraryList",
+        "subscribeMessage.send",
+        "subscribeMessage.getTemplateList"
       ]
     }
   }

@@ -11,6 +11,7 @@ const APPID = process.env.AppId
 const APPSCREAT = process.env.AppSecret
 const BMOBKEY = process.env.BmobKey
 const BMOBPWD = process.env.BmobPwd
+const WECHAT_URL = "https://api.weixin.qq.com";
 
 cloud.init()
 
@@ -19,7 +20,7 @@ exports.main = async(event, context) => {
 
   let token = await getCacheAccessToken(2)
   console.info(token)
-  await postTokenToBmob(token)
+  await postTokenToOther(token)
 }
 
 
@@ -33,7 +34,7 @@ async function getCacheAccessToken(type) {
     return null;
   }
   if (!result.data.length) {
-    let accessTokenBody = await getAccessWechatToken();
+    let accessTokenBody = await getAccessWechatToken(APPID, APPSCREAT);
     await db.collection(collection).add({
       data: {
         accessToken: accessTokenBody.access_token,
@@ -53,7 +54,7 @@ async function getCacheAccessToken(type) {
       type
     } = data;
 
-    let accessTokenBody = await getAccessWechatToken();
+    let accessTokenBody = await getAccessWechatToken(APPID, APPSCREAT);
     await db.collection(collection).doc(_id).set({
       data: {
         accessToken: accessTokenBody.access_token,
@@ -67,12 +68,11 @@ async function getCacheAccessToken(type) {
   }
 }
 /**
- * 获取公众号token
  * @param {}  
  */
-async function getAccessWechatToken() {
+async function getAccessWechatToken(appId, appScreat) {
   const result = await rp({
-    url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appId=${APPID}&secret=${APPSCREAT}`,
+    url: `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appId=${appId}&secret=${appScreat}`,
     method: 'GET'
   });
 
@@ -94,6 +94,25 @@ async function postTokenToBmob(token) {
       'X-Bmob-Application-Id': appId,
       'X-Bmob-REST-API-Key': apiKey
     },
+    json: true
+  };
+  let result = await rp(options)
+  console.info(result);
+}
+
+async function postTokenToOther(token) {
+  let appId = BMOBKEY
+  let apiKey = BMOBPWD
+  let accessTokenBody = await getAccessWechatToken(BMOBKEY, BMOBPWD)
+  console.info(accessTokenBody)
+  var url = `${WECHAT_URL}/tcb/invokecloudfunction?access_token=${accessTokenBody.access_token}&env=env-034d6b&name=syncAccessToken`
+  let data={
+    token: token
+  }
+  var options = {
+    method: 'POST',
+    uri: url,
+    body: data,
     json: true
   };
   let result = await rp(options)

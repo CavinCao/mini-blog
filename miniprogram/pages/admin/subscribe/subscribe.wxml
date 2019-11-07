@@ -1,0 +1,40 @@
+<!-- 设置列表 -->
+<view class="cu-bar bg-white solid-bottom margin-top">
+    <view class='action'>
+        <text class='cuIcon-titles text-orange '></text>
+        订阅消息模板列表
+    </view>
+</view>
+<view class="cu-list menu card-menu margin-top" wx:for="{{templates}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" data-title="{{item.title}}" data-templatedid="{{item.priTmplId}}" bindtap="showModol" >
+    <view class="cu-item">
+        <view class="content padding-tb-sm">
+            <view>
+                <text class="cuIcon-title text-orange "></text>
+                {{item.title}}
+            </view>
+            <view class="text-gray text-sm">
+                可用的消息次数：{{item.sendCount}}
+            </view>
+        </view>
+    </view>
+</view>
+
+<view class="cu-modal {{isShow?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>增加{{curTitle}}模版消息</view>
+            <view class='action' bindtap='hideModal'>
+                <text class='cuIcon-close text-red'></text>
+            </view>
+        </view>
+        <view class='padding-xl'>
+                <view>{{curTitle}}点击生成次数：{{templateIds.length}}</view>
+        </view>
+        <view class="cu-bar bg-white justify-end">
+            <view class='action'>
+                <button class='cu-btn line-green text-green' bindtap='templateGen'>点击生成</button>
+                <button class='cu-btn bg-green margin-left' bindtap='saveTemplateIds'>批量保存</button>
+            </view>
+        </view>
+    </view>
+</view>

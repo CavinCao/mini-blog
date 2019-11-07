@@ -19,11 +19,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    let that = this;
+    /*let that = this;
     let res = await api.queryFormIds();
     that.setData({
       formIdCount: res.result.formIds
-    })
+    })*/
 
   },
   /**
@@ -218,5 +218,11 @@ Page({
     wx.navigateTo({
       url: '../admin/classify/classify'
     })
-  }
+  },
+
+  showSubscribe: async function (e) {
+    wx.navigateTo({
+      url: '../admin/subscribe/subscribe'
+    })
+  },
 })
