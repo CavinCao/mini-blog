@@ -321,7 +321,7 @@ Page({
           createDate: util.formatTime(new Date()),
           comment: content,
           childComment: [],
-          flag: 0
+          flag: 1
         }
         await api.addPostComment(data,accept)
       }
@@ -335,7 +335,7 @@ Page({
           comment: content,
           tNickName: that.data.toName,
           tOpenId: that.data.toOpenId,
-          flag: 0
+          flag: 1
         }]
         await api.addPostChildComment(that.data.commentId, that.data.post._id, childData,accept)
       }
@@ -407,20 +407,31 @@ Page({
       return
     }
 
-    wx.requestSubscribeMessage({
-      tmplIds: [config.subcributeTemplateId],
-      success(res) {
-        console.info(res)
-        console.info(res[config.subcributeTemplateId])
-        that.submitContent(content, commentPage,res[config.subcributeTemplateId]).then((res) => { console.info(res) })
-      },
-      fail(res) {
-        console.info(res)
-        wx.showToast({
-          title: '程序有一点点小异常，操作失败啦',
-          icon: 'none',
-          duration: 1500
-        })
+    //提交评论前进行提示
+    wx.showModal({
+      title: '友情提醒',
+      content: '您的评论管理员审核后才会展现哦～',
+      success (res) {
+        if (res.confirm) {
+          wx.requestSubscribeMessage({
+            tmplIds: [config.subcributeTemplateId],
+            success(res) {
+              console.info(res)
+              console.info(res[config.subcributeTemplateId])
+              that.submitContent(content, commentPage,res[config.subcributeTemplateId]).then((res) => { console.info(res) })
+            },
+            fail(res) {
+              console.info(res)
+              wx.showToast({
+                title: '程序有一点点小异常，操作失败啦',
+                icon: 'none',
+                duration: 1500
+              })
+            }
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
       }
     })
   },
