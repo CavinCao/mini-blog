@@ -3,6 +3,8 @@
 
 ## 相关使用和文章介绍
 
+- [[mini-blog]小程序订阅消息踩坑记](https://mp.weixin.qq.com/s/MWSJ4pWBQW1vhEpqj2HEAA)
+
 - [[mini-blog]第一次部署过程中的问题点总结(最近很多人在问)](https://mp.weixin.qq.com/s/GLNSHdWIowwdb5_GHPJkmg)
 
 - [[mini-blog]小程序最近两个迭代版本总结，来看看更新了哪些内容吧](https://mp.weixin.qq.com/s/gmoHSnvw0E6Wld3PewDJNA)

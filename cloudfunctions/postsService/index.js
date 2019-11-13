@@ -85,16 +85,18 @@ async function addPostComment(event) {
     event.commentContent.cNickName="作者"
   }
 
-  /*let task = db.collection('mini_posts').doc(event.commentContent.postId).update({
+  let task = db.collection('mini_posts').doc(event.commentContent.postId).update({
     data: {
       totalComments: _.inc(1)
     }
-  });*/
+  });
+
+  event.commentContent.flag=0
   await db.collection("mini_comments").add({
     data: event.commentContent
   });
 
-  //let result = await task;
+  let result = await task;
 
   //如果同意
   if(event.accept=='accept')
@@ -130,23 +132,25 @@ async function addPostComment(event) {
  */
 async function addPostChildComment(event) {
 
-  /*let task = db.collection('mini_posts').doc(event.postId).update({
+  let task = db.collection('mini_posts').doc(event.postId).update({
     data: {
       totalComments: _.inc(1)
     }
-  });*/
+  });
 
   if(process.env.author==event.comments[0].cOpenId)
   {
     event.comments[0].cNickName="作者"
   }
 
+  event.comments[0].flag=0
+
   await db.collection('mini_comments').doc(event.id).update({
     data: {
       childComment: _.push(event.comments)
     }
   })
-  //await task;
+  await task;
 
   //如果同意
   if(event.accept=='accept')
