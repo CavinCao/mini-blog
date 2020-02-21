@@ -13,8 +13,6 @@ const BMOBKEY = process.env.BmobKey
 const BMOBPWD = process.env.BmobPwd
 const WECHAT_URL = "https://api.weixin.qq.com";
 
-cloud.init()
-
 // 云函数入口函数
 exports.main = async(event, context) => {
 

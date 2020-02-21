@@ -7,8 +7,6 @@ const db = cloud.database()
 const _ = db.command
 const RELEASE_LOG_KEY = 'releaseLogKey'
 
-cloud.init()
-
 // 云函数入口函数
 exports.main = async (event, context) => {
   //admin服务都要验证一下权限

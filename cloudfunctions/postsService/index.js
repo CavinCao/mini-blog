@@ -9,8 +9,6 @@ const dateUtils = require('date-utils')
 const towxml = new Towxml();
 const COMMENT_TEMPLATE_ID='BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg'
 
-cloud.init()
-
 // 云函数入口函数
 exports.main = async (event, context) => {
   switch (event.action) {

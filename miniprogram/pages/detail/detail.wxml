@@ -22,12 +22,18 @@
       </view>
     </view>
   </view>
-  <view>
+  <view class="detail-body" style="height:{{hideArticle}}">
     <template is="entry" data="{{...post.content}}" />
+    <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
+    <!-- 阅读更多 -->
+    <view class="detail-read-more" wx:if="{{hideArticle != ''}}">
+      <view class="detail-readmore-mask">
+        <view class="detail-readmore-btn margin-bottom-xs" bindtap="readMore">观看视频，阅读更多...</view>
+      </view>
+    </view>
   </view>
-  <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
 </view>
-<view wx:if="{{showBanner}}" class="cu-item">
+<view wx:if="{{showBanner}}" class="bg-white cu-item margin-top-xs">
   <view class="content padding-right-xs padding-left-xs">
     <ad binderror="adError" bindclose="adClose" unit-id="adunit-9b6188843da06444"></ad>
   </view>
@@ -73,17 +79,18 @@
   <view style="padding:50rpx"></view>
 </view>
 <!-- 底部功能 -->
-<view class="comment-fixed">-
-  <!--<form catchsubmit="formSubmit" report-submit="true">-->
-    <view class="cu-bar input">
-      <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
-      <view class='action'>
-        <text class='cuIcon-roundaddfill text-grey' bindtap='showMenuBox'></text>
-      </view>
-      <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" bindinput='commentInput' name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
-      <button class='cu-btn bg-green shadow-blur' bindtap="formSubmit">发送</button>
+<view class="comment-fixed">
+  -
+  <!-- <form catchsubmit="formSubmit" report-submit="true"> -->
+  <view class="cu-bar input">
+    <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
+    <view class='action'>
+      <text class='cuIcon-roundaddfill text-grey' bindtap='showMenuBox'></text>
     </view>
-  <!--</form>-->
+    <input class='solid-bottom' maxlength="300" cursor-spacing="10" confirm-type="send" bindinput='commentInput' name="inputComment" value="{{commentContent}}" placeholder="{{placeholder}}" focus="{{focus}}" bindblur="onReplyBlur"></input>
+    <button class='cu-btn bg-green shadow-blur' bindtap="formSubmit">发送</button>
+  </view>
+  <!-- </form> -->
   <view class="cu-list grid col-5 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
     <view class="cu-item item">
       <view class='cuIcon-share text-olive' style="margin-top:0;"></view>

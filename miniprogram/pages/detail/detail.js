@@ -4,6 +4,8 @@ const regeneratorRuntime = require('../../utils/runtime.js');
 const util = require('../../utils/util.js');
 const app = getApp();
 import Poster from '../../utils/poster';
+let rewardedVideoAd = null
+
 Page({
 
   /**
@@ -29,7 +31,8 @@ Page({
     nodata_str: "暂无评论，赶紧抢沙发吧",
     isShowPosterModal: false,//是否展示海报弹窗
     posterImageUrl: "",//海报地址
-    showBanner: true
+    showBanner: true,
+    hideArticle: '400rpx'
   },
 
   /**
@@ -54,6 +57,16 @@ Page({
     }
     await that.getDetail(blogId)
     await that.getPostRelated(that.data.post._id)
+    that.loadInterstitialAd("adunit-34234e8f9a6b06eb");
+  },
+
+  /**
+   * 
+   */
+  onUnload: function () {
+    if (rewardedVideoAd && rewardedVideoAd.destroy) {
+      rewardedVideoAd.destroy()
+    }
   },
   /**
    * 页面上拉触底事件的处理函数
@@ -305,7 +318,7 @@ Page({
   /**
  * 获取订阅消息
  */
-  submitContent: async function (content, commentPage,accept) {
+  submitContent: async function (content, commentPage, accept) {
     let that = this
     try {
       wx.showLoading({
@@ -323,7 +336,7 @@ Page({
           childComment: [],
           flag: 1
         }
-        await api.addPostComment(data,accept)
+        await api.addPostComment(data, accept)
       }
       else {
         var childData = [{
@@ -337,7 +350,7 @@ Page({
           tOpenId: that.data.toOpenId,
           flag: 1
         }]
-        await api.addPostChildComment(that.data.commentId, that.data.post._id, childData,accept)
+        await api.addPostChildComment(that.data.commentId, that.data.post._id, childData, accept)
       }
 
       let commentList = await api.getPostComments(commentPage, that.data.post._id)
@@ -411,14 +424,14 @@ Page({
     wx.showModal({
       title: '友情提醒',
       content: '您的评论管理员审核后才会展现哦～',
-      success (res) {
+      success(res) {
         if (res.confirm) {
           wx.requestSubscribeMessage({
             tmplIds: [config.subcributeTemplateId],
             success(res) {
               console.info(res)
               console.info(res[config.subcributeTemplateId])
-              that.submitContent(content, commentPage,res[config.subcributeTemplateId]).then((res) => { console.info(res) })
+              that.submitContent(content, commentPage, res[config.subcributeTemplateId]).then((res) => { console.info(res) })
             },
             fail(res) {
               console.info(res)
@@ -730,5 +743,79 @@ Page({
     this.setData({
       showBanner: false
     })
-  }
+  },
+
+  /**
+   * 阅读更多
+   */
+  readMore: function () {
+    let that = this;
+    rewardedVideoAd.show()
+      .catch(() => {
+        rewardedVideoAd.load()
+          .then(() => rewardedVideoAd.show())
+          .catch(err => {
+            console.log('激励视频 广告显示失败');
+            that.setData({
+              hideArticle: ''
+            })
+          })
+      })
+  },
+
+  /**
+   * 初始化广告视频
+   * @param {} excitationAdId 
+   */
+  loadInterstitialAd: function (excitationAdId) {
+    let that = this;
+    if (wx.createRewardedVideoAd) {
+      rewardedVideoAd = wx.createRewardedVideoAd({ adUnitId: excitationAdId })
+      rewardedVideoAd.onLoad(() => {
+        console.log('onLoad event emit')
+      })
+      rewardedVideoAd.onError((err) => {
+        console.log(err);
+        that.setData({
+          hideArticle: ''
+        })
+      })
+      rewardedVideoAd.onClose((res) => {
+
+        var id = that.data.post._id
+        if (res && res.isEnded) {
+          var nowDate = new Date();
+          nowDate = nowDate.getFullYear() + "-" + (nowDate.getMonth() + 1) + '-' + nowDate.getDate();
+
+          var openAdLogs = wx.getStorageSync('openAdLogs') || [];
+          // 过滤重复值
+          if (openAdLogs.length > 0) {
+            openAdLogs = openAdLogs.filter(function (log) {
+              return log["id"] !== id;
+            });
+          }
+          // 如果超过指定数量不再记录
+          if (openAdLogs.length < 21) {
+            var log = {
+              "id": id,
+              "date": nowDate
+            }
+            openAdLogs.unshift(log);
+            wx.setStorageSync('openAdLogs', openAdLogs);
+            console.log(openAdLogs);
+          }
+          this.setData({
+            hideArticle: ''
+          })
+        } else {
+          wx.showToast({
+            title: "完整看完视频才能阅读全文哦",
+            icon: "none",
+            duration: 3000
+          });
+        }
+      })
+    }
+
+  },
 })
