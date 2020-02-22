@@ -32,7 +32,8 @@ Page({
     nodata_str: "暂无评论，赶紧抢沙发吧",
     isShowPosterModal: false,//是否展示海报弹窗
     posterImageUrl: "",//海报地址
-    showBanner: true,
+    showBanner: false,
+    showBannerId: "",
     hideArticle: ''//400rpx
   },
 
@@ -56,9 +57,31 @@ Page({
     if (options.scene) {
       blogId = decodeURIComponent(options.scene);
     }
+    let advert = app.globalData.advert
+    if (advert.readMoreStatus) {
+      var openAded = false
+      var openAdLogs = wx.getStorageSync('openAdLogs') || [];
+      if (openAdLogs.length > 0) {
+        for (var i = 0; i < openAdLogs.length; i++) {
+          if (openAdLogs[i].id == blogId) {
+            openAded = true;
+            break;
+          }
+        }
+      }
+      that.setData({
+        hideArticle: openAded ? "" : "700rpx"
+      })
+      that.loadInterstitialAd(advert.readMoreId);
+    }
+    if (advert.bannerStatus) {
+      that.setData({
+        showBanner: true,
+        showBannerId: advert.bannerId
+      })
+    }
     await that.getDetail(blogId)
     await that.getPostRelated(that.data.post._id)
-    that.loadInterstitialAd("adunit-34234e8f9a6b06eb");
   },
 
   /**

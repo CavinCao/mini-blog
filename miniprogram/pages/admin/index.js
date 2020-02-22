@@ -225,4 +225,10 @@ Page({
       url: '../admin/subscribe/subscribe'
     })
   },
+
+  showAdvert:async function (e) {
+    wx.navigateTo({
+      url: '../admin/advert/advert'
+    })
+  },
 })

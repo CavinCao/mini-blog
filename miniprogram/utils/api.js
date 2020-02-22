@@ -632,6 +632,27 @@ function updateBatchPostsLabel(label,operate,posts) {
     })
 }
 
+function upsertAdvertConfig(advert)
+{
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "upsertAdvertConfig",
+            advert:advert
+        }
+    })
+}
+
+function getAdvertConfig()
+{
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "getAdvertConfig"
+        }
+    })
+}
+
 /**
  * 上传文件
  */
@@ -693,5 +714,7 @@ module.exports = {
     updateBatchPostsClassify:updateBatchPostsClassify,
     getTemplateList:getTemplateList,
     addSubscribeCount:addSubscribeCount,
-    checkPostComment:checkPostComment
+    checkPostComment:checkPostComment,
+    upsertAdvertConfig:upsertAdvertConfig,
+    getAdvertConfig:getAdvertConfig
 }

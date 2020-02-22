@@ -10,7 +10,7 @@ const RELEASE_LOG_KEY = 'releaseLogKey'
 // 云函数入口函数
 exports.main = async (event, context) => {
   //admin服务都要验证一下权限
-  if (event.action !== 'checkAuthor' && event.action !== 'getLabelList' && event.action !== 'getClassifyList') {
+  if (event.action !== 'checkAuthor' && event.action !== 'getLabelList' && event.action !== 'getClassifyList' && event.action !== 'getAdvertConfig') {
     let result = await checkAuthor(event)
     if (!result) {
       return false;
@@ -62,6 +62,12 @@ exports.main = async (event, context) => {
     }
     case 'updateBatchPostsClassify': {
       return updateBatchPostsClassify(event)
+    }
+    case 'upsertAdvertConfig': {
+      return upsertAdvertConfig(event)
+    }
+    case 'getAdvertConfig': {
+      return getAdvertConfig(event)
     }
     default: break
   }
@@ -210,6 +216,51 @@ async function addBaseLabel(event) {
         key: key,
         timestamp: Date.now(),
         value: event.labelName
+      }
+    });
+    return true;
+  }
+}
+
+/**
+ * 获取广告配置
+ */
+async function getAdvertConfig() {
+  let key = "advertConfig"
+  let collection = "mini_config"
+
+  let result = await db.collection(collection).where({
+    key: key
+  }).get()
+
+  return result.data[0]
+}
+
+/**
+ * 新增广告配置
+ * @param {*} event 
+ */
+async function upsertAdvertConfig(event) {
+  let key = "advertConfig"
+  let collection = "mini_config"
+  let result = await db.collection(collection).where({
+    key: key
+  }).get()
+  if (result.data.length > 0) {
+    await db.collection(collection).doc(result.data[0]._id).update({
+      data: {
+        timestamp: Date.now(),
+        value: event.advert
+      }
+    });
+    return true
+  }
+  else {
+    await db.collection(collection).add({
+      data: {
+        key: key,
+        timestamp: Date.now(),
+        value: event.advert
       }
     });
     return true;

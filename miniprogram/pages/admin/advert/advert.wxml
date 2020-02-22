@@ -1,0 +1,40 @@
+<form bindsubmit="formSubmit" >
+    <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange'></text>
+            阅读更多视频广告位
+        </view>
+    </view>
+    <view class="cu-list menu shadow-lg">
+        <view class="cu-form-group">
+            <view class="title">是否开启：</view>
+            <switch name='readMoreStatus' checked="{{advert.readMoreStatus}}"></switch>
+        </view>
+        <view class="cu-form-group">
+            <view class="title">广告位ID：</view>
+            <input name='readMoreId' placeholder="公众平台配置" value="{{advert.readMoreId}}"></input>
+        </view>
+    </view>
+    <view class="cu-bar bg-white solid-bottom margin-top">
+        <view class='action'>
+            <text class='cuIcon-titles text-orange '></text>
+            文章详情Banner广告位
+        </view>
+    </view>
+    <view class="cu-list menu shadow-lg">
+        <view class="cu-form-group">
+            <view class="title">是否开启：</view>
+            <switch name='bannerStatus' checked="{{advert.bannerStatus}}"></switch>
+        </view>
+        <view class="cu-form-group">
+            <view class="title">广告位ID：</view>
+            <input name='bannerId' placeholder="公众平台配置" value="{{advert.bannerId}}"></input>
+        </view>
+    </view>
+    <view class="box">
+        <view class="cu-bar btn-group foot">
+            <button class="cu-btn text-green line-green shadow"  bindtap='goback'>返回</button>
+            <button class="cu-btn bg-green shadow-blur" formType="submit">保存</button>
+        </view>
+    </view>
+</form>

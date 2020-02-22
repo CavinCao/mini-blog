@@ -1,6 +1,3 @@
-@import '/towxml/style/main.wxss';
-@import '/towxml/style/theme/light.wxss';
-
 .comment-fixed {
   position: fixed;
   bottom: 0;

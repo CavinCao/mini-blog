@@ -29,8 +29,18 @@ App({
       console.info(this.globalData.openid)
       //this.bindLastLoginDate()
     }
+    this.updateManager();
+    this.getAdvertConfig();
   },
-  towxml:require('/towxml/index'),
+  /**
+   * towxml
+   */
+  towxml: require('/towxml/index'),
+
+  /**
+   * 登录验证
+   * @param {} cb 
+   */
   checkUserInfo: function (cb) {
     let that = this
     if (that.globalData.userInfo) {
@@ -68,9 +78,54 @@ App({
     console.info(this.globalData.lastLoginDate)
     wx.setStorageSync('lastLoginDate', this.globalData.lastLoginDate);
   },
+  /**
+   * 小程序主动更新
+   */
+  updateManager() {
+    if (!wx.canIUse('getUpdateManager')) {
+      return false;
+    }
+    const updateManager = wx.getUpdateManager();
+    updateManager.onCheckForUpdate(function (res) {
+    });
+    updateManager.onUpdateReady(function () {
+      wx.showModal({
+        title: '有新版本',
+        content: '新版本已经准备好，即将重启',
+        showCancel: false,
+        success(res) {
+          if (res.confirm) {
+            updateManager.applyUpdate()
+          }
+        }
+      });
+    });
+    updateManager.onUpdateFailed(function () {
+      wx.showModal({
+        title: '更新提示',
+        content: '新版本下载失败',
+        showCancel: false
+      })
+    });
+  },
+  /**
+   * 获取广告信息
+   */
+  getAdvertConfig: function () {
+    const api = require('/utils/api.js')
+    api.getAdvertConfig().then(res => {
+      try {
+        this.globalData.advert = res.result.value
+      }
+      catch (err) {
+        console.info(err)
+      }
+    })
+  },
   globalData: {
     openid: "",
     userInfo: null,
+    advert: {},
     lastLoginDate: ""//最后登录时间
   }
 })

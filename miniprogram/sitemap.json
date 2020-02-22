@@ -24,6 +24,10 @@
     {
       "action": "disallow",
       "page": "pages/admin/labelList/labelList"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/advert/advert"
     }
   ]
 }

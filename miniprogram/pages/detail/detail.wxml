@@ -25,7 +25,7 @@
   <view class="detail-body" style="height:{{hideArticle}}">
      <towxml nodes="{{post.content}}"/>
     <!--<template is="entry" data="{{...post.content}}" />-->
-    <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
+    <!--<view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>-->
     <!-- 阅读更多 -->
     <view class="detail-read-more" wx:if="{{hideArticle != ''}}">
       <view class="detail-readmore-mask">
@@ -36,7 +36,7 @@
 </view>
 <view wx:if="{{showBanner}}" class="bg-white cu-item margin-top-xs">
   <view class="content padding-right-xs padding-left-xs">
-    <ad binderror="adError" bindclose="adClose" unit-id="adunit-9b6188843da06444"></ad>
+    <ad binderror="adError" bindclose="adClose" unit-id="{{showBannerId}}"></ad>
   </view>
 </view>
 <!-- 评论列表 -->
@@ -81,7 +81,6 @@
 </view>
 <!-- 底部功能 -->
 <view class="comment-fixed">
-  -
   <!-- <form catchsubmit="formSubmit" report-submit="true"> -->
   <view class="cu-bar input">
     <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
