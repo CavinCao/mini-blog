@@ -1,3 +1,6 @@
 {
-  "usingComponents": {"poster": "wxa-plugin-canvas/poster"}
+  "usingComponents": {
+    "poster": "wxa-plugin-canvas/poster",
+    "towxml": "/towxml/towxml"
+  }
 }

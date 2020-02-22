@@ -32,7 +32,7 @@ Page({
     isShowPosterModal: false,//是否展示海报弹窗
     posterImageUrl: "",//海报地址
     showBanner: true,
-    hideArticle: '400rpx'
+    hideArticle: ''//400rpx
   },
 
   /**
@@ -150,6 +150,9 @@ Page({
     })
     let that = this
     let postDetail = await api.getPostDetail(blogId);
+    console.info(postDetail)
+    let content = app.towxml(postDetail.result.content,'markdown');
+    postDetail.result.content=content
     that.setData({
       post: postDetail.result
     })
@@ -720,7 +723,8 @@ Page({
    * towxml点击事件
    * @param {} e 
    */
-  __bind_tap: function (e) {
+  _tap: function (e) {
+    console.info(e)
     try {
       if (e.target.dataset._el.attr.src != undefined) {
         wx.previewImage({

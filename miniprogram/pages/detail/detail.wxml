@@ -23,7 +23,8 @@
     </view>
   </view>
   <view class="detail-body" style="height:{{hideArticle}}">
-    <template is="entry" data="{{...post.content}}" />
+     <towxml nodes="{{post.content}}"/>
+    <!--<template is="entry" data="{{...post.content}}" />-->
     <view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>
     <!-- 阅读更多 -->
     <view class="detail-read-more" wx:if="{{hideArticle != ''}}">

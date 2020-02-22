@@ -280,7 +280,7 @@ async function getPostsDetail(event) {
     return "";
   }
   let data = post.data
-
+  
   //获取文章时直接浏览量+1
   let task = db.collection('mini_posts').doc(event.id).update({
     data: {
@@ -288,8 +288,11 @@ async function getPostsDetail(event) {
     }
   })
 
-  let content = await convertPosts(data.content, "html");
-  data.content = content;
+  if(event.type!=1)
+  {
+    let content = await convertPosts(data.content, "html");
+    data.content = content;
+  }
   data.totalVisits = data.totalVisits + 1;
   await task;
   return data

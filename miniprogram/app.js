@@ -1,4 +1,3 @@
-const Towxml = require('/towxml/main');
 const config = require('/utils/config.js')
 const util = require('/utils/util.js')
 App({
@@ -31,7 +30,7 @@ App({
       //this.bindLastLoginDate()
     }
   },
-  towxml: new Towxml(),
+  towxml:require('/towxml/index'),
   checkUserInfo: function (cb) {
     let that = this
     if (that.globalData.userInfo) {

@@ -218,7 +218,8 @@ function getPostDetail(id) {
         name: 'postsService',
         data: {
             action: "getPostsDetail",
-            id: id
+            id: id,
+            type:1
         }
     })
 }
