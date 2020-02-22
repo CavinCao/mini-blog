@@ -7,7 +7,7 @@ const _ = db.command
 const dateUtils = require('date-utils')
 
 const towxml = new Towxml();
-const COMMENT_TEMPLATE_ID='BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg'
+const COMMENT_TEMPLATE_ID = 'BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg'
 
 // 云函数入口函数
 exports.main = async (event, context) => {
@@ -32,6 +32,9 @@ exports.main = async (event, context) => {
     }
     case 'addPostQrCode': {
       return addPostQrCode(event)
+    }
+    case 'checkPostComment': {
+      return checkPostComment(event)
     }
     default: break
   }
@@ -70,6 +73,25 @@ async function addPostQrCode(event) {
   return []
 
 }
+
+/**
+ * 接入内容安全
+ * @param {} event 
+ */
+async function checkPostComment(event) {
+
+  try {
+    let result = await cloud.openapi.security.msgSecCheck({
+      content: event.content
+    })
+    if (result.errCode == 0) {
+      return true;
+    }
+    return false
+  } catch (err) {
+    return false;
+  }
+}
 /**
  * 新增评论
  * @param {} event 
@@ -78,9 +100,8 @@ async function addPostComment(event) {
 
   console.info("处理addPostComment")
 
-  if(process.env.author==event.commentContent.cOpenId)
-  {
-    event.commentContent.cNickName="作者"
+  if (process.env.author == event.commentContent.cOpenId) {
+    event.commentContent.cNickName = "作者"
   }
 
   let task = db.collection('mini_posts').doc(event.commentContent.postId).update({
@@ -89,7 +110,7 @@ async function addPostComment(event) {
     }
   });
 
-  event.commentContent.flag=0
+  event.commentContent.flag = 0
   await db.collection("mini_comments").add({
     data: event.commentContent
   });
@@ -97,12 +118,11 @@ async function addPostComment(event) {
   let result = await task;
 
   //如果同意
-  if(event.accept=='accept')
-  {
+  if (event.accept == 'accept') {
     await db.collection("mini_subcribute").add({
       data: {
-        templateId:COMMENT_TEMPLATE_ID,
-        openId:event.commentContent.cOpenId,
+        templateId: COMMENT_TEMPLATE_ID,
+        openId: event.commentContent.cOpenId,
         timestamp: new Date().getTime()
       }
     });
@@ -116,10 +136,10 @@ async function addPostComment(event) {
       tOpenId: "",
       page: 'pages/detail/detail?id=' + event.commentContent.postId,
       nickName: event.commentContent.cNickName,
-      content:event.commentContent.comment,
-      createDate:event.commentContent.createDate,
-      templateId:COMMENT_TEMPLATE_ID,
-      cOpenId:event.commentContent.cOpenId
+      content: event.commentContent.comment,
+      createDate: event.commentContent.createDate,
+      templateId: COMMENT_TEMPLATE_ID,
+      cOpenId: event.commentContent.cOpenId
     }
   })
 }
@@ -136,12 +156,11 @@ async function addPostChildComment(event) {
     }
   });
 
-  if(process.env.author==event.comments[0].cOpenId)
-  {
-    event.comments[0].cNickName="作者"
+  if (process.env.author == event.comments[0].cOpenId) {
+    event.comments[0].cNickName = "作者"
   }
 
-  event.comments[0].flag=0
+  event.comments[0].flag = 0
 
   await db.collection('mini_comments').doc(event.id).update({
     data: {
@@ -151,12 +170,11 @@ async function addPostChildComment(event) {
   await task;
 
   //如果同意
-  if(event.accept=='accept')
-  {
+  if (event.accept == 'accept') {
     await db.collection("mini_subcribute").add({
       data: {
-        templateId:COMMENT_TEMPLATE_ID,
-        openId:event.comments[0].cOpenId,
+        templateId: COMMENT_TEMPLATE_ID,
+        openId: event.comments[0].cOpenId,
         timestamp: new Date().getTime()
       }
     });
@@ -170,10 +188,10 @@ async function addPostChildComment(event) {
       tOpenId: event.comments[0].tOpenId,
       page: 'pages/detail/detail?id=' + event.postId,
       nickName: event.comments[0].cNickName,
-      content:event.comments[0].comment,
-      createDate:event.comments[0].createDate,
-      templateId:COMMENT_TEMPLATE_ID,
-      cOpenId:event.comments[0].cOpenId
+      content: event.comments[0].comment,
+      createDate: event.comments[0].createDate,
+      templateId: COMMENT_TEMPLATE_ID,
+      cOpenId: event.comments[0].cOpenId
     }
   })
 }
@@ -280,7 +298,7 @@ async function getPostsDetail(event) {
     return "";
   }
   let data = post.data
-  
+
   //获取文章时直接浏览量+1
   let task = db.collection('mini_posts').doc(event.id).update({
     data: {
@@ -288,8 +306,7 @@ async function getPostsDetail(event) {
     }
   })
 
-  if(event.type!=1)
-  {
+  if (event.type != 1) {
     let content = await convertPosts(data.content, "html");
     data.content = content;
   }

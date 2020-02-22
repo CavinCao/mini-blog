@@ -321,6 +321,16 @@ function addPostQrCode(postId, timestamp) {
         }
     })
 }
+
+function checkPostComment(content){
+    return wx.cloud.callFunction({
+        name: 'postsService',
+        data: {
+            action: "checkPostComment",
+            content: content
+        }
+    })
+}
 /**
  * 获取打赏码
  */
@@ -682,5 +692,6 @@ module.exports = {
     updateBatchPostsLabel:updateBatchPostsLabel,
     updateBatchPostsClassify:updateBatchPostsClassify,
     getTemplateList:getTemplateList,
-    addSubscribeCount:addSubscribeCount
+    addSubscribeCount:addSubscribeCount,
+    checkPostComment:checkPostComment
 }

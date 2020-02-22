@@ -4,6 +4,7 @@ const regeneratorRuntime = require('../../utils/runtime.js');
 const util = require('../../utils/util.js');
 const app = getApp();
 import Poster from '../../utils/poster';
+import { async } from '../../utils/runtime';
 let rewardedVideoAd = null
 
 Page({
@@ -151,8 +152,8 @@ Page({
     let that = this
     let postDetail = await api.getPostDetail(blogId);
     console.info(postDetail)
-    let content = app.towxml(postDetail.result.content,'markdown');
-    postDetail.result.content=content
+    let content = app.towxml(postDetail.result.content, 'markdown');
+    postDetail.result.content = content
     that.setData({
       post: postDetail.result
     })
@@ -323,72 +324,118 @@ Page({
  */
   submitContent: async function (content, commentPage, accept) {
     let that = this
+    let checkResult = await api.checkPostComment(content)
+    if (!checkResult.result) {
+      wx.showToast({
+        title: '评论内容存在敏感信息',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+
+    if (that.data.commentId === "") {
+      var data = {
+        postId: that.data.post._id,
+        cNickName: that.data.userInfo.nickName,
+        cAvatarUrl: that.data.userInfo.avatarUrl,
+        cOpenId: app.globalData.openid,
+        timestamp: new Date().getTime(),
+        createDate: util.formatTime(new Date()),
+        comment: content,
+        childComment: [],
+        flag: 1
+      }
+      await api.addPostComment(data, accept)
+    }
+    else {
+      var childData = [{
+        cOpenId: app.globalData.openid,
+        cNickName: that.data.userInfo.nickName,
+        cAvatarUrl: that.data.userInfo.avatarUrl,
+        timestamp: new Date().getTime(), //new Date(),
+        createDate: util.formatTime(new Date()),
+        comment: content,
+        tNickName: that.data.toName,
+        tOpenId: that.data.toOpenId,
+        flag: 1
+      }]
+      await api.addPostChildComment(that.data.commentId, that.data.post._id, childData, accept)
+    }
+
+    let commentList = await api.getPostComments(commentPage, that.data.post._id)
+    if (commentList.data.length === 0) {
+      that.setData({
+        nomore: true
+      })
+      if (commentPage === 1) {
+        that.setData({
+          nodata: true
+        })
+      }
+    }
+    else {
+      let post = that.data.post;
+      post.totalComments = post.totalComments + 1
+      that.setData({
+        commentPage: commentPage + 1,
+        commentList: commentList.data,
+        commentContent: "",
+        nomore: false,
+        nodata: false,
+        post: post,
+        commentId: "",
+        placeholder: "评论...",
+        focus: false,
+        toName: "",
+        toOpenId: ""
+      })
+    }
+
+    wx.showToast({
+      title: '提交成功',
+      icon: 'success',
+      duration: 1500
+    })
+  },
+
+  /**
+   * 提交评论
+   * @param {} e 
+   */
+  formSubmit: function (e) {
     try {
       wx.showLoading({
         title: '加载中...',
       })
-      if (that.data.commentId === "") {
-        var data = {
-          postId: that.data.post._id,
-          cNickName: that.data.userInfo.nickName,
-          cAvatarUrl: that.data.userInfo.avatarUrl,
-          cOpenId: app.globalData.openid,
-          timestamp: new Date().getTime(),
-          createDate: util.formatTime(new Date()),
-          comment: content,
-          childComment: [],
-          flag: 1
-        }
-        await api.addPostComment(data, accept)
-      }
-      else {
-        var childData = [{
-          cOpenId: app.globalData.openid,
-          cNickName: that.data.userInfo.nickName,
-          cAvatarUrl: that.data.userInfo.avatarUrl,
-          timestamp: new Date().getTime(), //new Date(),
-          createDate: util.formatTime(new Date()),
-          comment: content,
-          tNickName: that.data.toName,
-          tOpenId: that.data.toOpenId,
-          flag: 1
-        }]
-        await api.addPostChildComment(that.data.commentId, that.data.post._id, childData, accept)
+      let that = this;
+      let commentPage = 1
+      let content = that.data.commentContent;
+      console.info(content)
+      if (content == undefined || content.length == 0) {
+        wx.showToast({
+          title: '请输入内容',
+          icon: 'none',
+          duration: 1500
+        })
+        return
       }
 
-      let commentList = await api.getPostComments(commentPage, that.data.post._id)
-      if (commentList.data.length === 0) {
-        that.setData({
-          nomore: true
-        })
-        if (commentPage === 1) {
-          that.setData({
-            nodata: true
+      wx.requestSubscribeMessage({
+        tmplIds: [config.subcributeTemplateId],
+        success(res) {
+          console.info(res)
+          console.info(res[config.subcributeTemplateId])
+          that.submitContent(content, commentPage, res[config.subcributeTemplateId]).then((res) => { console.info(res) })
+        },
+        fail(res) {
+          console.info(res)
+          wx.showToast({
+            title: '程序有一点点小异常，操作失败啦',
+            icon: 'none',
+            duration: 1500
           })
         }
-      }
-      else {
-        let post = that.data.post;
-        post.totalComments = post.totalComments + 1
-        that.setData({
-          commentPage: commentPage + 1,
-          commentList: commentList.data,
-          commentContent: "",
-          nomore: false,
-          nodata: false,
-          post: post,
-          commentId: "",
-          placeholder: "评论...",
-          focus: false,
-          toName: "",
-          toOpenId: ""
-        })
-      }
-
-      wx.showToast({
-        title: '提交成功',
-        icon: 'success',
-        duration: 1500
       })
     }
     catch (err) {
@@ -402,54 +449,7 @@ Page({
     finally {
       wx.hideLoading()
     }
-  },
 
-  /**
-   * 提交评论
-   * @param {} e 
-   */
-  formSubmit: function (e) {
-
-    let that = this;
-    let commentPage = 1
-    let content = that.data.commentContent;
-    console.info(content)
-    if (content == undefined || content.length == 0) {
-      wx.showToast({
-        title: '请输入内容',
-        icon: 'none',
-        duration: 1500
-      })
-      return
-    }
-
-    //提交评论前进行提示
-    wx.showModal({
-      title: '友情提醒',
-      content: '您的评论管理员审核后才会展现哦～',
-      success(res) {
-        if (res.confirm) {
-          wx.requestSubscribeMessage({
-            tmplIds: [config.subcributeTemplateId],
-            success(res) {
-              console.info(res)
-              console.info(res[config.subcributeTemplateId])
-              that.submitContent(content, commentPage, res[config.subcributeTemplateId]).then((res) => { console.info(res) })
-            },
-            fail(res) {
-              console.info(res)
-              wx.showToast({
-                title: '程序有一点点小异常，操作失败啦',
-                icon: 'none',
-                duration: 1500
-              })
-            }
-          })
-        } else if (res.cancel) {
-          console.log('用户点击取消')
-        }
-      }
-    })
   },
   /**
   * 点击评论内容回复
