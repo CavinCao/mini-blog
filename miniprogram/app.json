@@ -9,7 +9,6 @@
     "pages/admin/index",
     "pages/mine/notice/notice",
     "pages/mine/release/release",
-    "pages/admin/article/article",
     "pages/admin/articleList/articleList",
     "pages/admin/labelList/labelList",
     "pages/admin/comment/comment",

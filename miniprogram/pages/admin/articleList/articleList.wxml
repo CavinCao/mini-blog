@@ -51,11 +51,11 @@
   <template is="nodata" />
 </view>
 <!-- 悬浮新增按钮 -->
-<view class="round-click">
+<!--<view class="round-click">
   <navigator url='{{articlePath}}'>
     <text class="cuIcon-writefill"></text>
   </navigator>
-</view>
+</view>-->
 <!-- 是否展示文章设置窗口 -->
 <view class="cu-modal {{isShowModel?'show':''}}">
   <view class="cu-dialog">
