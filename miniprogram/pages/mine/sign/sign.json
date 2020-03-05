@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "calendar": "/component/calendar/index"
+  },
+  "navigationBarTitleText": "签到"
+}

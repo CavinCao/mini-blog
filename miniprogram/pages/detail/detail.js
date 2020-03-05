@@ -428,9 +428,6 @@ Page({
    */
   formSubmit: function (e) {
     try {
-      wx.showLoading({
-        title: '加载中...',
-      })
       let that = this;
       let commentPage = 1
       let content = that.data.commentContent;
@@ -447,9 +444,15 @@ Page({
       wx.requestSubscribeMessage({
         tmplIds: [config.subcributeTemplateId],
         success(res) {
+          wx.showLoading({
+            title: '加载中...',
+          })
           console.info(res)
           console.info(res[config.subcributeTemplateId])
-          that.submitContent(content, commentPage, res[config.subcributeTemplateId]).then((res) => { console.info(res) })
+          that.submitContent(content, commentPage, res[config.subcributeTemplateId]).then((res) => {
+            console.info(res)
+            wx.hideLoading()
+          })
         },
         fail(res) {
           console.info(res)
@@ -468,11 +471,8 @@ Page({
         duration: 1500
       })
       console.info(err)
-    }
-    finally {
       wx.hideLoading()
     }
-
   },
   /**
   * 点击评论内容回复

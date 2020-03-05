@@ -1,0 +1,45 @@
+page {
+    background-color: #FF9300;
+  } 
+
+.sign-new {
+    width: 100%;
+    height: 270rpx;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sign-new .in {
+    padding: 40rpx 30rpx;
+    height: 100%;
+    box-sizing: border-box;
+  }  
+  .sig-qiu {
+    width: 190rpx;
+    height: 190rpx;
+    position: absolute;
+    left: 50%;
+    top: 40rpx;
+    transform: translateX(-50%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 50%;
+    text-align: center;
+  }
+  
+  .sig-qiu-no {
+    background-color: #FF9300;
+  }
+  
+  .sig-qiu-yes {
+    background-color: #999;
+  }
+  
+  .sig-qiu .ti {
+    color: #fff;
+    font-size: 36rpx;
+    display: inline-block;
+    line-height: 190rpx;
+  }
+  
+  

@@ -1,4 +1,5 @@
 const config = require('../../utils/config.js')
+const util = require('../../utils/util.js')
 const api = require('../../utils/api.js');
 const regeneratorRuntime = require('../../utils/runtime.js');
 const app = getApp();
@@ -11,7 +12,40 @@ Page({
     userInfo: {},
     showLogin: false,
     isAuthor: false,
-    showRedDot: ''
+    showRedDot: '',
+    signedDays: 0,//连续签到天数
+    signed: 0,
+    isShow: false,
+    signBtnTxt: "每日签到",
+    iconList: [{
+      icon: 'favorfill',
+      color: 'grey',
+      badge: 0,
+      name: '我的收藏',
+      bindtap: "bindCollect"
+    }, {
+      icon: 'appreciatefill',
+      color: 'green',
+      badge: 0,
+      name: '我的点赞',
+      bindtap: "bindZan"
+    }, {
+      icon: 'noticefill',
+      color: 'yellow',
+      badge: 0,
+      name: '我的消息',
+      bindtap: "bindNotice"
+    }, {
+      icon: 'goodsfavor',
+      color: 'orange',
+      badge: 0,
+      name: '我的积分',
+      bindtap: "bindPoint"
+    }],
+  },
+
+  onShow: async function () {
+    await this.getMemberInfo()
   },
 
   /**
@@ -27,42 +61,8 @@ Page({
       showRedDot: showRedDot
     });
     await that.checkAuthor()
+    //await that.getMemberInfo()
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  },
-
   /**
    * 返回
    */
@@ -160,6 +160,26 @@ Page({
   },
 
   /**
+   * 签到列表
+   * @param {*} e 
+   */
+  btnSigned: async function (e) {
+    wx.navigateTo({
+      url: '../mine/sign/sign?signedDays=' + this.data.signedDays + '&signed=' + this.data.signed
+    })
+  },
+
+  /**
+   * 我的积分
+   * @param {} e 
+   */
+  bindPoint: async function (e) {
+    this.setData({
+      isShow: true
+    })
+  },
+
+  /**
    * 验证是否是管理员
    */
   checkAuthor: async function (e) {
@@ -179,6 +199,35 @@ Page({
         isAuthor: res.result
       })
     }
-  }
+  },
+
+  /**
+   * 获取用户信息
+   * @param {} e 
+   */
+  getMemberInfo: async function (e) {
+
+    let that = this
+    try {
+      let res = await api.getMemberInfo(app.globalData.openid)
+      console.info(res)
+      if (res.data.length > 0) {
+        let memberInfo = res.data[0]
+        that.setData({
+          signedDays: memberInfo.continueSignedCount,
+          signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
+          signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "今日已签到" : "每日签到"
+        })
+      }
+    }
+    catch (e) {
+      console.info(e)
+    }
+  },
+  hideModal(e) {
+    this.setData({
+      isShow: false
+    })
+  },
 })
 

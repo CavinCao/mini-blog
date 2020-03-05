@@ -1,35 +1,34 @@
 <import src="../../templates/login/login.wxml" />
 <view class="bg-white">
-  <view class="flex padding justify-center">
-    <open-data style="width:128rpx;height:128rpx" class="margin-top-xl" type="userAvatarUrl"></open-data>
+  <view class="flex padding align-center">
+    <view class="avatar round margin-xs radius">
+      <open-data class=" round avatar margin-top-xl" type="userAvatarUrl"></open-data>
+    </view>
+    <view class="padding-sm margin-xs radius">
+      <open-data type="userNickName"></open-data>
+    </view>
   </view>
-  <view class="flex padding justify-center">
-    <view><open-data type="userNickName"></open-data></view>
+  <view class="cu-list-special">
+    <view class="bg-gradual-orange signbanner shadow-blur">
+     <view class="flex solid-bottom justify-between align-center">
+      <view class="padding-sm radius">已连续签到:<text class="text-sl">{{signedDays}}</text> 天</view>
+      <view class="padding-sm radius"> <button class="text-df cu-btn round bg-white" bindtap="btnSigned">{{signBtnTxt}}</button></view>
+    </view>
+    </view>
+  </view>
+  <view class="cu-list grid col-4 no-border">
+    <view class="cu-item" wx:for="{{iconList}}" wx:key bindtap="{{item.bindtap}}">
+      <view class="cuIcon-{{item.icon}} text-{{item.color}}">
+        <view class="cu-tag badge" wx:if="{{item.badge!=0}}">
+          <block wx:if="{{item.badge!=1}}">{{item.badge>99?"99+":item.badge}}</block>
+        </view>
+      </view>
+      <text>{{item.name}}</text>
+    </view>
   </view>
 </view>
 <view class="cu-list menu margin-top-sm shadow-lg">
   <view class="cu-item arrow">
-    <view class='content' bindtap='bindCollect'>
-      <text class='cuIcon-favorfill text-grey'></text>
-      <text class='text-grey'>我的收藏</text>
-    </view>
-  </view>
-  <view class="cu-item arrow ">
-    <view class='content' bindtap='bindZan' hover-class='none'>
-      <text class='cuIcon-appreciatefill text-green'></text>
-      <text class='text-grey'>我的点赞</text>
-    </view>
-  </view>
-  <view class="cu-item arrow ">
-    <view class='content' bindtap='bindNotice' hover-class='none'>
-      <text class='cuIcon-noticefill text-yellow'></text>
-      <text class='text-grey'>我的消息</text>
-    </view>
-    <view class='action'>
-      <view wx:if="{{showRedDot!='1'}}" class="cu-tag round bg-red sm"></view>
-    </view>
-  </view>
-  <view class="cu-item arrow  margin-top-sm">
     <view class='content' bindtap="showQrcode">
       <text class='cuIcon-refund text-red'></text>
       <text class='text-grey'>打赏支持</text>
@@ -62,3 +61,17 @@
 </view>
 <!-- 弹出层：授权 -->
 <template is="login" data="{{showLogin: showLogin}}"></template>
+
+<view class="cu-modal {{isShow?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">说明</view>
+      <view class="action" bindtap="hideModal">
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+      积分功能正在开发中，敬请期待～
+    </view>
+  </view>
+</view>

@@ -1,0 +1,30 @@
+<view class="margin-sm text-white">
+    <view class="radius">
+        已连续签到:
+        <text class="text-sl">{{signedDays}}</text>
+        天
+    </view>
+    <view class="radius text-white text-sm">连续签到可以获取更多积分哦</view>
+</view>
+<view class="bg-white margin-sm radius">
+    <view class="padding-sm">
+        <calendar id="calendar" calendarConfig="{{calendarConfig}}" bind:whenChangeMonth="whenChangeMonth" bind:afterCalendarRender="afterCalendarRender"></calendar>
+    </view>
+    <view class='sign-new'>
+        <view class='new-head'>
+            <!-- 未签到 -->
+            <view wx:if='{{!signed}}' class='sig-qiu sig-qiu-no' bindtap='bindSignFn'>
+                <label class='ti'>签到</label>
+            </view>
+            <!-- 已签到 -->
+            <view wx:else class='sig-qiu sig-qiu-yes'>
+                <label class='ti'>已签到</label>
+            </view>
+        </view>
+    </view>
+</view>
+<view wx:if="{{showBanner}}" class="cu-item margin-top-xs">
+    <view class="content padding-right-sm padding-left-sm">
+        <ad binderror="adError" bindclose="adClose" unit-id="{{showBannerId}}"></ad>
+    </view>
+</view>
