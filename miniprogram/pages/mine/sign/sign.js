@@ -48,7 +48,6 @@ Page({
         signed: signed == 1
       })
     }
-
   },
   /**
    * 日历组件渲染之后
@@ -68,7 +67,6 @@ Page({
         day: item.day
       }
       toSet.push(set)
-      console.info(toSet)
     })
 
     this.calendar.setSelectedDays(toSet);
