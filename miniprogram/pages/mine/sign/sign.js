@@ -57,7 +57,7 @@ Page({
 
     let year=util.getYear(new Date())
     let month=util.getMonth(new Date())
-    let res = await api.getSignedDetail(app.globalData.appid, year.toString(), month.toString())
+    let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
     let toSet = [];
     res.result.forEach(function (item) {
@@ -78,10 +78,9 @@ Page({
    */
   whenChangeMonth: async function (e) {
 
-    console.info(e)
-    console.info(e.detail.next.year)
-    console.info(e.detail.next.month)
-    let res = await api.getSignedDetail(app.globalData.appid, e.detail.next.year.toString(), e.detail.next.month.toString())
+    let year=util.getYear(new Date())
+    let month=util.getMonth(new Date())
+    let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
     let toSet = [];
     res.result.forEach(function (item) {
