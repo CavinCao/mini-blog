@@ -119,10 +119,12 @@ async function addSign(event) {
  * @param {}  
  */
 async function getSignedDetail(event) {
+
+  const wxContext = cloud.getWXContext()
   console.info(event)
   let res = await db.collection('mini_sign_detail')
     .where({
-      openId: event.openId,
+      openId: wxContext.OPENID,
       year: event.year,
       month: event.month
     })
