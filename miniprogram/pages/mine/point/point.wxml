@@ -1,0 +1,123 @@
+<view class="padding bg-white">
+    <view class="text-center">我的积分总数</view>
+    <view class="padding-xs text-center text-red text-sl">{{totalPoints}}</view>
+    <view class="text-sm text-center">
+        <text class="cuIcon-time text-sm text-right"></text>
+        使用明细
+        <text class="cuIcon-question padding-left-xs text-sm text-right"></text>
+        积分规则
+    </view>
+</view>
+<view class="margin-top-sm bg-white">
+    <view class="text-left text-black text-bold text-xl padding">做任务，得积分</view>
+    <view class="flex solid-bottom align-center margin-left margin-right ">
+        <view class="flex-sub margin-xs bg-gradual-orange signbanner shadow-blur radius point-task">
+            50积分
+        </view>
+        <view class="flex-twice margin-xs">
+            <view>观看完整视频</view>
+            <view class="text-sm text-red">+50积分/次</view>
+        </view>
+        <view class="flex-treble margin-xs text-right">
+            <button class="cu-btn round bg-orange shadow" bindtap="clickVideoTask">立即观看</button>
+        </view>
+    </view>
+    <view class="flex solid-bottom align-center margin-left margin-right ">
+        <view class="flex-sub margin-xs bg-gradual-orange signbanner shadow-blur radius point-task">
+            30积分
+        </view>
+        <view class="flex-twice margin-xs">
+            <view>今日签到</view>
+            <view class="text-sm text-red">最高+30积分/天</view>
+        </view>
+        <view class="flex-treble margin-xs text-right">
+            <button bindtap="clickSigned" class="cu-btn round {{signed==1?'bg-grey':'bg-orange'}} shadow">
+                {{signBtnTxt}}
+            </button>
+        </view>
+    </view>
+    <view class="flex solid-bottom align-center margin-left margin-right padding-bottom ">
+        <view class="flex-sub margin-xs bg-gradual-orange signbanner shadow-blur radius point-task">
+            VIP
+        </view>
+        <view class="flex-twice margin-xs">
+            <view>成为永久会员</view>
+            <view class="text-sm text-red">拒绝看广告</view>
+        </view>
+        <view class="flex-treble margin-xs text-right">
+            <button bindtap='clickVip' class="cu-btn round bg-orange shadow">立即申请</button>
+        </view>
+    </view>
+</view>
+<view class="margin-top-sm bg-white">
+    <view class="text-left text-black text-bold text-xl padding">邀请好友，得积分</view>
+    <view class="text-center ">
+        每邀请一位新用户，双方都可获得
+        <text class="text-red">100</text>
+        积分
+    </view>
+    <view class="flex solid-bottom padding justify-between">
+        <view class="margin-xs">
+            <view class="cu-avatar lg round bg-gary">
+                <text class="cuIcon-friendadd lg text-gray"></text>
+            </view>
+            <view class="text-center text-sm">待邀请</view>
+        </view>
+        <view class="margin-xs">
+            <view class="cu-avatar lg round bg-gary">
+                <text class="cuIcon-friendadd lg text-gray"></text>
+            </view>
+            <view class="text-center text-sm">待邀请</view>
+        </view>
+        <view class="margin-xs">
+            <view class="cu-avatar lg round bg-gary">
+                <text class="cuIcon-friendadd lg text-gray"></text>
+            </view>
+            <view class="text-center text-sm">待邀请</view>
+        </view>
+        <view class="margin-xs">
+            <view class="cu-avatar lg round bg-gary">
+                <text class="cuIcon-friendadd lg text-gray"></text>
+            </view>
+            <view class="text-center text-sm">待邀请</view>
+        </view>
+        <view class="margin-xs">
+            <view class="cu-avatar lg round bg-gary">
+                <text class="cuIcon-friendadd lg text-gray"></text>
+            </view>
+            <view class="text-center text-sm">待邀请</view>
+        </view>
+    </view>
+    <view class="text-center padding-bottom">
+        <button open-type="share" class="cu-btn btn-width round bg-gradual-orange signbanner shadow-blur shadow">
+            立即邀请
+        </button>
+    </view>
+</view>
+<view wx:if="{{showBanner}}" class="cu-item margin-top-sm">
+    <view class="content padding-right-xs padding-left-xs">
+        <ad unit-id="{{showBannerId}}" ad-type="grid" grid-opacity="0.8" grid-count="5" ad-theme="white"></ad>
+    </view>
+</view>
+<!-- vip窗口 -->
+<view class="cu-modal {{showVIPModal?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class="content">成为VIP说明</view>
+            <view class="action" bindtap="hideModal">
+                <text class="cuIcon-close text-red"></text>
+            </view>
+        </view>
+        <view class="padding-xl bg-white">
+            <view>申请条件：打赏过作者的用户即可申请</view>
+            <view>VIP权益：免广告阅读文章及后续福利</view>
+        </view>
+        <view class="cu-bar bg-white">
+            <view class="action margin-0 flex-sub " bindtap="hideModal">取消</view>
+            <view class="action margin-0 flex-sub text-green solid-left" bindtap="showMoneryUrl">
+                打赏
+            </view>
+            <view class="action margin-0 flex-sub text-green solid-left" bindtap="hideModal">申请</view>
+        </view>
+    </view>
+</view>

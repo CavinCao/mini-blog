@@ -306,6 +306,28 @@ async function getPostsDetail(event) {
     }
   })
 
+  let task2 = db.collection('mini_member').doc(memberInfo._id).update({
+    data: {
+      totalSignedCount: _.inc(1),
+      continueSignedCount: continueSignedCount,
+      totalPoints: _.inc(pointCount),
+      lastSignedDate: date,
+      modifyTime: new Date().getTime()
+    }
+  });
+
+  //积分明细
+  let task5 = db.collection('mini_point_detail').add({
+    data: {
+      openId: event.info.openId,
+      operateType: 0,//0:获得 1:使用 2:过期
+      count: pointCount,
+      desc: "签到得积分",
+      date: (new Date()).toFormat("YYYY-MM-DD HH:MI:SS"),
+      createTime: new Date().getTime()
+    }
+  })
+
   if (event.type != 1) {
     let content = await convertPosts(data.content, "html");
     data.content = content;

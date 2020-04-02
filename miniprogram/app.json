@@ -16,7 +16,9 @@
     "pages/detail/original",
     "pages/admin/subscribe/subscribe",
     "pages/admin/advert/advert",
-    "pages/mine/sign/sign"
+    "pages/mine/sign/sign",
+    "pages/mine/point/point",
+    "pages/mine/point/pointDetail"
   ],
   "window": {
     "backgroundTextStyle": "light",

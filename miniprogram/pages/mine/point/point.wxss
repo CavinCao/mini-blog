@@ -1,0 +1,10 @@
+.point-task {
+  width: 150rpx;
+  text-align: center;
+  line-height: 100rpx;
+  height: 100rpx;
+}
+
+.btn-width{
+  width:400rpx
+}

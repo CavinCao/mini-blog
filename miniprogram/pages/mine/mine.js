@@ -174,8 +174,8 @@ Page({
    * @param {} e 
    */
   bindPoint: async function (e) {
-    this.setData({
-      isShow: true
+    wx.navigateTo({
+      url: '../mine/point/point'
     })
   },
 

@@ -677,6 +677,20 @@ function addSign(info) {
     })
 }
 
+/**
+ * 新增积分
+ */
+function addPoints(taskType) {
+    return wx.cloud.callFunction({
+        name: 'memberService',
+        data: {
+            action: "addPoints",
+            taskType: taskType
+        }
+    })
+}
+
+
 
 function getSignedDetail(openId, year,month) {
     return wx.cloud.callFunction({
@@ -756,5 +770,6 @@ module.exports = {
     getAdvertConfig: getAdvertConfig,
     addSign: addSign,
     getMemberInfo: getMemberInfo,
-    getSignedDetail: getSignedDetail
+    getSignedDetail: getSignedDetail,
+    addPoints:addPoints
 }

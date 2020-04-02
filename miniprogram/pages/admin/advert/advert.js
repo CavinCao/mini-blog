@@ -1,5 +1,6 @@
 const api = require('../../../utils/api.js');
 const regeneratorRuntime = require('../../../utils/runtime.js');
+const app = getApp();
 
 Page({
 
@@ -47,8 +48,13 @@ Page({
     advert.readMoreId = e.detail.value.readMoreId
     advert.bannerStatus = e.detail.value.bannerStatus
     advert.bannerId = e.detail.value.bannerId
+    advert.taskVideoStatus= e.detail.value.taskVideoStatus
+    advert.taskVideoId= e.detail.value.taskVideoId
+    advert.pointsStatus= e.detail.value.pointsStatus
+    advert.pointsId= e.detail.value.pointsId
     let result = await api.upsertAdvertConfig(advert)
     if (result.result) {
+      app.globalData.advert = advert
       wx.showToast({
         title: "保存成功",
         icon: "none",
