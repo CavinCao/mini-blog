@@ -18,7 +18,8 @@
     "pages/admin/advert/advert",
     "pages/mine/sign/sign",
     "pages/mine/point/point",
-    "pages/mine/point/pointDetail"
+    "pages/mine/point/pointDetail",
+    "pages/admin/member/member"
   ],
   "window": {
     "backgroundTextStyle": "light",

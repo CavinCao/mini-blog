@@ -17,7 +17,10 @@ Page({
     signBtnTxt: "马上签到",
     signed: 0,
     signedDays: 0,
-    showVIPModal:false
+    showVIPModal:false,
+    isVip:false,
+    applyStatus:0,
+    showLogin:false
   },
 
   /**
@@ -34,6 +37,18 @@ Page({
       })
     }
 
+    app.checkUserInfo(function (userInfo, isLogin) {
+      if (!isLogin) {
+        that.setData({
+          showLogin: true
+        })
+      } else {
+        that.setData({
+          userInfo: userInfo
+        });
+      }
+    });
+
     let res = await api.getMemberInfo(app.globalData.openid)
     if (res.data.length > 0) {
       let memberInfo = res.data[0]
@@ -41,7 +56,9 @@ Page({
         signedDays: memberInfo.continueSignedCount,
         totalPoints: memberInfo.totalPoints,
         signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
-        signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "已经完成" : "马上签到"
+        signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "已经完成" : "马上签到",
+        isVip:Number(memberInfo.level)>1,
+        applyStatus:memberInfo.applyStatus
       })
     }
 
@@ -52,12 +69,12 @@ Page({
 
   /**
    * 
-   */
+   
   onUnload: function () {
     if (rewardedVideoAd && rewardedVideoAd.destroy) {
       rewardedVideoAd.destroy()
     }
-  },
+  },*/
 
   /**
    * 签到列表
@@ -74,7 +91,22 @@ Page({
    * @param {*} e 
    */
   clickVip: async function (e) {
-    this.setData({
+    let that=this
+    if(that.data.isVip)
+    {
+      return;
+    }
+    if(that.data.applyStatus==1)
+    {
+      wx.showToast({
+        title: "已经申请，等待审核",
+        icon: "none",
+        duration: 3000
+      });
+      return;
+    }
+
+    that.setData({
       showVIPModal: true
     })
   },
@@ -110,7 +142,13 @@ Page({
           wx.showLoading({
             title: '积分更新中...',
           })
-          api.addPoints("taskVideo").then((res) => {
+
+          let info ={
+            nickName: app.globalData.userInfo.nickName,
+            avatarUrl: app.globalData.userInfo.avatarUrl,
+          }
+
+          api.addPoints("taskVideo",info).then((res) => {
             console.info(res)
             if (res.result) {
               that.setData({
@@ -180,6 +218,54 @@ Page({
     wx.previewImage({
       urls: [config.moneyUrl],
       current: config.moneyUrl
+    })
+  },
+
+  /**
+   * 申请VIP
+   * @param {*} e 
+   */
+  applyVip:async function(e){
+    
+    wx.showLoading({
+      title: '提交中...',
+    })
+    console.info(app.globalData.userInfo)
+    let info ={
+      nickName: app.globalData.userInfo.nickName,
+      avatarUrl: app.globalData.userInfo.avatarUrl,
+    }
+    let res=await api.applyVip(info)
+    console.info(res)
+    if(res.result)
+    {
+      wx.showToast({
+        title: "申请成功，等待审批",
+        icon: "none",
+        duration: 3000
+      });
+      this.setData({
+        showVIPModal: false
+      })
+    }
+    else
+    {
+      wx.showToast({
+        title: "程序出错啦",
+        icon: "none",
+        duration: 3000
+      });
+    }
+
+    wx.hideLoading()
+  },
+
+    /**
+   * 返回
+   */
+  navigateBack: function (e) {
+    wx.navigateBack({
+      delta: 1
     })
   },
 })

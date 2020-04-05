@@ -6,15 +6,12 @@
     </view>
 </view>
 <view class="cu-list menu shadow-lg">
-    <!-- <view class="cu-item arrow">
-        <view class='content' bindtap='showFormModal'>
-            <text class='cuIcon-cascades text-grey'></text>
-            <text class='text-grey'>管理员FormId</text>
+    <view class="cu-item arrow">
+        <view class='content' bindtap='showMember'>
+            <text class='cuIcon-vip text-grey'></text>
+            <text class='text-grey'>会员管理</text>
         </view>
-        <view class='action'>
-            <text class='text-grey text-sm'>可用数量:{{formIdCount}}</text>
-        </view>
-    </view> -->
+    </view>
     <view class="cu-item arrow">
         <view class='content' bindtap='showSubscribe'>
             <text class='cuIcon-cascades text-grey'></text>

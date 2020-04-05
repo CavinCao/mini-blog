@@ -231,4 +231,9 @@ Page({
       url: '../admin/advert/advert'
     })
   },
+  showMember:async function (e) {
+    wx.navigateTo({
+      url: '../admin/member/member'
+    })
+  },
 })

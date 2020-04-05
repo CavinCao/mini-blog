@@ -69,6 +69,9 @@ exports.main = async (event, context) => {
     case 'getAdvertConfig': {
       return getAdvertConfig(event)
     }
+    case 'approveApplyVip':{
+      return approveApplyVip(event)
+    }
     default: break
   }
 }
@@ -478,4 +481,35 @@ async function updateBatchPostsClassify(event) {
   }
 
   return true;
+}
+
+/**
+ * 审核会员状态
+ * @param {*} event 
+ */
+async function approveApplyVip(event) {
+  try {
+    //申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
+    let applyStatus = 1
+    let level=1
+    if (event.apply == 'pass') {
+      applyStatus = 2
+      level=5
+    }
+    else if (event.apply == 'reject') {
+      applyStatus = 3
+    }
+    await db.collection('mini_member').doc(event.id).update({
+      data: {
+        applyStatus: applyStatus,
+        level:level,
+        modifyTime: new Date().getTime()
+      }
+    });
+    return true;
+  }
+  catch (e) {
+    console.error(e)
+    return false
+  }
 }

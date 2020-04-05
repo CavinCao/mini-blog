@@ -680,12 +680,42 @@ function addSign(info) {
 /**
  * 新增积分
  */
-function addPoints(taskType) {
+function addPoints(taskType,info) {
     return wx.cloud.callFunction({
         name: 'memberService',
         data: {
             action: "addPoints",
-            taskType: taskType
+            taskType: taskType,
+            info:info
+        }
+    })
+}
+
+/**
+ * 申请VIP
+ * @param {}}  
+ */
+function applyVip(info) {
+    return wx.cloud.callFunction({
+        name: 'memberService',
+        data: {
+            action: "applyVip",
+            info: info
+        }
+    })
+}
+
+/**
+ * 审核vip
+ * @param {}}  
+ */
+function approveApplyVip(id,apply) {
+    return wx.cloud.callFunction({
+        name: 'adminService',
+        data: {
+            action: "approveApplyVip",
+            id: id,
+            apply:apply
         }
     })
 }
@@ -771,5 +801,7 @@ module.exports = {
     addSign: addSign,
     getMemberInfo: getMemberInfo,
     getSignedDetail: getSignedDetail,
-    addPoints:addPoints
+    addPoints:addPoints,
+    applyVip:applyVip,
+    approveApplyVip:approveApplyVip
 }

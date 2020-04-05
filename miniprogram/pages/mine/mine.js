@@ -173,7 +173,7 @@ Page({
    * 我的积分
    * @param {} e 
    */
-  bindPoint: async function (e) {
+  bindPoint: async function (e) {    
     wx.navigateTo({
       url: '../mine/point/point'
     })

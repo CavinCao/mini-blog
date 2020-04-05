@@ -48,6 +48,19 @@ Page({
         signed: signed == 1
       })
     }
+
+    let that=this
+    app.checkUserInfo(function (userInfo, isLogin) {
+      if (!isLogin) {
+        that.setData({
+          showLogin: true
+        })
+      } else {
+        that.setData({
+          userInfo: userInfo
+        });
+      }
+    });
   },
   /**
    * 日历组件渲染之后
@@ -132,6 +145,8 @@ Page({
       })
       let info = {
         openId: app.globalData.openid,
+        nickName: app.globalData.userInfo.nickName,
+        avatarUrl: app.globalData.userInfo.avatarUrl,
         accept: accept,
         templateId: templateId
       }
@@ -158,5 +173,14 @@ Page({
       console.info(err)
       wx.hideLoading()
     }
+  },
+
+    /**
+   * 返回
+   */
+  navigateBack: function (e) {
+    wx.navigateBack({
+      delta: 1
+    })
   },
 })

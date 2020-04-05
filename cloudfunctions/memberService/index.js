@@ -15,8 +15,11 @@ exports.main = async (event, context) => {
     case 'getSignedDetail': {
       return getSignedDetail(event)
     }
-    case 'addPoints':{
+    case 'addPoints': {
       return addPoints(event)
+    }
+    case 'applyVip':{
+      return applyVip(event)
     }
     default: break
   }
@@ -48,7 +51,10 @@ async function addSign(event) {
           lastSignedDate: date,//最后一次签到日期
           level: 1,//会员等级（预留）
           unreadMessgeCount: 0,//未读消息（预留）
-          modifyTime: new Date().getTime()
+          modifyTime: new Date().getTime(),
+          avatarUrl: event.info.avatarUrl,//头像
+          nickName: event.info.nickName,//昵称
+          applyStatus: 0//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
         }
       })
       tasks.push(task1)
@@ -180,13 +186,16 @@ async function addPoints(event) {
           lastSignedDate: '',//最后一次签到日期
           level: 1,//会员等级（预留）
           unreadMessgeCount: 0,//未读消息（预留）
-          modifyTime: new Date().getTime()
+          modifyTime: new Date().getTime(),
+          avatarUrl: event.info.avatarUrl,//头像
+          nickName: event.info.nickName,//昵称
+          applyStatus: 0//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
         }
       })
       tasks.push(task1)
     }
     else {
-
+s
       let memberInfo = memberInfos.data[0]
       let task2 = db.collection('mini_member').doc(memberInfo._id).update({
         data: {
@@ -211,6 +220,55 @@ async function addPoints(event) {
     tasks.push(task3)
     await Promise.all(tasks)
     return true
+  }
+  catch (e) {
+    console.error(e)
+    return false
+  }
+}
+
+/**
+ * 申请VIP
+ * @param {} event 
+ */
+async function applyVip(event) {
+
+  console.info("applyVip")
+  try {
+    const wxContext = cloud.getWXContext()
+    let memberInfos = await db.collection('mini_member').where({
+      openId: wxContext.OPENID
+    }).get();
+
+    if (memberInfos.data.length === 0) {
+      await db.collection('mini_member').add({
+        data: {
+          openId: wxContext.OPENID,
+          totalSignedCount: 0,//累计签到数
+          continueSignedCount: 0,//持续签到
+          totalPoints: 0,//积分
+          lastSignedDate: '',//最后一次签到日期
+          level: 1,//会员等级（预留）
+          unreadMessgeCount: 0,//未读消息（预留）
+          modifyTime: new Date().getTime(),
+          avatarUrl: event.info.avatarUrl,//头像
+          nickName: event.info.nickName,//昵称
+          applyStatus: 1//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
+        }
+      })
+    }
+    else {
+      let memberInfo = memberInfos.data[0]
+      await db.collection('mini_member').doc(memberInfo._id).update({
+        data: {
+          applyStatus: 1,
+          avatarUrl: event.info.avatarUrl,//兼容下老数据
+          nickName: event.info.nickName,
+          modifyTime: new Date().getTime()
+        }
+      });
+    }
+    return true;
   }
   catch (e) {
     console.error(e)
