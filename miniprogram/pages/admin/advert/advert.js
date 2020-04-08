@@ -53,6 +53,7 @@ Page({
     advert.pointsStatus= e.detail.value.pointsStatus
     advert.pointsId= e.detail.value.pointsId
     let result = await api.upsertAdvertConfig(advert)
+    console.info(result)
     if (result.result) {
       app.globalData.advert = advert
       wx.showToast({

@@ -90,9 +90,8 @@ Page({
    * @param {} e 
    */
   whenChangeMonth: async function (e) {
-
-    let year=util.getYear(new Date())
-    let month=util.getMonth(new Date())
+    let year=e.detail.next.year
+    let month=e.detail.next.month
     let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
     let toSet = [];

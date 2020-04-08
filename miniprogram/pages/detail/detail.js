@@ -34,7 +34,10 @@ Page({
     posterImageUrl: "",//海报地址
     showBanner: false,
     showBannerId: "",
-    hideArticle: ''//400rpx
+    hideArticle: '',//400rpx
+    isVip: false,
+    totalPoints: 0,
+    pointsModal: false
   },
 
   /**
@@ -42,6 +45,7 @@ Page({
    */
   onLoad: async function (options) {
     let that = this;
+    //1.授权
     app.checkUserInfo(function (userInfo, isLogin) {
       if (!isLogin) {
         that.setData({
@@ -58,7 +62,18 @@ Page({
       blogId = decodeURIComponent(options.scene);
     }
     let advert = app.globalData.advert
-    if (advert.readMoreStatus) {
+    //验证是否是VIP
+    let isVip = false
+    let res = await api.getMemberInfo(app.globalData.openid)
+    if (res.data.length > 0) {
+      isVip = res.data[0].level == 5
+      that.setData({
+        isVip: isVip,
+        totalPoints: res.data[0].totalPoints
+      })
+    }
+    //广告加载
+    if (advert.readMoreStatus && !isVip) {
       var openAded = false
       var openAdLogs = wx.getStorageSync('openAdLogs') || [];
       if (openAdLogs.length > 0) {
@@ -80,6 +95,7 @@ Page({
         showBannerId: advert.bannerId
       })
     }
+    //获取文章详情&关联信息
     await that.getDetail(blogId)
     await that.getPostRelated(that.data.post._id)
   },
@@ -777,6 +793,30 @@ Page({
    */
   readMore: function () {
     let that = this;
+    if (that.data.totalPoints > 20) {
+      that.setData({
+        pointsModal: true
+      })
+    }
+    else {
+      rewardedVideoAd.show()
+        .catch(() => {
+          rewardedVideoAd.load()
+            .then(() => rewardedVideoAd.show())
+            .catch(err => {
+              console.log('激励视频 广告显示失败');
+              that.setData({
+                hideArticle: ''
+              })
+            })
+        })
+    }
+  },
+
+  /**
+   * 观看广告
+   */
+  lookAdvert: function () {
     rewardedVideoAd.show()
       .catch(() => {
         rewardedVideoAd.load()
@@ -789,6 +829,63 @@ Page({
           })
       })
   },
+
+  /**
+   * 隐藏
+   * @param {}} e 
+   */
+  hidePointsModal: async function (e) {
+    this.setData({
+      pointsModal: false
+    })
+  },
+
+  /**
+   * 消费积分
+   */
+  consumePoints: async function () {
+
+    let that=this
+    let info = {}
+    let res = await api.addPoints("readPost", info)
+    if (res.result) {
+      var id = that.data.post._id
+      var nowDate = new Date();
+      nowDate = nowDate.getFullYear() + "-" + (nowDate.getMonth() + 1) + '-' + nowDate.getDate();
+
+      var openAdLogs = wx.getStorageSync('openAdLogs') || [];
+      // 过滤重复值
+      if (openAdLogs.length > 0) {
+        openAdLogs = openAdLogs.filter(function (log) {
+          return log["id"] !== id;
+        });
+      }
+      // 如果超过指定数量不再记录
+      if (openAdLogs.length < 21) {
+        var log = {
+          "id": id,
+          "date": nowDate
+        }
+        openAdLogs.unshift(log);
+        wx.setStorageSync('openAdLogs', openAdLogs);
+        console.log(openAdLogs);
+      }
+      that.setData({
+        hideArticle: '',
+        totalPoints: Number(that.data.totalPoints) - 20,
+        pointsModal: false
+      })
+
+    }
+    else {
+      wx.showToast({
+        title: "小程序有一些些异常",
+        icon: "none",
+        duration: 3000
+      });
+    }
+  },
+
 
   /**
    * 初始化广告视频

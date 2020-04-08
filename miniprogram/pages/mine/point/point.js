@@ -17,10 +17,12 @@ Page({
     signBtnTxt: "马上签到",
     signed: 0,
     signedDays: 0,
-    showVIPModal:false,
-    isVip:false,
-    applyStatus:0,
-    showLogin:false
+    showVIPModal: false,
+    isVip: false,
+    applyStatus: 0,
+    showLogin: false,
+    showPointDescModal: false,//积分说明弹窗
+    shareList: [{ nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd", style: "" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }]
   },
 
   /**
@@ -57,24 +59,42 @@ Page({
         totalPoints: memberInfo.totalPoints,
         signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
         signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "已经完成" : "马上签到",
-        isVip:Number(memberInfo.level)>1,
-        applyStatus:memberInfo.applyStatus
+        isVip: Number(memberInfo.level) > 1,
+        applyStatus: memberInfo.applyStatus
       })
     }
 
     if (advert.taskVideoStatus) {
       that.loadInterstitialAd(advert.taskVideoId);
     }
+
+    let shareList = await api.getShareDetailList(app.globalData.openid, util.formatTime(new Date()))
+    let defaultShareList=that.data.shareList
+    console.info(shareList)
+    if (shareList.data.length > 0) {
+      let i=0
+      shareList.data.forEach(item => {
+        defaultShareList[i].nickName=item.nickName
+        defaultShareList[i].bgUrl=""
+        defaultShareList[i].icon=""
+        defaultShareList[i].style="background-image:url("+item.avatarUrl+");"
+        i++
+			});
+
+      that.setData({
+        shareList: defaultShareList
+      })
+    }
   },
 
   /**
    * 
-   
+   */
   onUnload: function () {
     if (rewardedVideoAd && rewardedVideoAd.destroy) {
       rewardedVideoAd.destroy()
     }
-  },*/
+  },
 
   /**
    * 签到列表
@@ -87,17 +107,26 @@ Page({
   },
 
   /**
+   * 展示积分使用明细
+   * @param {} e 
+   */
+  showUsingDetail: async function (e) {
+    wx.navigateTo({
+      url: '../point/pointDetail'
+    })
+  },
+
+  /**
    * 阅读文章
    * @param {*} e 
    */
   clickVip: async function (e) {
-    let that=this
-    if(that.data.isVip)
-    {
+    let that = this
+    if (that.data.isVip) {
       return;
     }
-    if(that.data.applyStatus==1)
-    {
+    console.info(that.data.applyStatus)
+    if (that.data.applyStatus == 1) {
       wx.showToast({
         title: "已经申请，等待审核",
         icon: "none",
@@ -111,9 +140,33 @@ Page({
     })
   },
 
+  /**
+   * 隐藏
+   * @param {}} e 
+   */
   hideModal: async function (e) {
     this.setData({
       showVIPModal: false
+    })
+  },
+
+  /**
+   * 展示积分说明
+   * @param {} e 
+   */
+  showPointDesc: function (e) {
+    this.setData({
+      showPointDescModal: true
+    })
+  },
+
+  /**
+   * 隐藏积分说明
+   * @param {*} e 
+   */
+  hidePointDesc: function (e) {
+    this.setData({
+      showPointDescModal: false
     })
   },
 
@@ -143,12 +196,12 @@ Page({
             title: '积分更新中...',
           })
 
-          let info ={
+          let info = {
             nickName: app.globalData.userInfo.nickName,
             avatarUrl: app.globalData.userInfo.avatarUrl,
           }
 
-          api.addPoints("taskVideo",info).then((res) => {
+          api.addPoints("taskVideo", info).then((res) => {
             console.info(res)
             if (res.result) {
               that.setData({
@@ -210,10 +263,10 @@ Page({
     }
   },
 
-    /**
-   * 展示打赏二维码
-   * @param {} e 
-   */
+  /**
+ * 展示打赏二维码
+ * @param {} e 
+ */
   showMoneryUrl: async function (e) {
     wx.previewImage({
       urls: [config.moneyUrl],
@@ -225,31 +278,30 @@ Page({
    * 申请VIP
    * @param {*} e 
    */
-  applyVip:async function(e){
-    
+  applyVip: async function (e) {
+
     wx.showLoading({
       title: '提交中...',
     })
     console.info(app.globalData.userInfo)
-    let info ={
+    let info = {
       nickName: app.globalData.userInfo.nickName,
       avatarUrl: app.globalData.userInfo.avatarUrl,
     }
-    let res=await api.applyVip(info)
+    let res = await api.applyVip(info)
     console.info(res)
-    if(res.result)
-    {
+    if (res.result) {
       wx.showToast({
         title: "申请成功，等待审批",
         icon: "none",
         duration: 3000
       });
       this.setData({
-        showVIPModal: false
+        showVIPModal: false,
+        applyStatus: 1
       })
     }
-    else
-    {
+    else {
       wx.showToast({
         title: "程序出错啦",
         icon: "none",
@@ -260,9 +312,9 @@ Page({
     wx.hideLoading()
   },
 
-    /**
-   * 返回
-   */
+  /**
+ * 返回
+ */
   navigateBack: function (e) {
     wx.navigateBack({
       delta: 1

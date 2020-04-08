@@ -4,6 +4,22 @@ const db = wx.cloud.database()
 const _ = db.command
 
 /**
+ * 获取分享明细
+ * @param {} openId 
+ * @param {*} date 
+ */
+function getShareDetailList(openId,date)
+{
+    return db.collection('mini_share_detail')
+    .where({
+        shareOpenId: openId,
+        date:date
+    })
+    .limit(5)
+    .get()
+}
+
+/**
  * 获取会员信息
  * @param {} openId 
  */
@@ -14,6 +30,39 @@ function getMemberInfo(openId) {
         })
         .limit(1)
         .get()
+}
+
+/**
+ * 获取会员列表
+ * @param {*} applyStatus 
+ * @param {*} page 
+ */
+function getMemberInfoList(page,applyStatus){
+    return db.collection('mini_member')
+    .where({
+        applyStatus: applyStatus
+    })
+    .orderBy('modifyTime', 'desc')
+    .skip((page - 1) * 10)
+    .limit(10)
+    .get()
+}
+
+/**
+ * 获取积分明细列表
+ * @param {*} page 
+ * @param {*} openId 
+ */
+function getPointsDetailList(page,openId)
+{
+    return db.collection('mini_point_detail')
+    .where({
+        openId: openId
+    })
+    .orderBy('createTime', 'desc')
+    .skip((page - 1) * 20)
+    .limit(20)
+    .get()
 }
 
 /**
@@ -692,6 +741,21 @@ function addPoints(taskType,info) {
 }
 
 /**
+ * 分享得积分
+ * @param {*} info 
+ */
+function addShareDetail(info)
+{
+    return wx.cloud.callFunction({
+        name: 'memberService',
+        data: {
+            action: "addShareDetail",
+            info:info
+        }
+    })
+}
+
+/**
  * 申请VIP
  * @param {}}  
  */
@@ -803,5 +867,9 @@ module.exports = {
     getSignedDetail: getSignedDetail,
     addPoints:addPoints,
     applyVip:applyVip,
-    approveApplyVip:approveApplyVip
+    approveApplyVip:approveApplyVip,
+    getMemberInfoList:getMemberInfoList,
+    addShareDetail:addShareDetail,
+    getShareDetailList:getShareDetailList,
+    getPointsDetailList:getPointsDetailList
 }

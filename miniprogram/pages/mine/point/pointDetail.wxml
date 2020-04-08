@@ -1,2 +1,16 @@
-<!--miniprogram/pages/mine/point/pointDetail.wxml-->
-<text>miniprogram/pages/mine/point/pointDetail.wxml</text>
+<import src="../../../templates/nodata.wxml" />
+<view class="bg-white">
+  <view class="flex solid-bottom align-center justify-between" wx:for="{{pointList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+    <view class="padding-sm margin-xs radius">
+      <view>{{item.desc}}</view>
+      <view class="padding-top-sm">{{item.date}}</view>
+    </view>
+    <view class="padding-sm margin-xs radius {{item.count>0?'text-green':'text-red'}}">
+      {{item.count>0?'+'+item.count:item.count}}积分
+    </view>
+  </view>
+</view>
+<!-- 数据不存在 -->
+<view wx:if="{{nodata}}">
+  <template is="nodata" />
+</view>

@@ -1,5 +1,6 @@
 const api = require('../../utils/api.js');
 const regeneratorRuntime = require('../../utils/runtime.js');
+const app = getApp();
 Page({
 
   /**
@@ -21,14 +22,40 @@ Page({
     hotCur: 0,
     labelList: [],
     labelCur: "全部",
-    whereItem:['', 'createTime','']//下拉查询条件
+    whereItem: ['', 'createTime', ''],//下拉查询条件
+    showLogin: false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    await this.getPostsList('', 'createTime')
+    console.info("测试："+options.openid)
+    let that=this
+    if (options.openid) {
+      let shareOpenId = options.openid;
+      app.checkUserInfo(function (userInfo, isLogin) {
+        if (!isLogin) {
+          that.setData({
+            showLogin: true
+          })
+        } else {
+          that.setData({
+            userInfo: userInfo
+          });
+        }
+      });
+
+      if (that.data.userInfo) {
+        let info = {
+          shareOpenId: shareOpenId,
+          nickName: app.globalData.userInfo.nickName,
+          avatarUrl: app.globalData.userInfo.avatarUrl
+        }
+        await api.addShareDetail(info)
+      }
+    }
+    await that.getPostsList('', 'createTime')
   },
   /**
    * 页面相关事件处理函数--监听用户下拉动作
@@ -52,9 +79,9 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: async function () {
-    let whereItem=this.data.whereItem
+    let whereItem = this.data.whereItem
     let filter = this.data.filter
-    await this.getPostsList(whereItem[0],whereItem[1],whereItem[2])
+    await this.getPostsList(whereItem[0], whereItem[1], whereItem[2])
   },
 
   /**
@@ -86,7 +113,7 @@ Page({
       filter: e.detail.value,
       nomore: false,
       nodata: false,
-      whereItem:[e.detail.value, 'createTime','']
+      whereItem: [e.detail.value, 'createTime', '']
     })
     await this.getPostsList(e.detail.value, 'createTime')
   },
@@ -111,7 +138,7 @@ Page({
           defaultSearchValue: "",
           posts: [],
           page: 1,
-          whereItem:['', 'createTime','']
+          whereItem: ['', 'createTime', '']
         })
 
         await that.getPostsList("", 'createTime')
@@ -128,7 +155,7 @@ Page({
           page: 1,
           nomore: false,
           nodata: false,
-          whereItem:['', 'totalVisits','']
+          whereItem: ['', 'totalVisits', '']
         })
         await that.getPostsList("", "totalVisits")
         break
@@ -190,7 +217,7 @@ Page({
       page: 1,
       nomore: false,
       nodata: false,
-      whereItem:['', orderBy,'']
+      whereItem: ['', orderBy, '']
     })
     await that.getPostsList("", orderBy)
   },
@@ -210,11 +237,21 @@ Page({
       page: 1,
       nomore: false,
       nodata: false,
-      whereItem:['', 'createTime',labelCur == "全部" ? "" : labelCur]
+      whereItem: ['', 'createTime', labelCur == "全部" ? "" : labelCur]
     })
 
     await that.getPostsList("", "createTime", labelCur == "全部" ? "" : labelCur)
   },
+
+  /**
+   * 返回
+   */
+  navigateBack: function (e) {
+    wx.switchTab({
+      url: '../index/index'
+    })
+  },
+
   /**
    * 获取文章列表
    */

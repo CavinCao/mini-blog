@@ -32,7 +32,7 @@
     </view>
     <view class="cu-item arrow">
         <view class='content' bindtap='showAdvert'>
-            <text class='cuIcon-vip text-grey'></text>
+            <text class='cuIcon-link text-grey'></text>
             <text class='text-grey'>广告位管理</text>
         </view>
     </view>

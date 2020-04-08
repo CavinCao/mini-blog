@@ -299,41 +299,42 @@ async function getPostsDetail(event) {
   }
   let data = post.data
 
+  const tasks = []
   //获取文章时直接浏览量+1
   let task = db.collection('mini_posts').doc(event.id).update({
     data: {
       totalVisits: _.inc(1)
     }
   })
+  tasks.push(task)
 
-  let task2 = db.collection('mini_member').doc(memberInfo._id).update({
+  /*let task2 = db.collection('mini_member').doc(memberInfo._id).update({
     data: {
-      totalSignedCount: _.inc(1),
-      continueSignedCount: continueSignedCount,
       totalPoints: _.inc(pointCount),
-      lastSignedDate: date,
       modifyTime: new Date().getTime()
     }
   });
+  tasks.push(task2)
 
   //积分明细
-  let task5 = db.collection('mini_point_detail').add({
+  let task3 = db.collection('mini_point_detail').add({
     data: {
       openId: event.info.openId,
       operateType: 0,//0:获得 1:使用 2:过期
       count: pointCount,
-      desc: "签到得积分",
-      date: (new Date()).toFormat("YYYY-MM-DD HH:MI:SS"),
+      desc: "浏览文章得积分",
+      date: (new Date()).toFormat("YYYY-MM-DD HH24:MI:SS"),
       createTime: new Date().getTime()
     }
   })
+  tasks.push(task3)*/
 
   if (event.type != 1) {
     let content = await convertPosts(data.content, "html");
     data.content = content;
   }
   data.totalVisits = data.totalVisits + 1;
-  await task;
+  await Promise.all(tasks)
   return data
 }
 

@@ -18,8 +18,11 @@ exports.main = async (event, context) => {
     case 'addPoints': {
       return addPoints(event)
     }
-    case 'applyVip':{
+    case 'applyVip': {
       return applyVip(event)
+    }
+    case 'addShareDetail': {
+      return addShareDetail(event)
     }
     default: break
   }
@@ -115,7 +118,7 @@ async function addSign(event) {
         operateType: 0,//0:获得 1:使用 2:过期
         count: pointCount,
         desc: "签到得积分",
-        date: (new Date()).toFormat("YYYY-MM-DD HH:MI:SS"),
+        date: (new Date()).toFormat("YYYY-MM-DD HH24:MI:SS"),
         createTime: new Date().getTime()
       }
     })
@@ -159,15 +162,24 @@ async function addPoints(event) {
     const tasks = []
     let pointCount = 0;
     let desc = ""
+    let operateType = 0
 
     switch (event.taskType) {
       case 'taskVideo': {
         pointCount = 50
         desc = "完成观看视频任务奖励"
+        break
       }
       case 'taskRead': {
         pointCount = 1
         desc = "阅读文章奖励"
+        break
+      }
+      case 'readPost': {
+        pointCount = -20
+        desc = "跳过广告阅读文章"
+        operateType = 1
+        break
       }
       default: break
     }
@@ -195,7 +207,6 @@ async function addPoints(event) {
       tasks.push(task1)
     }
     else {
-s
       let memberInfo = memberInfos.data[0]
       let task2 = db.collection('mini_member').doc(memberInfo._id).update({
         data: {
@@ -212,8 +223,8 @@ s
         openId: wxContext.OPENID,
         operateType: 0,//0:获得 1:使用 2:过期
         count: pointCount,
-        desc: "完成观看视频任务奖励",
-        date: (new Date()).toFormat("YYYY-MM-DD HH:MI:SS"),
+        desc: desc,
+        date: (new Date()).toFormat("YYYY-MM-DD HH24:MI:SS"),
         createTime: new Date().getTime()
       }
     })
@@ -273,5 +284,91 @@ async function applyVip(event) {
   catch (e) {
     console.error(e)
     return false
+  }
+}
+
+/**
+ * 新增分享数据
+ * @param {*} event 
+ */
+async function addShareDetail(event) {
+  const wxContext = cloud.getWXContext()
+  if (wxContext.OPENID == event.info.shareOpenId) {
+    return true;
+  }
+  let shareInfos = await db.collection('mini_share_detail').where({
+    openId: wxContext.OPENID,
+    shareOpenId: event.info.shareOpenId
+  }).get();
+  if (shareInfos.data.length > 0) {
+    return true;
+  }
+  else {
+
+    try {
+
+      let memberInfos = await db.collection('mini_member').where({
+        openId: event.info.shareOpenId
+      }).get();
+
+      const tasks = []
+      if (memberInfos.data.length === 0) {
+        let task1 = db.collection('mini_member').add({
+          data: {
+            openId: event.info.openId,
+            totalSignedCount: 0,//累计签到数
+            continueSignedCount: 0,//持续签到
+            totalPoints: 100,//积分
+            lastSignedDate: '',//最后一次签到日期
+            level: 1,//会员等级（预留）
+            unreadMessgeCount: 0,//未读消息（预留）
+            modifyTime: new Date().getTime(),
+            applyStatus: 0//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
+          }
+        })
+        tasks.push(task1)
+      }
+      else {
+        let memberInfo = memberInfos.data[0]
+        let task2 = db.collection('mini_member').doc(memberInfo._id).update({
+          data: {
+            totalPoints: _.inc(100),
+            modifyTime: new Date().getTime()
+          }
+        });
+        tasks.push(task2)
+      }
+
+      let task3 = db.collection('mini_share_detail').add({
+        data: {
+          shareOpenId: event.info.shareOpenId,
+          openId: wxContext.OPENID,
+          avatarUrl: event.info.avatarUrl,//头像
+          nickName: event.info.nickName,//昵称
+          date: (new Date()).toFormat("YYYY-MM-DD"),
+          createTime: new Date().getTime()
+        }
+      })
+      tasks.push(task3)
+
+      //积分明细
+      let task5 = db.collection('mini_point_detail').add({
+        data: {
+          openId: event.info.openId,
+          operateType: 0,//0:获得 1:使用 2:过期
+          count: 100,
+          desc: "邀请好友得积分",
+          date: (new Date()).toFormat("YYYY-MM-DD HH24:MI:SS"),
+          createTime: new Date().getTime()
+        }
+      })
+      tasks.push(task5)
+      await Promise.all(tasks)
+      return true
+    }
+    catch (e) {
+      console.error(e)
+      return false
+    }
   }
 }
