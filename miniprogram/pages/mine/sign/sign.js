@@ -37,19 +37,24 @@ Page({
    */
   onLoad: async function (options) {
 
+    let that = this
     let signedDays = options.signedDays;
     let signed = options.signed;
     let advert = app.globalData.advert
+    let showBanner = false
+    let showBannerId = ''
     if (advert.bannerStatus) {
-      this.setData({
-        showBanner: true,
-        showBannerId: advert.bannerId,
-        signedDays: signedDays,
-        signed: signed == 1
-      })
+      showBanner = true
+      showBannerId = advert.bannerId
     }
 
-    let that=this
+    that.setData({
+      showBanner: showBanner,
+      showBannerId: showBannerId,
+      signedDays: signedDays,
+      signed: signed == 1
+    })
+
     app.checkUserInfo(function (userInfo, isLogin) {
       if (!isLogin) {
         that.setData({
@@ -68,8 +73,8 @@ Page({
    */
   afterCalendarRender: async function (e) {
 
-    let year=util.getYear(new Date())
-    let month=util.getMonth(new Date())
+    let year = util.getYear(new Date())
+    let month = util.getMonth(new Date())
     let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
     let toSet = [];
@@ -90,8 +95,8 @@ Page({
    * @param {} e 
    */
   whenChangeMonth: async function (e) {
-    let year=e.detail.next.year
-    let month=e.detail.next.month
+    let year = e.detail.next.year
+    let month = e.detail.next.month
     let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
     let toSet = [];
@@ -119,7 +124,7 @@ Page({
       tmplIds: [tempalteId],
       success(res) {
         console.info(res)
-        that.submitSign(res[tempalteId], tempalteId,that).then((res) => {
+        that.submitSign(res[tempalteId], tempalteId, that).then((res) => {
           console.info(res)
         })
       },
@@ -137,7 +142,7 @@ Page({
   /**
 * 获取订阅消息
 */
-  submitSign: async function (accept, templateId,that) {
+  submitSign: async function (accept, templateId, that) {
     try {
       wx.showLoading({
         title: '加载中...',
@@ -153,7 +158,7 @@ Page({
       let result = await api.addSign(info)
       await that.afterCalendarRender()
       that.setData({
-        signedDays: Number(that.data.signedDays)+1,
+        signedDays: Number(that.data.signedDays) + 1,
         signed: true
       })
       console.info(result)
@@ -174,9 +179,9 @@ Page({
     }
   },
 
-    /**
-   * 返回
-   */
+  /**
+ * 返回
+ */
   navigateBack: function (e) {
     wx.navigateBack({
       delta: 1
