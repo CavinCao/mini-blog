@@ -64,12 +64,12 @@ async function addSign(event) {
     }
     else {
       let continueSignedCount = 1
-      pointCount = continueSignedCount
       let memberInfo = memberInfos.data[0]
       if (new Date().addDays(-1).toFormat("YYYY-MM-DD") == memberInfo.lastSignedDate) {
         continueSignedCount = memberInfo.continueSignedCount + 1
       }
 
+      pointCount = continueSignedCount
       if (continueSignedCount > 30) {
         pointCount = 30
       }

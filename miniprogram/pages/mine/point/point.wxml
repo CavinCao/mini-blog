@@ -38,6 +38,7 @@
             </button>
         </view>
     </view>
+    <!--
     <view class="flex solid-bottom align-center margin-left margin-right padding-bottom ">
         <view class="flex-sub margin-xs bg-gradual-orange signbanner shadow-blur radius point-task">
             VIP
@@ -51,7 +52,7 @@
                 {{isVip?'已经是啦':'立即申请'}}
             </button>
         </view>
-    </view>
+    </view>-->
 </view>
 <view class="margin-top-sm bg-white">
     <view class="text-left text-black text-bold text-xl padding">邀请好友，得积分</view>

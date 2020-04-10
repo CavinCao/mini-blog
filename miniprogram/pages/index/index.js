@@ -30,10 +30,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    console.info("测试："+options.openid)
     let that=this
+    //有openid跳授权计算积分
     if (options.openid) {
-      let shareOpenId = options.openid;
+      let shareOpenId = options.openid
       app.checkUserInfo(function (userInfo, isLogin) {
         if (!isLogin) {
           that.setData({
