@@ -773,13 +773,14 @@ function applyVip(info) {
  * 审核vip
  * @param {}}  
  */
-function approveApplyVip(id,apply) {
+function approveApplyVip(id,apply,openId) {
     return wx.cloud.callFunction({
         name: 'adminService',
         data: {
             action: "approveApplyVip",
             id: id,
-            apply:apply
+            apply:apply,
+            openId:openId
         }
     })
 }

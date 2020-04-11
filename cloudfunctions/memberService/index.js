@@ -245,6 +245,7 @@ async function addPoints(event) {
 async function applyVip(event) {
 
   console.info("applyVip")
+  console.info(event)
   try {
     const wxContext = cloud.getWXContext()
     let memberInfos = await db.collection('mini_member').where({
@@ -276,6 +277,16 @@ async function applyVip(event) {
           avatarUrl: event.info.avatarUrl,//兼容下老数据
           nickName: event.info.nickName,
           modifyTime: new Date().getTime()
+        }
+      });
+    }
+    //如果统一订阅签到通知
+    if (event.info.accept == 'accept') {
+      await db.collection("mini_subcribute").add({
+        data: {
+          templateId: event.info.templateId,
+          openId: wxContext.OPENID,
+          timestamp: new Date().getTime()
         }
       });
     }

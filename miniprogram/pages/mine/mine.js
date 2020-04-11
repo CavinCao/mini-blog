@@ -12,10 +12,13 @@ Page({
     userInfo: {},
     showLogin: false,
     isAuthor: false,
+    isVip: false,
+    vipDesc: '点击申请VIP',
     showRedDot: '',
     signedDays: 0,//连续签到天数
     signed: 0,
-    isShow: false,
+    applyStatus: 0,
+    showVIPModal: false,
     signBtnTxt: "每日签到",
     iconList: [{
       icon: 'favorfill',
@@ -173,7 +176,7 @@ Page({
    * 我的积分
    * @param {} e 
    */
-  bindPoint: async function (e) {    
+  bindPoint: async function (e) {
     wx.navigateTo({
       url: '../mine/point/point'
     })
@@ -202,6 +205,151 @@ Page({
   },
 
   /**
+* 展示打赏二维码
+* @param {} e 
+*/
+  showMoneryUrl: async function (e) {
+    wx.previewImage({
+      urls: [config.moneyUrl],
+      current: config.moneyUrl
+    })
+  },
+
+  /**
+   * VIP申请
+   * @param {*} e 
+   */
+  clickVip: async function (e) {
+    let that = this
+    if (that.data.isVip) {
+      return;
+    }
+
+    app.checkUserInfo(function (userInfo, isLogin) {
+      if (!isLogin) {
+        that.setData({
+          showLogin: true
+        })
+      } else {
+        that.setData({
+          userInfo: userInfo
+        });
+      }
+    });
+
+    console.info(that.data.applyStatus)
+    if (that.data.applyStatus == 1) {
+      wx.showToast({
+        title: "已经申请，等待审核",
+        icon: "none",
+        duration: 3000
+      });
+      return;
+    }
+
+    that.setData({
+      showVIPModal: true
+    })
+  },
+
+  /**
+* 返回
+*/
+  navigateBack: function (e) {
+    let that = this
+    that.setData({
+      showLogin: false
+    })
+  },
+
+  /**
+   * 隐藏
+   * @param {}} e 
+   */
+  hideModal: async function (e) {
+    this.setData({
+      showVIPModal: false
+    })
+  },
+
+    /**
+* 正式提交
+*/
+submitApplyVip: async function (accept, templateId, that) {
+  try {
+
+    wx.showLoading({
+      title: '提交中...',
+    })
+    console.info(app.globalData.userInfo)
+    let info = {
+      nickName: app.globalData.userInfo.nickName,
+      avatarUrl: app.globalData.userInfo.avatarUrl,
+      accept: accept,
+      templateId: templateId
+    }
+    let res = await api.applyVip(info)
+    console.info(res)
+    if (res.result) {
+      wx.showToast({
+        title: "申请成功，等待审批",
+        icon: "none",
+        duration: 3000
+      });
+      this.setData({
+        showVIPModal: false,
+        applyStatus: 1
+      })
+    }
+    else {
+      wx.showToast({
+        title: "程序出错啦",
+        icon: "none",
+        duration: 3000
+      });
+    }
+
+    wx.hideLoading()
+  }
+  catch (err) {
+    wx.showToast({
+      title: '程序有一点点小异常，操作失败啦',
+      icon: 'none',
+      duration: 1500
+    })
+    console.info(err)
+    wx.hideLoading()
+  }
+},
+
+
+  /**
+   * 申请VIP
+   * @param {*} e 
+   */
+  applyVip: async function (e) {
+    let that = this
+    let tempalteId='DI_AuJDmFXnNuME1vpX_hY2yw1pR6kFXPZ7ZAQ0uLOY'
+    wx.requestSubscribeMessage({
+      tmplIds: [tempalteId],
+      success(res) {
+        console.info(res)
+        that.submitApplyVip(res[tempalteId], tempalteId, that).then((res) => {
+          console.info(res)
+        })
+      },
+      fail(res) {
+        console.info(res)
+        wx.showToast({
+          title: '程序有一点点小异常，操作失败啦',
+          icon: 'none',
+          duration: 1500
+        })
+      }
+    })
+  },
+
+  /**
    * 获取用户信息
    * @param {} e 
    */
@@ -216,7 +364,10 @@ Page({
         that.setData({
           signedDays: memberInfo.continueSignedCount,
           signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
-          signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "今日已签到" : "每日签到"
+          signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "今日已签到" : "每日签到",
+          vipDesc: Number(memberInfo.level) > 1 ? "VIP用户" : "点击申请VIP",
+          isVip: Number(memberInfo.level) > 1,
+          applyStatus: memberInfo.applyStatus
         })
       }
     }

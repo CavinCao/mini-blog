@@ -1,3 +1,4 @@
+<import src="../../../templates/login/login.wxml" />
 <view class="bg-white">
   <view class="flex padding align-center">
     <view class="avatar round margin-xs radius">
@@ -5,14 +6,23 @@
     </view>
     <view class="padding-sm margin-xs radius">
       <open-data type="userNickName"></open-data>
+      <view class="margin-top-xs text-xs">
+        <view class="cu-tag line-orange radius sm" bindtap="clickVip">{{vipDesc}}</view>
+      </view>
     </view>
   </view>
   <view class="cu-list-special">
     <view class="bg-gradual-orange signbanner shadow-blur">
-     <view class="flex solid-bottom justify-between align-center">
-      <view class="padding-sm radius">已连续签到:<text class="text-sl">{{signedDays}}</text> 天</view>
-      <view class="padding-sm radius"> <button class="text-df cu-btn round bg-white" bindtap="btnSigned">{{signBtnTxt}}</button></view>
-    </view>
+      <view class="flex solid-bottom justify-between align-center">
+        <view class="padding-sm radius">
+          已连续签到:
+          <text class="text-sl">{{signedDays}}</text>
+          天
+        </view>
+        <view class="padding-sm radius">
+          <button class="text-df cu-btn round bg-white" bindtap="btnSigned">{{signBtnTxt}}</button>
+        </view>
+      </view>
     </view>
   </view>
   <view class="cu-list grid col-4 no-border">
@@ -58,17 +68,28 @@
     </view>
   </view>
 </view>
-
-<view class="cu-modal {{isShow?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">说明</view>
-      <view class="action" bindtap="hideModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
+<!-- vip窗口 -->
+<view class="cu-modal {{showVIPModal?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class="content">成为VIP说明</view>
+            <view class="action" bindtap="hideModal">
+                <text class="cuIcon-close text-red"></text>
+            </view>
+        </view>
+        <view class="padding-xl bg-white">
+            <view>申请条件：打赏过作者的用户即可申请</view>
+            <view>VIP权益：待作者开发中</view>
+        </view>
+        <view class="cu-bar bg-white">
+            <view class="action margin-0 flex-sub " bindtap="hideModal">取消</view>
+            <view class="action margin-0 flex-sub text-green solid-left" bindtap="showMoneryUrl">
+                打赏
+            </view>
+            <view class="action margin-0 flex-sub text-green solid-left" bindtap="applyVip">
+                申请
+            </view>
+        </view>
     </view>
-    <view class="padding-xl">
-      积分功能正在开发中，敬请期待～
-    </view>
-  </view>
 </view>
+<template is="login" data="{{showLogin: showLogin}}"></template>

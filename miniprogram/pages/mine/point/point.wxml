@@ -91,7 +91,7 @@
         </view>
         <view class="padding-xl bg-white">
             <view>申请条件：打赏过作者的用户即可申请</view>
-            <view>VIP权益：免广告阅读文章及后续福利</view>
+            <view>VIP权益：待作者开发中</view>
         </view>
         <view class="cu-bar bg-white">
             <view class="action margin-0 flex-sub " bindtap="hideModal">取消</view>
@@ -119,9 +119,8 @@
             <view class="text-left">2、观看视频，每次可获得50积分</view>
             <view class="text-left">3、邀请好友，最高每天可得100积分</view>
             <view class="padding-sm text-xl text-black text-bold text-center">积分的作用</view>
-            <view class="text-left">1、每20积分跳过一次文章的广告</view>
-            <view class="text-left">2、积累一定的积分可向作者兑换相应的礼品「待作者想想」</view>
-            <view class="text-left">3、后续小程序中提供的福利</view>
+            <view class="text-left">1、积累一定的积分可向作者兑换相应的礼品「待作者想想」</view>
+            <view class="text-left">2、后续小程序中提供的福利</view>
         </view>
         <view class="cu-bar bg-white">
             <view class="action margin-0 flex-sub text-green solid-left" bindtap="hidePointDesc">

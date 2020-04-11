@@ -792,13 +792,14 @@ Page({
    * 阅读更多
    */
   readMore: function () {
-    let that = this;
+    //TODO：与广告组件接入有冲突，暂时注释
+    /*let that = this;
     if (that.data.totalPoints > 20) {
       that.setData({
         pointsModal: true
       })
     }
-    else {
+    else {*/
       rewardedVideoAd.show()
         .catch(() => {
           rewardedVideoAd.load()
@@ -810,7 +811,7 @@ Page({
               })
             })
         })
-    }
+    //}
   },
 
   /**

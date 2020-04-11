@@ -137,7 +137,7 @@
     </view>
   </view>
 </view>
-<!-- 积分抵扣弹窗 -->
+<!-- 积分抵扣弹窗 
 <view class="cu-modal {{pointsModal?'show':''}}">
   <view class="cu-dialog">
     <view class="cu-bar bg-white justify-end">
@@ -154,5 +154,5 @@
       <view class="action margin-0 flex-sub text-green  solid-left" bindtap="consumePoints">花积分</view>
     </view>
   </view>
-</view>
+</view>-->
 

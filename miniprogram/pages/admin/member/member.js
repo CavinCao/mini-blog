@@ -167,9 +167,10 @@ Page({
       let that = this
       let memberId = e.currentTarget.id
       let status = e.currentTarget.dataset.status
+      let openId=e.currentTarget.dataset.openid
       console.info(memberId)
       console.info(status)
-      let res = await api.approveApplyVip(memberId, status)
+      let res = await api.approveApplyVip(memberId, status,openId)
       console.info(res)
       if (res.result) {
         wx.showToast({

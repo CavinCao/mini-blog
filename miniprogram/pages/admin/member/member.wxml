@@ -18,10 +18,10 @@
             </view>
         </view>
         <view class="move">
-            <view class="bg-green" id="{{item._id}}" data-status="pass" bindtap='changeMemberApplyStatus'>
+            <view class="bg-green" id="{{item._id}}" data-openid="{{item.openId}}" data-status="pass" bindtap='changeMemberApplyStatus'>
                通过
             </view>
-            <view class="bg-red" id="{{item._id}}" data-status="reject" bindtap='changeMemberApplyStatus'>
+            <view class="bg-red" id="{{item._id}}" data-openid="{{item.openId}}"  data-status="reject" bindtap='changeMemberApplyStatus'>
                驳回
             </view>
         </view>
