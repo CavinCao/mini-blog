@@ -538,7 +538,7 @@ async function approveApplyVip(event) {
             value: "VIP申请"
           },
           thing5: {
-            value: event.apply == 'pass' ? "" : "没有打赏记录，不满足条件"
+            value: event.apply == 'pass' ? "恭喜成为VIP" : "没有打赏记录，不满足条件"
           }
         },
         templateId: APPLY_TEMPLATE_ID
