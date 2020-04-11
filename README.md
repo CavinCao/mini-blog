@@ -3,6 +3,10 @@
 
 ## 相关使用和文章介绍
 
+- [[mini-blog][v2.2.0]博客小程序积分功能实现](https://mp.weixin.qq.com/s/B1CN-Z8XgL0ENOHJn8YvWw)
+
+- [[mini-blog][v2.1.0]博客小程序签到功能实现](https://mp.weixin.qq.com/s/0vYdcxA4mOOZQq3R5nRl_w)
+
 - [[mini-blog][v2.0.0]博客小程序的一些优化汇总](https://mp.weixin.qq.com/s/V0IwsCx0b0PGIVz6EGaGnQ)
 
 - [[mini-blog]小程序订阅消息踩坑记](https://mp.weixin.qq.com/s/MWSJ4pWBQW1vhEpqj2HEAA)
@@ -38,6 +42,11 @@
 - [x]  评论消息通知功能的实现
 - [x]  专题、标签相关功能的实现
 - [x]  后台管理功能实现（文章管理、评论管理等-基本完成了)
+- [x]  签到功能
+- [x]  积分商城功能
+- []  消息中心模块整合
+- []  订阅消息模块整合
+- []  简化部署流程「最好一键初始化」
 
 ## 云数据库对应集合
 
@@ -64,6 +73,8 @@ mini_sign_detail
 mini_point_detail
 //订阅消息记录表
 mini_subcribute
+//分享邀请记录表
+mini_share_detail
 ```
 
 
