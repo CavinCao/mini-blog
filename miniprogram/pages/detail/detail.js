@@ -383,7 +383,8 @@ Page({
         createDate: util.formatTime(new Date()),
         comment: content,
         childComment: [],
-        flag: 1
+        flag: 1,
+        isVip:that.data.isVip
       }
       await api.addPostComment(data, accept)
     }
@@ -397,7 +398,8 @@ Page({
         comment: content,
         tNickName: that.data.toName,
         tOpenId: that.data.toOpenId,
-        flag: 1
+        flag: 1,
+        isVip:that.data.isVip
       }]
       await api.addPostChildComment(that.data.commentId, that.data.post._id, childData, accept)
     }
