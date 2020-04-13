@@ -377,7 +377,7 @@ submitApplyVip: async function (accept, templateId, that) {
   },
   hideModal(e) {
     this.setData({
-      isShow: false
+      showVIPModal: false
     })
   },
 })

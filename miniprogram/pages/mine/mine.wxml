@@ -79,7 +79,7 @@
         </view>
         <view class="padding-xl bg-white">
             <view>申请条件：打赏过作者的用户即可申请</view>
-            <view>VIP权益：待作者开发中</view>
+            <view>VIP权益：拥有VIP专属标签</view>
         </view>
         <view class="cu-bar bg-white">
             <view class="action margin-0 flex-sub " bindtap="hideModal">取消</view>

@@ -510,6 +510,18 @@ async function approveApplyVip(event) {
       }
     });
 
+    //通过后评论增加VIP
+    if (event.apply == 'pass') {
+      await db.collection('mini_comments').where({
+        cOpenId: event.openId
+      })
+      .update({
+        data: {
+          isVip: true
+        },
+      })
+    }
+
     var templateInfo = await db.collection('mini_subcribute').where({
       openId: event.openId,
       templateId: APPLY_TEMPLATE_ID

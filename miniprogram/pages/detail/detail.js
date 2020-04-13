@@ -73,7 +73,7 @@ Page({
       })
     }
     //广告加载
-    if (advert.readMoreStatus && !isVip) {
+    if (advert.readMoreStatus) {
       var openAded = false
       var openAdLogs = wx.getStorageSync('openAdLogs') || [];
       if (openAdLogs.length > 0) {
@@ -792,26 +792,18 @@ Page({
    * 阅读更多
    */
   readMore: function () {
-    //TODO：与广告组件接入有冲突，暂时注释
-    /*let that = this;
-    if (that.data.totalPoints > 20) {
-      that.setData({
-        pointsModal: true
-      })
-    }
-    else {*/
-      rewardedVideoAd.show()
-        .catch(() => {
-          rewardedVideoAd.load()
-            .then(() => rewardedVideoAd.show())
-            .catch(err => {
-              console.log('激励视频 广告显示失败');
-              that.setData({
-                hideArticle: ''
-              })
+
+    rewardedVideoAd.show()
+      .catch(() => {
+        rewardedVideoAd.load()
+          .then(() => rewardedVideoAd.show())
+          .catch(err => {
+            console.log('激励视频 广告显示失败');
+            that.setData({
+              hideArticle: ''
             })
-        })
-    //}
+          })
+      })
   },
 
   /**
@@ -846,7 +838,7 @@ Page({
    */
   consumePoints: async function () {
 
-    let that=this
+    let that = this
     let info = {}
     let res = await api.addPoints("readPost", info)
     if (res.result) {

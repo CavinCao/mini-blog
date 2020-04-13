@@ -56,13 +56,13 @@
       <view class="cu-avatar round" style="background-image:url({{item.cAvatarUrl}});" data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment"></view>
       <view class='content'>
         <view class='text-grey' data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment">
-          {{item.cNickName}}
+          {{item.cNickName}}<view wx:if="{{item.isVip}}" class="cu-tag line-orange radius sm">VIP</view>
         </view>
         <view class='text-gray text-content text-df'>{{item.comment}}</view>
         <view class='padding-sm radius  text-sm text-gray'>
           <view class="flex" wx:for="{{item.childComment}}" wx:key="id" wx:for-index="id" wx:for-item="childItem">
             <view data-id="{{item._id}}" data-name="{{childItem.cNickName}}" data-openid="{{childItem.cOpenId}}" bindtap="focusComment">
-              <view class='text-grey'>{{childItem.cNickName}}：</view>
+              <view class='text-grey'>{{childItem.cNickName}}<view wx:if="{{childItem.isVip}}" class="cu-tag line-orange radius sm">VIP</view>：</view>
             </view>
             <view class='flex-sub'>{{childItem.comment}}</view>
           </view>
@@ -137,22 +137,4 @@
     </view>
   </view>
 </view>
-<!-- 积分抵扣弹窗 
-<view class="cu-modal {{pointsModal?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">积分抵扣</view>
-      <view class="action" bindtap="hidePointsModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      您当前有<text class="text-green">{{totalPoints}}</text>积分，是否花费<text class="text-red">20</text>积分跳过广告？
-    </view>
-    <view class="cu-bar bg-white">
-      <view class="action margin-0 flex-sub solid-left" bindtap="lookAdvert">看广告</view>
-      <view class="action margin-0 flex-sub text-green  solid-left" bindtap="consumePoints">花积分</view>
-    </view>
-  </view>
-</view>-->
 

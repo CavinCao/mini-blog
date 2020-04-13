@@ -22,6 +22,8 @@ Page({
     applyStatus: 0,
     showLogin: false,
     showPointDescModal: false,//积分说明弹窗
+    highLighted:false,
+    highLightBtnTxt:"立即兑换",
     shareList: [{ nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd", style: "" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }]
   },
 
