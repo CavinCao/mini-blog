@@ -24,7 +24,94 @@ exports.main = async (event, context) => {
     case 'addShareDetail': {
       return addShareDetail(event)
     }
+    case 'addSignAgain':{
+      return addSignAgain(event)
+    }
     default: break
+  }
+}
+
+async function addSignAgain(event)
+{
+  try {
+    const wxContext = cloud.getWXContext()
+    let memberInfos = await db.collection('mini_member').where({
+      openId: wxContext.OPENID
+    }).get();
+
+    const tasks = []
+    let pointCount = 1
+
+    if (memberInfos.data.length === 0) {
+      let task1 = db.collection('mini_member').add({
+        data: {
+          openId: wxContext.OPENID,
+          totalSignedCount: 1,//累计签到数
+          continueSignedCount: 1,//持续签到
+          totalPoints: 1,//积分
+          lastSignedDate: "",//最后一次签到日期
+          level: 1,//会员等级（预留）
+          unreadMessgeCount: 0,//未读消息（预留）
+          modifyTime: new Date().getTime(),
+          avatarUrl: event.info.avatarUrl,//头像
+          nickName: event.info.nickName,//昵称
+          sighRightCount:_.inc(-1),
+          applyStatus: 0//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
+        }
+      })
+      tasks.push(task1)
+    }
+    else {
+      let memberInfo = memberInfos.data[0]
+      let continueSignedCount = memberInfo.continueSignedCount + 1
+
+      pointCount = continueSignedCount
+      if (continueSignedCount > 30) {
+        pointCount = 30
+      }
+
+      let task2 = db.collection('mini_member').doc(memberInfo._id).update({
+        data: {
+          totalSignedCount: _.inc(1),
+          continueSignedCount: continueSignedCount,
+          totalPoints: _.inc(pointCount),
+          sighRightCount:_.inc(-1),
+          modifyTime: new Date().getTime()
+        }
+      });
+      tasks.push(task2)
+    }
+
+    //签到明细
+    let task3 = db.collection('mini_sign_detail').add({
+      data: {
+        openId: wxContext.OPENID,
+        year: event.info.year.toString(),
+        month: event.info.month.toString(),
+        day: event.info.day.toString(),
+        createTime: new Date().getTime()
+      }
+    })
+    tasks.push(task3)
+
+    //积分明细
+    let task5 = db.collection('mini_point_detail').add({
+      data: {
+        openId: wxContext.OPENID,
+        operateType: 0,//0:获得 1:使用 2:过期
+        count: pointCount,
+        desc: "签到得积分",
+        date: (new Date()).toFormat("YYYY-MM-DD HH24:MI:SS"),
+        createTime: new Date().getTime()
+      }
+    })
+    tasks.push(task5)
+    await Promise.all(tasks)
+    return true
+  }
+  catch (e) {
+    console.error(e)
+    return false
   }
 }
 
@@ -163,6 +250,8 @@ async function addPoints(event) {
     let pointCount = 0;
     let desc = ""
     let operateType = 0
+    let sighRight=false
+    let highRight=false
 
     switch (event.taskType) {
       case 'taskVideo': {
@@ -179,6 +268,20 @@ async function addPoints(event) {
         pointCount = -20
         desc = "跳过广告阅读文章"
         operateType = 1
+        break
+      }
+      case 'forgetSignRight':{
+        pointCount = -200
+        desc = "漏签到补签权益"
+        operateType = 1
+        sighRight=true
+        break
+      }
+      case 'highNicknameRight':{
+        pointCount = -10000
+        desc = "昵称永久高亮"
+        operateType = 1
+        highRight=true
         break
       }
       default: break
@@ -201,17 +304,22 @@ async function addPoints(event) {
           modifyTime: new Date().getTime(),
           avatarUrl: event.info.avatarUrl,//头像
           nickName: event.info.nickName,//昵称
-          applyStatus: 0//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
+          applyStatus: 0,//申请状态 0:默认 1:申请中 2:申请通过 3:申请驳回
+          sighRightCount:sighRight?1:0,
+          highRight:highRight
         }
       })
       tasks.push(task1)
     }
     else {
+      let sighRightCount=sighRight?1:0
       let memberInfo = memberInfos.data[0]
       let task2 = db.collection('mini_member').doc(memberInfo._id).update({
         data: {
           totalPoints: _.inc(pointCount),
-          modifyTime: new Date().getTime()
+          modifyTime: new Date().getTime(),
+          sighRightCount:_.inc(sighRightCount),
+          highRight:highRight?true:memberInfo.highRight
         }
       });
       tasks.push(task2)

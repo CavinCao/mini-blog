@@ -2,13 +2,13 @@
     <view class="radius">
         已连续签到:
         <text class="text-sl">{{signedDays}}</text>
-        天
+        天,拥有 <text class="text-sl">{{signedRightCount}}</text> 次补签机会
     </view>
     <view class="radius text-white text-sm">连续签到可以获取更多积分哦</view>
 </view>
 <view class="bg-white margin-sm radius">
     <view class="padding-sm">
-        <calendar id="calendar" calendarConfig="{{calendarConfig}}" bind:whenChangeMonth="whenChangeMonth" bind:afterCalendarRender="afterCalendarRender"></calendar>
+        <calendar id="calendar" calendarConfig="{{calendarConfig}}" bind:onTapDay="onTapDay" bind:afterTapDay="afterTapDay" bind:whenChangeMonth="whenChangeMonth" bind:afterCalendarRender="afterCalendarRender"></calendar>
     </view>
     <view class='sign-new'>
         <view class='new-head'>

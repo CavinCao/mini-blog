@@ -17,6 +17,7 @@ Page({
     showRedDot: '',
     signedDays: 0,//连续签到天数
     signed: 0,
+    signedRightCount: 0,
     applyStatus: 0,
     showVIPModal: false,
     signBtnTxt: "每日签到",
@@ -168,7 +169,7 @@ Page({
    */
   btnSigned: async function (e) {
     wx.navigateTo({
-      url: '../mine/sign/sign?signedDays=' + this.data.signedDays + '&signed=' + this.data.signed
+      url: '../mine/sign/sign?signedDays=' + this.data.signedDays + '&signed=' + this.data.signed + '&signedRightCount=' + this.data.signedRightCount
     })
   },
 
@@ -272,55 +273,55 @@ Page({
     })
   },
 
-    /**
+  /**
 * 正式提交
 */
-submitApplyVip: async function (accept, templateId, that) {
-  try {
+  submitApplyVip: async function (accept, templateId, that) {
+    try {
 
-    wx.showLoading({
-      title: '提交中...',
-    })
-    console.info(app.globalData.userInfo)
-    let info = {
-      nickName: app.globalData.userInfo.nickName,
-      avatarUrl: app.globalData.userInfo.avatarUrl,
-      accept: accept,
-      templateId: templateId
-    }
-    let res = await api.applyVip(info)
-    console.info(res)
-    if (res.result) {
-      wx.showToast({
-        title: "申请成功，等待审批",
-        icon: "none",
-        duration: 3000
-      });
-      this.setData({
-        showVIPModal: false,
-        applyStatus: 1
+      wx.showLoading({
+        title: '提交中...',
       })
-    }
-    else {
-      wx.showToast({
-        title: "程序出错啦",
-        icon: "none",
-        duration: 3000
-      });
-    }
+      console.info(app.globalData.userInfo)
+      let info = {
+        nickName: app.globalData.userInfo.nickName,
+        avatarUrl: app.globalData.userInfo.avatarUrl,
+        accept: accept,
+        templateId: templateId
+      }
+      let res = await api.applyVip(info)
+      console.info(res)
+      if (res.result) {
+        wx.showToast({
+          title: "申请成功，等待审批",
+          icon: "none",
+          duration: 3000
+        });
+        this.setData({
+          showVIPModal: false,
+          applyStatus: 1
+        })
+      }
+      else {
+        wx.showToast({
+          title: "程序出错啦",
+          icon: "none",
+          duration: 3000
+        });
+      }
 
-    wx.hideLoading()
-  }
-  catch (err) {
-    wx.showToast({
-      title: '程序有一点点小异常，操作失败啦',
-      icon: 'none',
-      duration: 1500
-    })
-    console.info(err)
-    wx.hideLoading()
-  }
-},
+      wx.hideLoading()
+    }
+    catch (err) {
+      wx.showToast({
+        title: '程序有一点点小异常，操作失败啦',
+        icon: 'none',
+        duration: 1500
+      })
+      console.info(err)
+      wx.hideLoading()
+    }
+  },
 
 
   /**
@@ -329,7 +330,7 @@ submitApplyVip: async function (accept, templateId, that) {
    */
   applyVip: async function (e) {
     let that = this
-    let tempalteId='DI_AuJDmFXnNuME1vpX_hY2yw1pR6kFXPZ7ZAQ0uLOY'
+    let tempalteId = 'DI_AuJDmFXnNuME1vpX_hY2yw1pR6kFXPZ7ZAQ0uLOY'
     wx.requestSubscribeMessage({
       tmplIds: [tempalteId],
       success(res) {
@@ -367,7 +368,8 @@ submitApplyVip: async function (accept, templateId, that) {
           signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "今日已签到" : "每日签到",
           vipDesc: Number(memberInfo.level) > 1 ? "VIP用户" : "点击申请VIP",
           isVip: Number(memberInfo.level) > 1,
-          applyStatus: memberInfo.applyStatus
+          applyStatus: memberInfo.applyStatus,
+          signedRightCount: memberInfo.sighRightCount == undefined ? 0 : memberInfo.sighRightCount
         })
       }
     }

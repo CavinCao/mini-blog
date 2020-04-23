@@ -22,8 +22,8 @@ Page({
     applyStatus: 0,
     showLogin: false,
     showPointDescModal: false,//积分说明弹窗
-    highLighted:false,
-    highLightBtnTxt:"立即兑换",
+    highLighted: false,
+    highLightBtnTxt: "立即兑换",
     shareList: [{ nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd", style: "" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }, { nickName: "待邀请", bgUrl: "bg-gary", icon: "cuIcon-friendadd" }]
   },
 
@@ -71,17 +71,17 @@ Page({
     }
 
     let shareList = await api.getShareDetailList(app.globalData.openid, util.formatTime(new Date()))
-    let defaultShareList=that.data.shareList
+    let defaultShareList = that.data.shareList
     console.info(shareList)
     if (shareList.data.length > 0) {
-      let i=0
+      let i = 0
       shareList.data.forEach(item => {
-        defaultShareList[i].nickName=item.nickName
-        defaultShareList[i].bgUrl=""
-        defaultShareList[i].icon=""
-        defaultShareList[i].style="background-image:url("+item.avatarUrl+");"
+        defaultShareList[i].nickName = item.nickName
+        defaultShareList[i].bgUrl = ""
+        defaultShareList[i].icon = ""
+        defaultShareList[i].style = "background-image:url(" + item.avatarUrl + ");"
         i++
-			});
+      });
 
       that.setData({
         shareList: defaultShareList
@@ -322,4 +322,59 @@ Page({
       delta: 1
     })
   },
+
+  /**
+   * 兑换漏签权益
+   * @param {*} e 
+   */
+  clickForgetRight: function (e) {
+    let that = this
+    if (that.data.totalPoints < 200) {
+      wx.showToast({
+        title: "很抱歉，您的积分不够",
+        icon: "none",
+        duration: 4000
+      });
+      return;
+    }
+
+    wx.showModal({
+      title: '提示',
+      content: '是否确认兑换?',
+      success(res) {
+        if (res.confirm) {
+          wx.showLoading({
+            title: '处理中...',
+          })
+          let info = {
+            nickName: app.globalData.userInfo.nickName,
+            avatarUrl: app.globalData.userInfo.avatarUrl,
+          }
+          api.addPoints("forgetSignRight", info).then((res) => {
+            console.info(res)
+            if (res.result) {
+              that.setData({
+                totalPoints: Number(that.data.totalPoints) - 200
+              })
+              wx.showToast({
+                title: "兑换成功",
+                icon: "none",
+                duration: 3000
+              });
+            }
+            else {
+              wx.showToast({
+                title: "程序有些小异常",
+                icon: "none",
+                duration: 3000
+              });
+            }
+            wx.hideLoading()
+          })
+        } else if (res.cancel) {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  }
 })

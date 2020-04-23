@@ -727,6 +727,19 @@ function addSign(info) {
 }
 
 /**
+ * 补充签到
+ */
+function addSignAgain(info) {
+    return wx.cloud.callFunction({
+        name: 'memberService',
+        data: {
+            action: "addSignAgain",
+            info: info
+        }
+    })
+}
+
+/**
  * 新增积分
  */
 function addPoints(taskType,info) {
@@ -872,5 +885,6 @@ module.exports = {
     getMemberInfoList:getMemberInfoList,
     addShareDetail:addShareDetail,
     getShareDetailList:getShareDetailList,
-    getPointsDetailList:getPointsDetailList
+    getPointsDetailList:getPointsDetailList,
+    addSignAgain:addSignAgain
 }

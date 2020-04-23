@@ -3,6 +3,7 @@ const api = require('../../../utils/api.js');
 const util = require('../../../utils/util.js');
 const regeneratorRuntime = require('../../../utils/runtime.js');
 const app = getApp();
+let toSet = []
 Page({
 
   /**
@@ -20,7 +21,7 @@ Page({
       highlightToday: true, // 是否高亮显示当天，区别于选中样式（初始化时当天高亮并不代表已选中当天）
       takeoverTap: true, // 是否完全接管日期点击事件（日期不会选中），配合 onTapDay() 使用
       preventSwipe: true, // 是否禁用日历滑动切换月份
-      disablePastDay: true, // 是否禁选当天之前的日期
+      disablePastDay: false, // 是否禁选当天之前的日期
       disableLaterDay: true, // 是否禁选当天之后的日期
       firstDayOfWeek: 'Mon', // 每周第一天为周一还是周日，默认按周日开始
       onlyShowCurrentMonth: true, // 日历面板是否只显示本月日期
@@ -30,19 +31,21 @@ Page({
     showBanner: false,
     showBannerId: "",
     signedDays: 0,//连续签到天数
-    signed: false
+    signed: false,
+    signedRightCount:0
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-
+    console.info(options)
     let that = this
     let signedDays = options.signedDays;
     let signed = options.signed;
     let advert = app.globalData.advert
     let showBanner = false
     let showBannerId = ''
+    let signedRightCount=options.signedRightCount
     if (advert.bannerStatus) {
       showBanner = true
       showBannerId = advert.bannerId
@@ -52,7 +55,8 @@ Page({
       showBanner: showBanner,
       showBannerId: showBannerId,
       signedDays: signedDays,
-      signed: signed == 1
+      signed: signed == 1,
+      signedRightCount:signedRightCount
     })
 
     app.checkUserInfo(function (userInfo, isLogin) {
@@ -77,7 +81,7 @@ Page({
     let month = util.getMonth(new Date())
     let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
-    let toSet = [];
+    toSet = [];
     res.result.forEach(function (item) {
       let set = {
         year: item.year,
@@ -99,7 +103,7 @@ Page({
     let month = e.detail.next.month
     let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
     console.info(res)
-    let toSet = [];
+    toSet = [];
     res.result.forEach(function (item) {
       let set = {
         year: item.year,
@@ -110,6 +114,74 @@ Page({
     })
 
     this.calendar.setSelectedDays(toSet);
+  },
+    /**
+   * 日期点击事件（此事件会完全接管点击事件），需自定义配置 takeoverTap 值为真才能生效
+   * currentSelect 当前点击的日期
+   */
+  onTapDay(e) {
+    let that=this
+    console.log('onTapDay', e.detail); // => { year: 2019, month: 12, day: 3, ...}
+    if(e.detail.choosed)
+    {
+      if(Number(that.data.signedRightCount)<=0)
+      {
+        return;
+      }
+      
+      wx.showModal({
+        title: '提示',
+        content: '您有'+that.data.signedRightCount+'次补签，是否进行补签？',
+        success(res) {
+          if (res.confirm) {
+            wx.showLoading({
+              title: '处理中...',
+            })
+
+            let info = {
+              openId: app.globalData.openid,
+              nickName: app.globalData.userInfo.nickName,
+              avatarUrl: app.globalData.userInfo.avatarUrl,
+              year:e.detail.year,
+              month:e.detail.month,
+              day:e.detail.day
+            }
+            api.addSignAgain(info).then((res) => {
+              console.info(res)
+              if (res.result) {
+                that.setData({
+                  signedDays: Number(that.data.signedDays) + 1,
+                  signedRightCount:Number(that.data.signedRightCount) - 1,
+                })
+                let set = {
+                  year: e.detail.year.toString(),
+                  month: e.detail.month.toString(),
+                  day: e.detail.day.toString()
+                }
+                toSet.push(set)
+                that.calendar.setSelectedDays(toSet);
+
+                wx.showToast({
+                  title: "补签成功",
+                  icon: "none",
+                  duration: 3000
+                });
+              }
+              else {
+                wx.showToast({
+                  title: "程序有些小异常",
+                  icon: "none",
+                  duration: 3000
+                });
+              }
+              wx.hideLoading()
+            })
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }
   },
 
   /**
