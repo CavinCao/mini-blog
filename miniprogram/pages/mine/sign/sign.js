@@ -128,7 +128,18 @@ Page({
       {
         return;
       }
-      
+
+      let set = {
+        year: e.detail.year.toString(),
+        month: e.detail.month.toString(),
+        day: e.detail.day.toString()
+      }
+
+      if(JSON.stringify(toSet).indexOf(JSON.stringify(set))!==-1)
+      {
+        return;
+      }
+
       wx.showModal({
         title: '提示',
         content: '您有'+that.data.signedRightCount+'次补签，是否进行补签？',
@@ -153,11 +164,7 @@ Page({
                   signedDays: Number(that.data.signedDays) + 1,
                   signedRightCount:Number(that.data.signedRightCount) - 1,
                 })
-                let set = {
-                  year: e.detail.year.toString(),
-                  month: e.detail.month.toString(),
-                  day: e.detail.day.toString()
-                }
+
                 toSet.push(set)
                 that.calendar.setSelectedDays(toSet);
 

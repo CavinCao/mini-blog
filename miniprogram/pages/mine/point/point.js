@@ -16,6 +16,7 @@ Page({
     showBannerId: "",
     signBtnTxt: "马上签到",
     signed: 0,
+    signedRightCount: 0,
     signedDays: 0,
     showVIPModal: false,
     isVip: false,
@@ -62,7 +63,8 @@ Page({
         signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
         signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "已经完成" : "马上签到",
         isVip: Number(memberInfo.level) > 1,
-        applyStatus: memberInfo.applyStatus
+        applyStatus: memberInfo.applyStatus,
+        signedRightCount: memberInfo.sighRightCount == undefined ? 0 : memberInfo.sighRightCount
       })
     }
 
@@ -104,7 +106,7 @@ Page({
    */
   clickSigned: async function (e) {
     wx.navigateTo({
-      url: '../sign/sign?signedDays=' + this.data.signedDays + '&signed=' + this.data.signed
+      url: '../sign/sign?signedDays=' + this.data.signedDays + '&signed=' + this.data.signed + '&signedRightCount=' + this.data.signedRightCount
     })
   },
 
