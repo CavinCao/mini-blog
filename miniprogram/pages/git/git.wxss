@@ -1,0 +1,9 @@
+page {
+  background-color: #f1f1f1;
+}
+.cu-tag.light {
+    color: #666;
+    background-color: #f8f8f8;
+    border: 1rpx solid #eee;
+}
+

@@ -1,0 +1,7 @@
+<view class="bg-white padding">
+    <view class="cu-load loading" wx:if="{{isLoading}}"></view>
+    <view wx:else>
+        <towxml nodes="{{article}}"/>
+    </view>
+</view>
+

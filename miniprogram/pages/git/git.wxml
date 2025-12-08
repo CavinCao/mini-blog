@@ -1,0 +1,73 @@
+<view class="box">
+  <view class="cu-bar search bg-white">
+    <view class="search-form round">
+      <text class="cuIcon-search"></text>
+      <input type="text" placeholder="输入关键词搜索 GitHub 仓库" confirm-type="search" bindinput="handleInput" bindconfirm="handleSearch" value="{{searchKeyword}}"></input>
+    </view>
+    <view class="action">
+      <button class="cu-btn bg-blue shadow-blur round" bindtap="handleSearch">搜索</button>
+    </view>
+  </view>
+</view>
+
+<view wx:if="{{!showHot && !nodata}}" class="padding-sm text-sm text-gray">
+    找到 {{totalCount}} 个结果
+</view>
+
+<block wx:if="{{showHot}}">
+  <view class="padding-sm bg-white margin-top-xs">
+    <view class="flex justify-between align-center padding-bottom-sm">
+      <view class="text-bold text-lg">热门搜索</view>
+    </view>
+    <view class="flex flex-wrap">
+      <view class="padding-xs" wx:for="{{hotSearch}}" wx:key="index">
+        <view class="cu-tag round bg-gray light" bindtap="handleTagSearch" data-keyword="{{item}}">{{item}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="padding-sm bg-white margin-top-sm" wx:if="{{historySearch.length > 0}}">
+    <view class="flex justify-between align-center padding-bottom-sm">
+      <view class="text-bold text-lg">搜索历史</view>
+      <view class="text-gray" bindtap="handleClearHistory">清空</view>
+    </view>
+    <view class="flex flex-wrap">
+      <view class="padding-xs" wx:for="{{historySearch}}" wx:key="index">
+        <view class="cu-tag round bg-gray light" bindtap="handleTagSearch" data-keyword="{{item}}">{{item}}</view>
+      </view>
+    </view>
+  </view>
+</block>
+
+<block wx:else>
+  <view class="cu-card dynamic no-card margin-top-xs">
+    <view class="cu-item shadow solids-bottom padding-sm" wx:for="{{repoList}}" wx:key="id" bindtap="bindRepoDetail" data-fullname="{{item.full_name}}">
+      <view class="flex align-center">
+        <image src="{{item.owner.avatar_url}}" class="cu-avatar round sm margin-right-sm"></image>
+        <view class="text-bold text-lg text-cut flex-sub">{{item.full_name}}</view>
+        <view class="cu-tag line-blue sm round margin-left-sm" wx:if="{{item.language}}">{{item.language}}</view>
+      </view>
+      <view class="text-content text-gray text-sm margin-top-sm" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
+        {{item.description || 'No description'}}
+      </view>
+      <view class="flex flex-wrap margin-top-sm" wx:if="{{item.topics && item.topics.length > 0}}">
+        <view class="cu-tag bg-green light sm round margin-right-xs margin-bottom-xs" wx:for="{{item.topics}}" wx:key="index" wx:if="{{index < 3}}" wx:for-item="topic">
+            {{topic}}
+        </view>
+      </view>
+      <view class="flex justify-between margin-top-sm text-gray text-sm">
+        <view class="flex align-center">
+          <text class="cuIcon-favorfill text-yellow margin-right-xs"></text> {{item.stargazers_count}}
+          <text class="cuIcon-fork margin-left-sm margin-right-xs"></text> {{item.forks_count}}
+        </view>
+        <view>
+           {{item.updated_at}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{nodata}}" class="padding-xl text-center text-gray">
+    <text>暂无相关内容</text>
+  </view>
+</block>

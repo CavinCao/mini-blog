@@ -1,0 +1,67 @@
+<view class="bg-white padding">
+  <view class="flex justify-between align-center margin-bottom-sm">
+    <view class="flex align-center">
+      <image src="{{repo.owner.avatar_url}}" class="cu-avatar round sm margin-right-sm" wx:if="{{repo.owner.avatar_url}}"></image>
+      <text class="text-bold text-lg text-blue">{{repo.owner.login}}</text>
+    </view>
+    <view class="flex">
+      <button class="cu-btn line-gray sm margin-right-sm" bindtap="copyUrl">
+        <text class="cuIcon-copy"></text> 复制
+      </button>
+      <button class="cu-btn line-gray sm">
+        <text class="cuIcon-favor"></text> 收藏
+      </button>
+    </view>
+  </view>
+
+  <view class="text-xxl text-bold margin-bottom-sm">{{repo.name}}</view>
+
+  <view class="text-gray text-content margin-bottom-sm">
+    {{repo.description || '暂无描述'}}
+  </view>
+
+  <view class="flex justify-between margin-bottom text-gray text-sm">
+    <view class="flex align-center">
+      <view class="margin-right-sm">
+        <text class="cuIcon-favorfill text-yellow"></text> {{repo.stargazers_count}}
+      </view>
+      <view class="margin-right-sm">
+        <text class="cuIcon-fork"></text> {{repo.forks_count}}
+      </view>
+      <view class="margin-right-sm">
+        <text class="cuIcon-attention"></text> {{repo.watchers_count}}
+      </view>
+      <view wx:if="{{repo.language}}">
+        <text class="cuIcon-title text-green"></text> {{repo.language}}
+      </view>
+    </view>
+  </view>
+  
+  <view class="text-gray text-sm margin-bottom-sm">
+    创建于 {{repo.created_at}} · 更新于 {{repo.updated_at}}
+  </view>
+
+  <view class="flex margin-top-lg margin-bottom-lg">
+    <button class="cu-btn bg-green shadow-blur flex-sub margin-right-sm" bindtap="viewCode">
+      <text class="cuIcon-edit margin-right-xs"></text> View Code
+    </button>
+    <button class="cu-btn bg-blue shadow-blur flex-sub margin-left-sm" bindtap="viewIssues">
+      <text class="cuIcon-warn margin-right-xs"></text> View Issues
+    </button>
+  </view>
+</view>
+
+<view class="bg-white margin-top-sm padding">
+  <view class="flex align-center margin-bottom border-bottom padding-bottom-sm">
+    <text class="cuIcon-file text-gray margin-right-xs"></text>
+    <text class="text-bold">README</text>
+  </view>
+  
+  <view class="padding-bottom" wx:if="{{isReadmeLoading}}">
+     <view class="cu-load loading"></view>
+  </view>
+  
+  <view wx:else>
+      <towxml nodes="{{readme}}"/>
+  </view>
+</view>

@@ -1,0 +1,31 @@
+<view class="bg-white padding-sm solid-bottom flex justify-between align-center">
+  <picker bindchange="handleBranchChange" value="{{branchIndex}}" range="{{branches}}">
+    <view class="text-lg flex align-center">
+      <text class="cuIcon-fork margin-right-xs"></text>
+      分支: {{branch}}
+      <text class="cuIcon-triangledownfill text-gray margin-left-xs"></text>
+    </view>
+  </picker>
+  <view wx:if="{{path}}" class="text-blue" bindtap="navigateBack">返回上一级</view>
+</view>
+
+<view class="cu-list menu">
+  <view class="cu-item" wx:if="{{path}}">
+     <view class="content text-bold text-lg text-cut">
+         {{path}}
+     </view>
+  </view>
+  
+  <view class="cu-item arrow" wx:for="{{contents}}" wx:key="sha" bindtap="handleItemClick" data-item="{{item}}">
+    <view class="content flex align-center">
+      <text class="cuIcon-file text-gray margin-right-sm" wx:if="{{item.type === 'file'}}"></text>
+      <text class="cuIcon-file text-blue margin-right-sm" wx:if="{{item.type === 'dir'}}"></text>
+      <view>
+          <view class="text-df">{{item.name}}</view>
+          <view class="text-xs text-gray" wx:if="{{item.type === 'file'}}">{{item.size}} bytes</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="cu-load loading" wx:if="{{isLoading}}"></view>

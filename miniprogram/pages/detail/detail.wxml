@@ -22,10 +22,8 @@
     </view>
   </view>
   <view class="detail-body" style="height:{{hideArticle}}">
-      <!--<towxml nodes="{{post.content}}"/>-->
       <view class='padding'>
-        <rich-text mode="compat" nodes="{{post.content}}"></rich-text>
-        <!--<mp-html content="{{post.content}}" />-->
+        <towxml nodes="{{post.content}}"/>
       </view>
     <!--<template is="entry" data="{{...post.content}}" />-->
     <!--<view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>-->
@@ -94,15 +92,11 @@
     <button class='cu-btn bg-green shadow-blur' bindtap="formSubmit">发送</button>
   </view>
   <!-- </form> -->
-  <view class="cu-list grid col-5 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
+  <view class="cu-list grid col-4 no-border menu-box {{isShow ? 'emoji-move-in' : 'emoji-move-out'}}">
     <view class="cu-item item">
       <view class='cuIcon-share text-olive' style="margin-top:0;"></view>
       <text>转发</text>
       <button class="share-button" open-type="share"></button>
-    </view>
-    <view class="cu-item item" catchtap="onCreatePoster">
-      <view class='cuIcon-pic text-olive' style="margin-top:0;"></view>
-      <text>海报</text>
     </view>
     <view class="cu-item item" bindtap='postCollection'>
       <view class='cuIcon-{{collection.icon}} text-olive' style="margin-top:0;"></view>
@@ -120,24 +114,4 @@
 </view>
 <!-- 弹出层：授权 -->
 <template is="login" data="{{showLogin: showLogin}}"></template>
-<!-- 生成海报组件 -->
-<poster id="poster" hide-loading="{{false}}" preload="{{false}}" config="{{posterConfig}}" bind:success="onPosterSuccess" bind:fail="onPosterFail"></poster>
-<!-- 展示海报弹窗 -->
-<view class="cu-modal {{isShowPosterModal?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class='content'>海报分享</view>
-      <view class='action' bindtap='hideModal'>
-        <text class='cuIcon-close text-red'></text>
-      </view>
-    </view>
-    <view>
-      <image style='height:800rpx;' mode="aspectFit" src="{{posterImageUrl}}" bindtap="posterImageClick"></image>
-    </view>
-    <view class="cu-bar bg-white">
-      <view class='action margin-0 flex-sub text-green solid-left' bindtap='hideModal'>取消</view>
-      <view class='action margin-0 flex-sub  solid-left' bindtap='savePosterImage'>保存本地</view>
-    </view>
-  </view>
-</view>
 

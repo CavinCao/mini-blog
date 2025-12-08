@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "towxml": "/towxml/towxml"
+  },
+  "navigationBarTitleText": "文件详情"
+}
+

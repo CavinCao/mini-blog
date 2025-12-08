@@ -1,0 +1,7 @@
+page {
+  background-color: #f1f1f1;
+}
+.border-bottom {
+    border-bottom: 1rpx solid #eee;
+}
+

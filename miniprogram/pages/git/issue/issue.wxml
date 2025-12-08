@@ -1,0 +1,35 @@
+<view class="bg-white nav">
+  <view class="flex text-center">
+    <view class="cu-item flex-sub {{state=='open'?'text-blue cur':''}}" bindtap="tabSelect" data-id="open">
+      <text class="cuIcon-info"></text> Open
+    </view>
+    <view class="cu-item flex-sub {{state=='closed'?'text-blue cur':''}}" bindtap="tabSelect" data-id="closed">
+      <text class="cuIcon-roundcheck"></text> Closed
+    </view>
+  </view>
+</view>
+
+<view class="cu-list menu sm-border card-menu margin-top">
+  <view class="cu-item content padding-tb-sm" wx:for="{{issues}}" wx:key="id" bindtap="viewIssueDetail" data-url="{{item.html_url}}">
+    <view class="content">
+      <view class="text-black text-bold text-lg">
+        <text class="cuIcon-info text-green margin-right-xs" wx:if="{{item.state=='open'}}"></text>
+        <text class="cuIcon-roundcheck text-red margin-right-xs" wx:else></text>
+        {{item.title}}
+      </view>
+      <view class="flex flex-wrap margin-top-xs">
+        <view class="cu-tag bg-{{label.color}} light sm round margin-right-xs margin-bottom-xs" wx:for="{{item.labels}}" wx:for-item="label" wx:key="id" style="background-color: #{{label.color}}; color: {{util.isLight(label.color)?'#000':'#fff'}}">
+          {{label.name}}
+        </view>
+      </view>
+      <view class="text-gray text-sm margin-top-xs">
+        #{{item.number}} opened by {{item.user.login}} {{item.created_at_algo}}
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="cu-load loading" wx:if="{{isLoading}}"></view>
+<view class="cu-load over" wx:if="{{!isLoading && issues.length==0}}">暂无数据</view>
+<view class="cu-load over" wx:if="{{!isLoading && !isMore && issues.length>0}}">没有更多了</view>
+

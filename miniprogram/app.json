@@ -1,6 +1,11 @@
 {
     "pages": [
         "pages/index/index",
+        "pages/git/git",
+        "pages/git/detail/detail",
+        "pages/git/code/code",
+        "pages/git/file/file",
+        "pages/git/issue/issue",
         "pages/topic/topic",
         "pages/mine/mine",
         "pages/topic/topiclist/topiclist",
@@ -38,6 +43,12 @@
                 "iconPath": "/images/tab/index.png",
                 "selectedIconPath": "/images/tab/index_clicked.png",
                 "text": "首页"
+            },
+            {
+                "pagePath": "pages/git/git",
+                "iconPath": "/images/tab/github_fill.png",
+                "selectedIconPath": "/images/tab/github_fill_clicked.png",
+                "text": "Git"
             },
             {
                 "pagePath": "pages/topic/topic",

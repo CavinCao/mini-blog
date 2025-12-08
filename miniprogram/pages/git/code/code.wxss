@@ -1,0 +1,7 @@
+page {
+  background-color: #f1f1f1;
+}
+.cu-list.menu>.cu-item {
+    min-height: 100rpx;
+}
+

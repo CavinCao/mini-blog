@@ -887,7 +887,107 @@ module.exports = {
     getShareDetailList:getShareDetailList,
     getPointsDetailList:getPointsDetailList,
     addSignAgain:addSignAgain,
-    syncWechatPosts: syncWechatPosts
+    syncWechatPosts: syncWechatPosts,
+    searchGitHub: searchGitHub,
+    getGitHubRepo: getGitHubRepo,
+    getGitHubReadme: getGitHubReadme,
+    getGitHubContents: getGitHubContents,
+    getGitHubBranches: getGitHubBranches,
+    getGitHubIssues: getGitHubIssues
+}
+
+/**
+ * 获取 GitHub 仓库 Issues
+ * @param {*} fullName 
+ * @param {*} state 
+ * @param {*} page 
+ */
+function getGitHubIssues(fullName, state, page) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'getGitHubIssues',
+            fullName: fullName,
+            state: state,
+            page: page
+        }
+    })
+}
+
+/**
+ * 搜索 GitHub
+ * @param {*} keyword
+ * @param {*} page
+ */
+function searchGitHub(keyword, page) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'searchGitHub',
+            keyword: keyword,
+            page: page
+        }
+    })
+}
+
+/**
+ * 获取 GitHub 仓库详情
+ * @param {*} fullName
+ */
+function getGitHubRepo(fullName) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'getGitHubRepo',
+            fullName: fullName
+        }
+    })
+}
+
+/**
+ * 获取 GitHub 仓库 Readme
+ * @param {*} fullName
+ */
+function getGitHubReadme(fullName) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'getGitHubReadme',
+            fullName: fullName
+        }
+    })
+}
+
+/**
+ * 获取 GitHub 仓库内容
+ * @param {*} fullName
+ * @param {*} path
+ * @param {*} ref
+ */
+function getGitHubContents(fullName, path, ref) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'getGitHubContents',
+            fullName: fullName,
+            path: path,
+            ref: ref
+        }
+    })
+}
+
+/**
+ * 获取 GitHub 仓库分支列表
+ * @param {*} fullName
+ */
+function getGitHubBranches(fullName) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'getGitHubBranches',
+            fullName: fullName
+        }
+    })
 }
 
 /**

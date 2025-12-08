@@ -11,6 +11,27 @@ const APPSCREAT = process.env.AppSecret
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  switch (event.action) {
+    case 'searchGitHub': {
+      return await searchGitHub(event)
+    }
+    case 'getGitHubRepo': {
+      return await getGitHubRepo(event)
+    }
+    case 'getGitHubReadme': {
+      return await getGitHubReadme(event)
+    }
+    case 'getGitHubContents': {
+      return await getGitHubContents(event)
+    }
+    case 'getGitHubBranches': {
+      return await getGitHubBranches(event)
+    }
+    case 'getGitHubIssues': {
+      return await getGitHubIssues(event)
+    }
+  }
+
   await syncWechatPosts(false)
   //TODO:暂时注释：2019-05-09(cloud.openapi.wxacode.getUnlimited)云调用暂不支持云端测试和定时触发器，只能由小程序端触发
   //await syncPostQrCode()
@@ -285,4 +306,164 @@ async function getConfigInfo(key) {
     return result.data[0];
   }
 
+}
+/**
+ * 获取 GitHub 仓库详情
+ * @param {*} event 
+ */
+async function getGitHubRepo(event) {
+  let { fullName } = event;
+  try {
+    const result = await rp({
+      url: `https://api.github.com/repos/${fullName}`,
+      headers: {
+        'User-Agent': 'Mini-Blog-WeChat-App'
+      },
+      json: true
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+}
+
+/**
+ * 获取 GitHub 仓库 Readme
+ * @param {*} event 
+ */
+async function getGitHubReadme(event) {
+  let { fullName } = event;
+  try {
+    const result = await rp({
+      url: `https://api.github.com/repos/${fullName}/readme`,
+      headers: {
+        'User-Agent': 'Mini-Blog-WeChat-App'
+      },
+      json: true
+    });
+    
+    if (result.content && result.encoding === 'base64') {
+        return Buffer.from(result.content, 'base64').toString('utf-8');
+    }
+    return "";
+
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}
+
+/**
+ * 获取 GitHub 仓库内容
+ * @param {*} event 
+ */
+async function getGitHubContents(event) {
+  let { fullName, path, ref } = event;
+  let url = `https://api.github.com/repos/${fullName}/contents`;
+  if (path) {
+      url += `/${path}`;
+  }
+  
+  let qs = {};
+  if (ref) {
+      qs.ref = ref;
+  }
+
+  try {
+    const result = await rp({
+      url: url,
+      qs: qs,
+      headers: {
+        'User-Agent': 'Mini-Blog-WeChat-App'
+      },
+      json: true
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+}
+
+/**
+ * 获取 GitHub 仓库分支列表
+ * @param {*} event 
+ */
+async function getGitHubBranches(event) {
+  let { fullName } = event;
+  try {
+     const result = await rp({
+      url: `https://api.github.com/repos/${fullName}/branches`,
+      headers: {
+        'User-Agent': 'Mini-Blog-WeChat-App'
+      },
+      json: true
+    });
+    return result;
+  }
+  catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+}
+
+/**
+ * 搜索 GitHub 仓库
+ * @param {*} event 
+ */
+async function searchGitHub(event) {
+  let { keyword, page } = event;
+  if (!page) page = 1;
+  
+  try {
+    const result = await rp({
+      url: `https://api.github.com/search/repositories`,
+      qs: {
+        q: keyword,
+        sort: 'stars',
+        order: 'desc',
+        page: page,
+        per_page: 20
+      },
+      headers: {
+        'User-Agent': 'Mini-Blog-WeChat-App'
+      },
+      json: true
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return { items: [], total_count: 0, error: err.message };
+  }
+}
+
+/**
+ * 获取 GitHub 仓库 Issues
+ * @param {*} event 
+ */
+async function getGitHubIssues(event) {
+  let { fullName, state, page } = event;
+  if (!page) page = 1;
+  if (!state) state = 'open';
+
+  try {
+    const result = await rp({
+      url: `https://api.github.com/repos/${fullName}/issues`,
+      qs: {
+        state: state,
+        page: page,
+        per_page: 20,
+        sort: 'updated'
+      },
+      headers: {
+        'User-Agent': 'Mini-Blog-WeChat-App'
+      },
+      json: true
+    });
+    return result;
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
 }
