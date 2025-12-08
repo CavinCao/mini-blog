@@ -11,10 +11,10 @@ const APPSCREAT = process.env.AppSecret
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  const wxContext = cloud.getWXContext()
   await syncWechatPosts(false)
   //TODO:暂时注释：2019-05-09(cloud.openapi.wxacode.getUnlimited)云调用暂不支持云端测试和定时触发器，只能由小程序端触发
   //await syncPostQrCode()
+  return true
 }
 
 /**
@@ -27,17 +27,16 @@ async function syncWechatPosts(isUpdate) {
     return;
   }
   let collection = "mini_posts"
-  let accessToken = await getCacheAccessToken(1)
   var offset = parseInt(configData.value.currentOffset);
   let maxCount = parseInt(configData.value.maxSyncCount);
   var count = 10
   var isContinue = true
   while (isContinue) {
-    var posts = await getWechatPosts(accessToken, offset, count)
+    var posts = await getWechatPosts(offset, count)
     console.info(posts.item.length)
     if (posts.item.length == 0) {
       isContinue = false;
-      let data = { currentOffset: 0, maxSyncCount: 10 }
+      let data = { currentOffset: offset, maxSyncCount: maxCount }
       await db.collection("mini_config").doc(configData._id).update({
         data: {
           value: data
@@ -50,7 +49,7 @@ async function syncWechatPosts(isUpdate) {
       //判断是否存在
       let existPost = await db.collection(collection).where(
         {
-          uniqueId: posts.item[index].media_id,
+          uniqueId: posts.item[index].mediaId,
           sourceFrom: "wechat"
         }).get();
 
@@ -58,10 +57,10 @@ async function syncWechatPosts(isUpdate) {
         continue;
       }
       if (!existPost.data.length) {
-        let dt = new Date(posts.item[index].update_time * 1000);
+        let dt = new Date(posts.item[index].updateTime * 1000);
         let createTime = dt.toFormat("YYYY-MM-DD")
         //移除公众号代码片段序号
-        let content = posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g, '')
+        let content = posts.item[index].content.newsItem[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g, '')
         //替换图片data-url
         content = content.replace(/data-src/g, "src")
 
@@ -69,57 +68,29 @@ async function syncWechatPosts(isUpdate) {
         content = content.replace(/<span style="color:rgba(0, 0, 0, 0);"><span style="line-height: inherit;margin-right: auto;margin-left: auto;border-radius: 4px;">/g, "")
 
         var data = {
-          uniqueId: posts.item[index].media_id,
+          uniqueId: posts.item[index].mediaId,
           sourceFrom: "wechat",
           content: content,
-          author: posts.item[index].content.news_item[0].author,
-          title: posts.item[index].content.news_item[0].title,
-          defaultImageUrl: posts.item[index].content.news_item[0].thumb_url,
+          author: posts.item[index].content.newsItem[0].author,
+          title: posts.item[index].content.newsItem[0].title,
+          defaultImageUrl: posts.item[index].content.newsItem[0].thumbUrl,
           createTime: createTime,
-          timestamp: posts.item[index].update_time,
+          timestamp: posts.item[index].updateTime,
           totalComments: 0,//总的点评数
           totalVisits: 100,//总的访问数
           totalZans: 50,//总的点赞数
           label: [],//标签
           classify: 0,//分类
           contentType: "html",
-          digest: posts.item[index].content.news_item[0].digest,//摘要
+          digest: posts.item[index].content.newsItem[0].digest,//摘要
           isShow: 1,//是否展示
-          originalUrl: posts.item[index].content.news_item[0].url,
+          originalUrl: posts.item[index].content.newsItem[0].url,
           totalCollection: 10 + Math.floor(Math.random() * 40)
         }
 
         await db.collection(collection).add({
           data: data
         });
-      }
-      else {
-        //不需要更新直接继续
-        if (!isUpdate) {
-          continue
-        }
-
-        //移除公众号代码片段序号
-        let content = posts.item[index].content.news_item[0].content.replace(/<ul class="code-snippet__line-index code-snippet__js".*?<\/ul>/g, '')
-        //替换图片data-url
-        content = content.replace(/data-src/g, "src")
-
-        //替换新媒体管家样式问题
-        content = content.replace(/<span style="color:rgba(0, 0, 0, 0);"><span style="line-height: inherit;margin-right: auto;margin-left: auto;border-radius: 4px;">/g, "")
-
-
-        let id = existPost.data[0]._id;
-        await db.collection(collection).doc(id).update({
-          data: {
-            content: content,
-            author: posts.item[index].content.news_item[0].author,
-            title: posts.item[index].content.news_item[0].title,
-            defaultImageUrl: posts.item[index].content.news_item[0].thumb_url,
-            originalUrl: posts.item[index].content.news_item[0].url,
-            totalCollection: 10 + Math.floor(Math.random() * 40)
-          }
-        });
-
       }
     }
     if (offset > maxCount) {
@@ -202,19 +173,12 @@ async function getAccessWechatToken() {
  * 获取公众号文章信息
  * @param {*} accessToken
  */
-async function getWechatPosts(accessToken, offset, count) {
-  let url = `https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=${accessToken}`
-  var options = {
-    method: 'POST',
-    json: true,
-    uri: url,
-    body: {
-      "type": "news",
-      "offset": offset,
-      "count": count
-    }
-  }
-  const result = await rp(options)
+async function getWechatPosts(offset, count) {
+  const result = await cloud.openapi({ appid: APPID }).officialAccount.material.batchGetMaterial({
+    "type": "news",
+    "offset": offset,
+    "count": count
+  })
   let rbody = (typeof result === 'object') ? result : JSON.parse(result);
   return rbody;
 }
@@ -305,7 +269,7 @@ async function getConfigInfo(key) {
   let collection = "mini_config";
   let result = await db.collection(collection).where({ key: key }).get();
   if (result.data.length === 0) {
-    let value = { currentOffset: 0, maxSyncCount: 0 }
+    let value = { currentOffset: 0, maxSyncCount: 100 }
     let data = {
       key: key,
       value: value,

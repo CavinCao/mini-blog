@@ -1,57 +1,57 @@
 {
-  "pages": [
-    "pages/index/index",
-    "pages/topic/topic",
-    "pages/mine/mine",
-    "pages/topic/topiclist/topiclist",
-    "pages/detail/detail",
-    "pages/mine/collection/collection",
-    "pages/admin/index",
-    "pages/mine/notice/notice",
-    "pages/mine/release/release",
-    "pages/admin/articleList/articleList",
-    "pages/admin/labelList/labelList",
-    "pages/admin/comment/comment",
-    "pages/admin/classify/classify",
-    "pages/detail/original",
-    "pages/admin/subscribe/subscribe",
-    "pages/admin/advert/advert",
-    "pages/mine/sign/sign",
-    "pages/mine/point/point",
-    "pages/mine/point/pointDetail",
-    "pages/admin/member/member"
-  ],
-  "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "我是程序员",
-    "navigationBarTextStyle": "black"
-  },
-  "tabBar": {
-    "color": "#959394",
-    "selectedColor": "#1296db",
-    "backgroundColor": "#fff",
-    "borderStyle": "black",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "iconPath": "/images/tab/index.png",
-        "selectedIconPath": "/images/tab/index_clicked.png",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/topic/topic",
-        "iconPath": "/images/tab/function.png",
-        "selectedIconPath": "/images/tab/function_clicked.png",
-        "text": "专题"
-      },
-      {
-        "pagePath": "pages/mine/mine",
-        "iconPath": "/images/tab/mine.png",
-        "selectedIconPath": "/images/tab/mine_clicked.png",
-        "text": "我的"
-      }
-    ]
-  },
-  "sitemapLocation": "sitemap.json"
+    "pages": [
+        "pages/index/index",
+        "pages/topic/topic",
+        "pages/mine/mine",
+        "pages/topic/topiclist/topiclist",
+        "pages/detail/detail",
+        "pages/mine/collection/collection",
+        "pages/admin/index",
+        "pages/mine/notice/notice",
+        "pages/mine/release/release",
+        "pages/admin/articleList/articleList",
+        "pages/admin/labelList/labelList",
+        "pages/admin/comment/comment",
+        "pages/admin/classify/classify",
+        "pages/detail/original",
+        "pages/admin/subscribe/subscribe",
+        "pages/admin/advert/advert",
+        "pages/mine/sign/sign",
+        "pages/mine/point/point",
+        "pages/mine/point/pointDetail",
+        "pages/admin/member/member"
+    ],
+    "window": {
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#fff",
+        "navigationBarTitleText": "我是程序员",
+        "navigationBarTextStyle": "black"
+    },
+    "tabBar": {
+        "color": "#959394",
+        "selectedColor": "#1296db",
+        "backgroundColor": "#fff",
+        "borderStyle": "black",
+        "list": [
+            {
+                "pagePath": "pages/index/index",
+                "iconPath": "/images/tab/index.png",
+                "selectedIconPath": "/images/tab/index_clicked.png",
+                "text": "首页"
+            },
+            {
+                "pagePath": "pages/topic/topic",
+                "iconPath": "/images/tab/function.png",
+                "selectedIconPath": "/images/tab/function_clicked.png",
+                "text": "专题"
+            },
+            {
+                "pagePath": "pages/mine/mine",
+                "iconPath": "/images/tab/mine.png",
+                "selectedIconPath": "/images/tab/mine_clicked.png",
+                "text": "我的"
+            }
+        ]
+    },
+    "sitemapLocation": "sitemap.json"
 }

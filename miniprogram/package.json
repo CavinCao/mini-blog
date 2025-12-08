@@ -4,9 +4,9 @@
   "description": "基于云开发的博客小程序",
   "main": "app.js",
   "dependencies": {
+    "mp-html": "^2.5.1",
     "wxa-plugin-canvas": "^1.1.12"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

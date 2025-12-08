@@ -1,6 +1,5 @@
 <import src="../../templates/login/login.wxml" />
 <import src="../../templates/end.wxml" />
-<import src="/towxml/entry.wxml" />
 <import src="../../templates/nodata.wxml" />
 <!-- 文章详情 -->
 <view class="bg-white">
@@ -23,7 +22,11 @@
     </view>
   </view>
   <view class="detail-body" style="height:{{hideArticle}}">
-     <towxml nodes="{{post.content}}"/>
+      <!--<towxml nodes="{{post.content}}"/>-->
+      <view class='padding'>
+        <rich-text mode="compat" nodes="{{post.content}}"></rich-text>
+        <!--<mp-html content="{{post.content}}" />-->
+      </view>
     <!--<template is="entry" data="{{...post.content}}" />-->
     <!--<view class="margin-xs padding-sm text-blue" bindtap='showoriginalUrl'>阅读原文</view>-->
     <!-- 阅读更多 -->

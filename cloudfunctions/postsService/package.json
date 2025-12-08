@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "date-utils": "^1.2.21",
-    "towxml": "^2.1.4",
-    "wx-server-sdk": "^0.8.1"
+    "wx-server-sdk": "^3.0.1"
   }
 }

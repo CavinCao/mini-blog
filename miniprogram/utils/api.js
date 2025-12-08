@@ -886,5 +886,16 @@ module.exports = {
     addShareDetail:addShareDetail,
     getShareDetailList:getShareDetailList,
     getPointsDetailList:getPointsDetailList,
-    addSignAgain:addSignAgain
+    addSignAgain:addSignAgain,
+    syncWechatPosts: syncWechatPosts
+}
+
+/**
+ * 同步公众号文章
+ */
+function syncWechatPosts() {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {}
+    })
 }

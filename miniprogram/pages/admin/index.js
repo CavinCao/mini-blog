@@ -12,6 +12,8 @@ Page({
     formIds: [],
     formIdCount: 0,
     isReleaseShow: false,
+    isSyncShow: false,
+    isSyncing: false,
     release: { releaseName: '', releaseDate: util.formatTime(new Date()), releaseContent: '' }
   },
 
@@ -235,5 +237,101 @@ Page({
     wx.navigateTo({
       url: '../admin/member/member'
     })
+  },
+
+  /**
+   * 显示同步确认弹窗
+   */
+  showSyncModal: function(e) {
+    // 检查是否在冷却期内
+    const lastSyncTime = wx.getStorageSync('lastSyncTime') || 0
+    const currentTime = Date.now()
+    const thirtyMinutes = 30 * 60 * 1000 // 30分钟的毫秒数
+
+    if (currentTime - lastSyncTime < thirtyMinutes) {
+      const remainingTime = thirtyMinutes - (currentTime - lastSyncTime)
+      const remainingMinutes = Math.ceil(remainingTime / 60000)
+      
+      wx.showModal({
+        title: '同步限制',
+        content: `后台正在执行同步任务，请${remainingMinutes}分钟后再试`,
+        showCancel: false,
+        confirmText: '知道了'
+      })
+      return
+    }
+
+    this.setData({
+      isSyncShow: true
+    })
+  },
+
+  /**
+   * 隐藏同步确认弹窗
+   */
+  hideSyncModal: function(e) {
+    this.setData({
+      isSyncShow: false,
+      isSyncing: false
+    })
+  },
+
+  /**
+   * 确认同步公众号文章
+   */
+  confirmSync: async function(e) {
+    const that = this
+    
+    if (that.data.isSyncing) {
+      return // 防止重复点击
+    }
+
+    try {
+      that.setData({
+        isSyncing: true
+      })
+
+      console.info('开始异步同步公众号文章...')
+      
+      // 异步调用云函数，不等待响应
+      api.syncWechatPosts().then(res => {
+        console.info('✅ 同步云函数调用成功:', res)
+      }).catch(error => {
+        console.error('❌ 同步云函数调用失败:', error)
+      })
+      
+      // 记录同步时间戳
+      const currentTime = Date.now()
+      wx.setStorageSync('lastSyncTime', currentTime)
+      
+      console.info('📝 已记录同步时间戳:', new Date(currentTime).toLocaleString())
+      
+      // 立即显示友好提示
+      wx.showToast({
+        title: '后台同步中，请稍后查看',
+        icon: 'success',
+        duration: 2500
+      })
+      
+      // 自动关闭弹窗
+      setTimeout(() => {
+        that.setData({
+          isSyncShow: false,
+          isSyncing: false
+        })
+      }, 800) // 延迟800ms关闭，让用户看到提示
+
+    } catch (error) {
+      console.error('❌ 启动同步失败:', error)
+      wx.showToast({
+        title: '启动同步失败，请重试',
+        icon: 'none',
+        duration: 2000
+      })
+      
+      that.setData({
+        isSyncing: false
+      })
+    }
   },
 })

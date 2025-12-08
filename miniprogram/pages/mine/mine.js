@@ -110,8 +110,8 @@ Page({
    */
   showWechatCode: async function (e) {
     wx.previewImage({
-      urls: [config.wechatUrl],
-      current: config.wechatUrl
+      urls: ["../../images/wechat.jpg"],
+      current: "../../images/wechat.jpg"
     })
   },
   /**

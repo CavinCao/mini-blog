@@ -191,8 +191,6 @@ Page({
     let that = this
     let postDetail = await api.getPostDetail(blogId);
     console.info(postDetail)
-    let content = app.towxml(postDetail.result.content, 'markdown');
-    postDetail.result.content = content
     that.setData({
       post: postDetail.result
     })

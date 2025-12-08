@@ -68,6 +68,12 @@
             <text class='text-grey'>标签管理</text>
         </view>
     </view>
+    <view class="cu-item arrow">
+        <view class='content' bindtap='showSyncModal'>
+            <text class='cuIcon-refresh text-grey'></text>
+            <text class='text-grey'>同步公众号文章</text>
+        </view>
+    </view>
 </view>
 <!-- formId设置窗口 -->
 <view class="cu-modal {{isShow?'show':''}}">
@@ -125,5 +131,30 @@
                 </view>
             </view>
         </form>
+    </view>
+</view>
+<!-- 同步公众号文章确认窗口 -->
+<view class="cu-modal {{isSyncShow?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>同步公众号文章</view>
+            <view class='action' bindtap='hideSyncModal'>
+                <text class='cuIcon-close text-red'></text>
+            </view>
+        </view>
+        <view class='padding-xl text-center'>
+            <view class="cu-avatar xl margin-bottom" style="background-image:url(/images/gravatar.png);"></view>
+            <view class='text-lg text-bold margin-bottom-sm'>同步公众号文章</view>
+            <view class='text-gray'>确认开始同步公众号最新文章？</view>
+            <view class='text-sm text-gray margin-top-sm'>同步将在后台执行，无需等待完成</view>
+        </view>
+        <view class="cu-bar bg-white justify-center">
+            <view class='action'>
+                <button class='cu-btn line-gray text-gray' bindtap='hideSyncModal'>取消</button>
+                <button class='cu-btn bg-green margin-left' bindtap='confirmSync' loading='{{isSyncing}}'>
+                    {{isSyncing ? '同步中...' : '确认同步'}}
+                </button>
+            </view>
+        </view>
     </view>
 </view>

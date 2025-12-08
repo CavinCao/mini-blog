@@ -1,12 +1,10 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 cloud.init({ env: process.env.Env })
-const Towxml = require('towxml');
 const db = cloud.database()
 const _ = db.command
 const dateUtils = require('date-utils')
 
-const towxml = new Towxml();
 const COMMENT_TEMPLATE_ID = 'BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg'
 
 // 云函数入口函数
@@ -329,26 +327,7 @@ async function getPostsDetail(event) {
   })
   tasks.push(task3)*/
 
-  if (event.type != 1) {
-    let content = await convertPosts(data.content, "html");
-    data.content = content;
-  }
   data.totalVisits = data.totalVisits + 1;
   await Promise.all(tasks)
   return data
-}
-
-/**
- * 转换下程序文章
- * @param {} isUpdate 
- */
-async function convertPosts(content, type) {
-  let res
-  if (type === 'markdown') {
-    res = await towxml.toJson(content || '', 'markdown');
-  } else {
-    res = await towxml.toJson(content || '', 'html');
-  }
-  return res;
-
 }
