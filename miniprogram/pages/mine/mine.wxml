@@ -1,12 +1,12 @@
 <import src="../../../templates/login/login.wxml" />
 <view class="bg-white">
   <view class="flex padding align-center">
-    <view class="avatar round margin-xs radius">
-      <open-data class=" round avatar margin-top-xl" type="userAvatarUrl"></open-data>
-    </view>
-    <view class="padding-sm margin-xs radius">
-      <open-data type="userNickName"></open-data>
-      <view class="margin-top-xs text-xs">
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <image class="avatar round" src="{{avatarUrl}}" mode="aspectFill"></image>
+    </button>
+    <view class="padding-sm margin-left-sm">
+      <view class="text-bold text-df">{{nickName || '微信用户'}}</view>
+      <view class="margin-top-xs">
         <view class="cu-tag line-orange radius sm" bindtap="clickVip">{{vipDesc}}</view>
       </view>
     </view>
@@ -80,6 +80,16 @@
         <view class="padding-xl bg-white">
             <view>申请条件：打赏过作者的用户即可申请</view>
             <view>VIP权益：拥有VIP专属标签</view>
+            <view class="margin-top-sm">
+              <view class="text-bold margin-bottom-sm">完善个人信息：</view>
+              <view class="flex align-center margin-bottom-sm">
+                <button class="avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+                  <image class="vip-avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+                </button>
+                <text class="text-gray text-sm margin-left-sm">点击头像更换</text>
+              </view>
+              <input type="nickname" class="vip-input solid-bottom" value="{{nickName}}" placeholder="请输入昵称" bindinput="onNicknameInput" />
+            </view>
         </view>
         <view class="cu-bar bg-white">
             <view class="action margin-0 flex-sub " bindtap="hideModal">取消</view>

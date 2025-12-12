@@ -1,7 +1,22 @@
 .avatar {
-    width:100rpx;
-    height:100rpx;
-  }
+  width: 120rpx;
+  height: 120rpx;
+  display: block;
+  border-radius: 50%;
+}
+
+.avatar-wrapper {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  display: block;
+}
+
+.avatar-wrapper::after {
+  border: none;
+}
 
 .signbanner{
     border-radius:10rpx 10rpx 0 0;
@@ -9,4 +24,33 @@
 
 .cu-list-special{
     padding: 0 20rpx;
+}
+
+/* VIP弹窗样式 */
+.avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.avatar-btn::after {
+  border: none;
+}
+
+.vip-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 2rpx solid #eee;
+}
+
+.vip-input {
+  width: 100%;
+  height: 80rpx;
+  padding: 20rpx;
+  margin-top: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
 }

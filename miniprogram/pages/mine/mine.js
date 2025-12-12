@@ -21,6 +21,8 @@ Page({
     applyStatus: 0,
     showVIPModal: false,
     signBtnTxt: "每日签到",
+    avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0', // 默认头像
+    nickName: '', // 用户昵称
     iconList: [{
       icon: 'favorfill',
       color: 'grey',
@@ -50,6 +52,7 @@ Page({
 
   onShow: async function () {
     await this.getMemberInfo()
+    await this.loadUserProfile()
   },
 
   /**
@@ -65,7 +68,61 @@ Page({
       showRedDot: showRedDot
     });
     await that.checkAuthor()
+    await that.loadUserProfile()
     //await that.getMemberInfo()
+  },
+
+  /**
+   * 加载用户头像和昵称
+   */
+  loadUserProfile: async function() {
+    let that = this
+    try {
+      // 从本地存储或云端加载用户头像和昵称
+      const userProfile = wx.getStorageSync('userProfile')
+      if (userProfile) {
+        that.setData({
+          avatarUrl: userProfile.avatarUrl || that.data.avatarUrl,
+          nickName: userProfile.nickName || ''
+        })
+      }
+    } catch (e) {
+      console.error('加载用户信息失败', e)
+    }
+  },
+
+  /**
+   * 选择头像回调
+   */
+  onChooseAvatar: function(e) {
+    const { avatarUrl } = e.detail
+    this.setData({
+      avatarUrl
+    })
+    // 保存到本地
+    this.saveUserProfile()
+  },
+
+  /**
+   * 昵称输入回调
+   */
+  onNicknameInput: function(e) {
+    this.setData({
+      nickName: e.detail.value
+    })
+    // 保存到本地
+    this.saveUserProfile()
+  },
+
+  /**
+   * 保存用户头像和昵称到本地
+   */
+  saveUserProfile: function() {
+    const userProfile = {
+      avatarUrl: this.data.avatarUrl,
+      nickName: this.data.nickName
+    }
+    wx.setStorageSync('userProfile', userProfile)
   },
   /**
    * 返回
@@ -278,26 +335,67 @@ Page({
 */
   submitApplyVip: async function (accept, templateId, that) {
     try {
+      // 检查是否填写了昵称
+      if (!that.data.nickName || that.data.nickName.trim() === '') {
+        wx.showToast({
+          title: "请先填写昵称",
+          icon: "none",
+          duration: 2000
+        });
+        return;
+      }
 
       wx.showLoading({
         title: '提交中...',
       })
-      console.info(app.globalData.userInfo)
+
+      // 如果选择了新头像，需要先上传到云存储
+      let finalAvatarUrl = that.data.avatarUrl
+      if (that.data.avatarUrl.indexOf('tmp') !== -1) {
+        // 临时文件，需要上传到云存储
+        const cloudPath = `avatars/${app.globalData.openid}_${Date.now()}.png`
+        try {
+          const uploadResult = await wx.cloud.uploadFile({
+            cloudPath: cloudPath,
+            filePath: that.data.avatarUrl
+          })
+          finalAvatarUrl = uploadResult.fileID
+          console.info('头像上传成功', finalAvatarUrl)
+        } catch (uploadErr) {
+          console.error('头像上传失败', uploadErr)
+          wx.showToast({
+            title: "头像上传失败",
+            icon: "none",
+            duration: 2000
+          });
+          wx.hideLoading()
+          return;
+        }
+      }
+
+      console.info('提交的用户信息:', {
+        nickName: that.data.nickName,
+        avatarUrl: finalAvatarUrl
+      })
+
       let info = {
-        nickName: app.globalData.userInfo.nickName,
-        avatarUrl: app.globalData.userInfo.avatarUrl,
+        nickName: that.data.nickName,
+        avatarUrl: finalAvatarUrl,
         accept: accept,
         templateId: templateId
       }
       let res = await api.applyVip(info)
       console.info(res)
       if (res.result) {
+        // 更新本地存储
+        that.saveUserProfile()
+        
         wx.showToast({
           title: "申请成功，等待审批",
           icon: "none",
           duration: 3000
         });
-        this.setData({
+        that.setData({
           showVIPModal: false,
           applyStatus: 1
         })
