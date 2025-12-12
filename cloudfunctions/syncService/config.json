@@ -8,7 +8,8 @@
     ],
     "permissions": {
         "openapi": [
-            "wxacode.getUnlimited"
+            "wxacode.getUnlimited",
+            "officialAccount.material.batchGetMaterial"
         ]
     }
 }

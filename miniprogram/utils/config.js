@@ -1,7 +1,7 @@
 /**
  * 打赏二维码
  */
-var moneyUrl ="https://7072-product-raeub-1257595977.tcb.qcloud.la/WechatIMG25.jpeg?sign=c06ecac1e6cea4b4f3391058b7dc7559&t=1585576954"
+var moneyUrl ="https://636c-cloud1-9gxjaupb046e81dc-1257595977.tcb.qcloud.la/default/dashang.jpg?sign=0e73063ae18034da20c3b4bbb8b2386b&t=1765509278"
 
 /**
  * 公众号二维码

@@ -37,12 +37,12 @@
   </view>
 </view>
 <view class="cu-list menu margin-top-sm shadow-lg">
- <!-- <view class="cu-item arrow">
+  <view class="cu-item arrow">
     <view class='content' bindtap="showQrcode">
       <text class='cuIcon-refund text-red'></text>
       <text class='text-grey'>打赏支持</text>
     </view>
-  </view>-->
+  </view>
   <view class="cu-item arrow">
     <button class='cu-btn content' open-type='feedback'>
       <text class='cuIcon-writefill text-cyan'></text>

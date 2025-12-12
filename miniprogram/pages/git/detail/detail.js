@@ -21,7 +21,7 @@ Page({
 
   async getRepoDetail(fullName) {
     try {
-      let res = await api.searchGitHub(fullName, 1); // Re-using search or creating new specific API?
+      //let res = await api.searchGitHub(fullName, 1); // Re-using search or creating new specific API?
       // Actually searchGitHub returns a list. It's better to get specific repo detail.
       // I'll add getRepoDetail to api.js and syncService.
       // For now, let's assume I might pass the basic info from previous page to show quickly.
