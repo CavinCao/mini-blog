@@ -1,4 +1,3 @@
-const regeneratorRuntime = require('../../../utils/runtime.js');
 const api = require('../../../utils/api.js');
 const app = getApp();
 

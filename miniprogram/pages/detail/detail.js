@@ -1,9 +1,7 @@
 const config = require('../../utils/config.js')
 const api = require('../../utils/api.js');
-const regeneratorRuntime = require('../../utils/runtime.js');
 const util = require('../../utils/util.js');
 const app = getApp();
-import { async } from '../../utils/runtime';
 let rewardedVideoAd = null
 
 Page({

@@ -1,5 +1,3 @@
-const regeneratorRuntime = require('runtime.js');
-
 const db = wx.cloud.database()
 const _ = db.command
 

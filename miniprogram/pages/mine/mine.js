@@ -1,7 +1,6 @@
 const config = require('../../utils/config.js')
 const util = require('../../utils/util.js')
 const api = require('../../utils/api.js');
-const regeneratorRuntime = require('../../utils/runtime.js');
 const app = getApp();
 Page({
 
