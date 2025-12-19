@@ -38,7 +38,9 @@
   <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
     <view class='text-content margin-top-sm'>{{item.title}}</view>
     <view class="grid col-1 flex-sub padding-lr">
-      <view class="bg-img only-img" style="background-image:url({{item.defaultImageUrl}})"></view>
+      <view class="only-img-container">
+        <image class="only-img" src="{{item.defaultImageUrl}}" mode="aspectFill" lazy-load="{{true}}"></image>
+      </view>
     </view>
     <view class='text-gray text-sm text-right padding'>
       <text class="cuIcon-timefill"></text>

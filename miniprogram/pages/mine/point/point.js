@@ -80,7 +80,7 @@ Page({
         defaultShareList[i].nickName = item.nickName
         defaultShareList[i].bgUrl = ""
         defaultShareList[i].icon = ""
-        defaultShareList[i].style = "background-image:url(" + item.avatarUrl + ");"
+        defaultShareList[i].avatarUrl = item.avatarUrl  // 直接保存头像URL
         i++
       });
 

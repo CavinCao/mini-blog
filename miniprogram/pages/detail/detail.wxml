@@ -7,7 +7,9 @@
     <view class="cu-item shadow">
       <view class='text-content margin-top-sm'>{{post.title}}</view>
       <view class="grid col-1 flex-sub padding-lr">
-        <view class="bg-img only-img" style="background-image:url({{post.defaultImageUrl}})" />
+        <view class="only-img-container">
+          <image class="only-img" src="{{post.defaultImageUrl}}" mode="aspectFill" lazy-load="{{true}}"></image>
+        </view>
       </view>
       <view class='text-gray text-sm text-right padding'>
         <text class="cuIcon-timefill" />
@@ -54,7 +56,7 @@
   </view>
   <view class="cu-list menu menu-avatar comment solids-top">
     <view class="cu-item" wx:for="{{commentList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-      <view class="cu-avatar round" style="background-image:url({{item.cAvatarUrl}});" data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment"></view>
+      <image class="cu-avatar round" src="{{item.cAvatarUrl}}" mode="aspectFill" data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment"></image>
       <view class='content'>
         <view class='text-grey' data-id="{{item._id}}" data-name="{{item.cNickName}}" data-openid="{{item.cOpenId}}" bindtap="focusComment">
           {{item.cNickName}}<view wx:if="{{item.isVip}}" class="cu-tag line-orange radius sm">VIP</view>
@@ -84,7 +86,7 @@
 <view class="comment-fixed">
   <!-- <form catchsubmit="formSubmit" report-submit="true"> -->
   <view class="cu-bar input">
-    <view class="cu-avatar round" style="background-image:url({{userInfo.avatarUrl}});" bindtap='showMenuBox'></view>
+    <image class="cu-avatar round" src="{{userInfo.avatarUrl}}" mode="aspectFill" bindtap='showMenuBox'></image>
     <view class='action'>
       <text class='cuIcon-roundaddfill text-grey' bindtap='showMenuBox'></text>
     </view>

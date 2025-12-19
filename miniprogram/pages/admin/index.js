@@ -13,6 +13,9 @@ Page({
     isReleaseShow: false,
     isSyncShow: false,
     isSyncing: false,
+    isManualSyncShow: false,
+    isManualSyncing: false,
+    manualSync: { articleUrl: '', defaultImageUrl: '', tempFilePath: '' },
     release: { releaseName: '', releaseDate: util.formatTime(new Date()), releaseContent: '' }
   },
 
@@ -330,6 +333,138 @@ Page({
       
       that.setData({
         isSyncing: false
+      })
+    }
+  },
+
+  /**
+   * 显示手动同步文章弹窗
+   */
+  showManualSyncModal: function(e) {
+    this.setData({
+      isManualSyncShow: true,
+      manualSync: { articleUrl: '', defaultImageUrl: '', tempFilePath: '' }
+    })
+  },
+
+  /**
+   * 隐藏手动同步文章弹窗
+   */
+  hideManualSyncModal: function(e) {
+    this.setData({
+      isManualSyncShow: false,
+      isManualSyncing: false,
+      manualSync: { articleUrl: '', defaultImageUrl: '', tempFilePath: '' }
+    })
+  },
+
+  /**
+   * 选择默认图片
+   */
+  chooseDefaultImage: function(e) {
+    const that = this
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success(res) {
+        const tempFilePath = res.tempFilePaths[0]
+        that.setData({
+          'manualSync.tempFilePath': tempFilePath,
+          'manualSync.defaultImageUrl': tempFilePath
+        })
+      },
+      fail(err) {
+        console.error('选择图片失败:', err)
+        wx.showToast({
+          title: '选择图片失败',
+          icon: 'none',
+          duration: 1500
+        })
+      }
+    })
+  },
+
+  /**
+   * 提交手动同步文章
+   */
+  formManualSyncSubmit: async function(e) {
+    const that = this
+    const articleUrl = e.detail.value.articleUrl
+    
+    // 验证表单
+    if (!articleUrl || articleUrl === '') {
+      wx.showToast({
+        title: '请输入文章链接',
+        icon: 'none',
+        duration: 1500
+      })
+      return
+    }
+
+    if (!that.data.manualSync.tempFilePath || that.data.manualSync.tempFilePath === '') {
+      wx.showToast({
+        title: '请选择默认图片',
+        icon: 'none',
+        duration: 1500
+      })
+      return
+    }
+
+    try {
+      that.setData({
+        isManualSyncing: true
+      })
+
+      wx.showLoading({
+        title: '上传中...',
+      })
+
+      // 上传图片到云存储
+      const timestamp = Date.now()
+      const cloudPath = `manual-sync/${timestamp}-${Math.floor(Math.random() * 1000)}.jpg`
+      const uploadRes = await api.uploadFile(cloudPath, that.data.manualSync.tempFilePath)
+      
+      if (!uploadRes.fileID) {
+        throw new Error('图片上传失败')
+      }
+
+      wx.showLoading({
+        title: '同步中...',
+      })
+
+      // 调用云函数手动同步文章
+      const syncRes = await api.manualSyncArticle(articleUrl, uploadRes.fileID)
+      
+      wx.hideLoading()
+
+      if (syncRes.result && syncRes.result.success) {
+        wx.showToast({
+          title: '同步成功',
+          icon: 'success',
+          duration: 2000
+        })
+
+        that.setData({
+          isManualSyncShow: false,
+          isManualSyncing: false,
+          manualSync: { articleUrl: '', defaultImageUrl: '', tempFilePath: '' }
+        })
+      } else {
+        throw new Error(syncRes.result?.message || '同步失败')
+      }
+
+    } catch (error) {
+      console.error('手动同步文章失败:', error)
+      wx.hideLoading()
+      wx.showToast({
+        title: error.message || '同步失败，请重试',
+        icon: 'none',
+        duration: 2000
+      })
+      
+      that.setData({
+        isManualSyncing: false
       })
     }
   },

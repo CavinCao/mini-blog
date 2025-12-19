@@ -30,6 +30,9 @@ exports.main = async (event, context) => {
     case 'getGitHubIssues': {
       return await getGitHubIssues(event)
     }
+    case 'manualSyncArticle': {
+      return await manualSyncArticle(event)
+    }
   }
 
   await syncWechatPosts(false)
@@ -67,6 +70,8 @@ async function syncWechatPosts(isUpdate) {
     }
 
     for (var index in posts.item) {
+
+      console.info("title:"+posts.item[index].content.newsItem[0].title)
       //判断是否存在
       let existPost = await db.collection(collection).where(
         {
@@ -465,5 +470,181 @@ async function getGitHubIssues(event) {
   } catch (err) {
     console.error(err);
     return { error: err.message };
+  }
+}
+
+/**
+ * 手动同步文章
+ * @param {*} event 
+ */
+async function manualSyncArticle(event) {
+  const { articleUrl, defaultImageUrl } = event;
+  const wxContext = cloud.getWXContext();
+  
+  try {
+    console.info('开始手动同步文章:', articleUrl);
+    
+    // 验证URL
+    if (!articleUrl || articleUrl === '') {
+      return { success: false, message: '文章链接不能为空' };
+    }
+
+    if (!defaultImageUrl || defaultImageUrl === '') {
+      return { success: false, message: '默认图片不能为空' };
+    }
+
+    // 获取文章HTML内容
+    let htmlContent = '';
+    try {
+      const result = await rp({
+        url: articleUrl,
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+      htmlContent = result;
+    } catch (err) {
+      console.error('获取文章内容失败:', err);
+      return { success: false, message: '无法获取文章内容，请检查链接是否正确' };
+    }
+    console.info(htmlContent)
+
+    // 解析文章标题和内容
+    let title = '';
+    let content = '';
+    let author = '';
+    let digest = '';
+
+    // 优先从变量中提取标题（最准确）
+    const titleMatch1 = htmlContent.match(/var\s+msg_title\s*=\s*["']([^"']+)["']/i);
+    const titleMatch2 = htmlContent.match(/id="activity-name"[^>]*>(.*?)<\/h[1-6]>/is);
+    const titleMatch3 = htmlContent.match(/<h1[^>]*class="rich_media_title"[^>]*>(.*?)<\/h1>/is);
+    
+    if (titleMatch1 && titleMatch1[1]) {
+      title = titleMatch1[1].trim();
+    } else if (titleMatch2 && titleMatch2[1]) {
+      title = titleMatch2[1].trim().replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    } else if (titleMatch3 && titleMatch3[1]) {
+      title = titleMatch3[1].trim().replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    // 优先从js_name提取作者（页面昵称），然后是meta标签中的author
+    const authorMatch1 = htmlContent.match(/id="js_name"[^>]*>(.*?)<\/a>/is);
+    const authorMatch2 = htmlContent.match(/<meta\s+name="author"\s+content="([^"]+)"/i);
+    const authorMatch3 = htmlContent.match(/var\s+nickname\s*=\s*["']([^"']+)["']/i);
+    
+    if (authorMatch1 && authorMatch1[1]) {
+      // 提取纯文本，去除HTML标签
+      author = authorMatch1[1].trim().replace(/<[^>]+>/g, '').trim();
+      // 如果作者名包含"生活"等词，尝试提取更简洁的版本（如Bug生活2048 -> Bug2048）
+      const simpleAuthorMatch = author.match(/(Bug\d+)/i);
+      if (simpleAuthorMatch) {
+        author = simpleAuthorMatch[1];
+      }
+    } else if (authorMatch2 && authorMatch2[1]) {
+      author = authorMatch2[1].trim();
+    } else if (authorMatch3 && authorMatch3[1]) {
+      author = authorMatch3[1].trim();
+    }
+
+    // 提取正文内容（公众号文章的内容通常在 id="js_content" 的div中）
+    const contentMatch = htmlContent.match(/<div\s+class="rich_media_content\s+"\s+id="js_content"[^>]*>([\s\S]*?)<\/div>\s*<script/i) ||
+                         htmlContent.match(/<div[^>]+id="js_content"[^>]*>([\s\S]*?)<\/div>/i);
+    
+    if (contentMatch && contentMatch[1]) {
+      content = contentMatch[1].trim();
+      
+      // 清理和优化内容
+      // 移除代码片段的行号标记（这些是干扰显示的点）
+      content = content.replace(/<ul\s+class="code-snippet__line-index[^"]*"[^>]*>.*?<\/ul>/gs, '');
+      
+      // 移除script标签
+      content = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+      
+      // 移除style标签
+      content = content.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+      
+      // 替换data-src为src（微信公众号图片懒加载）
+      content = content.replace(/data-src=/g, 'src=');
+      
+      // 移除data-开头的属性（保留基本HTML结构）
+      content = content.replace(/\s+data-[a-z-]+="[^"]*"/gi, '');
+      
+      // 移除一些微信特有的属性
+      content = content.replace(/\s+data-slate-[a-z-]+="[^"]*"/gi, '');
+      
+      // 清理空的span标签和无意义的标记
+      content = content.replace(/<span\s+style="font-size:\s*0px;[^"]*"[^>]*>.*?<\/span>/gi, '');
+    } else {
+      return { success: false, message: '无法解析文章内容，可能不是有效的公众号文章链接' };
+    }
+
+    // 提取摘要（从content中提取前200字符的纯文本）
+    const textContent = content.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    digest = textContent.substring(0, 200);
+
+    // 如果没有提取到标题，使用摘要的前30字符
+    if (!title || title === '') {
+      title = textContent.substring(0, 30) + '...';
+    }
+
+    // 检查文章是否已存在（通过URL判断）
+    const existPost = await db.collection('mini_posts').where({
+      originalUrl: articleUrl
+    }).get();
+
+    if (existPost.data && existPost.data.length > 0) {
+      return { success: false, message: '该文章已存在，请勿重复添加' };
+    }
+
+    // 保存到数据库
+    const timestamp = Date.now();
+    const createTime = new Date(timestamp).toFormat("YYYY-MM-DD");
+    
+    const postData = {
+      uniqueId: `manual_${timestamp}`,
+      sourceFrom: 'manual',
+      content: content,
+      author: author || '未知',
+      title: title,
+      defaultImageUrl: defaultImageUrl,
+      createTime: createTime,
+      timestamp: timestamp,
+      totalComments: 0,
+      totalVisits: 0,
+      totalZans: 0,
+      label: [],
+      classify: 0,
+      contentType: 'html',
+      digest: digest,
+      isShow: 1,
+      originalUrl: articleUrl,
+      totalCollection: 0,
+      createBy: wxContext.OPENID
+    };
+
+    const addResult = await db.collection('mini_posts').add({
+      data: postData
+    });
+
+    if (addResult._id) {
+      console.info('手动同步文章成功:', addResult._id);
+      return { 
+        success: true, 
+        message: '文章同步成功',
+        postId: addResult._id,
+        title: title
+      };
+    } else {
+      throw new Error('保存文章失败');
+    }
+
+  } catch (err) {
+    console.error('手动同步文章异常:', err);
+    return { 
+      success: false, 
+      message: err.message || '同步失败，请稍后重试'
+    };
   }
 }

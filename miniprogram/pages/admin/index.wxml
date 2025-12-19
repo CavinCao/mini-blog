@@ -74,6 +74,12 @@
             <text class='text-grey'>同步公众号文章</text>
         </view>
     </view>
+    <view class="cu-item arrow">
+        <view class='content' bindtap='showManualSyncModal'>
+            <text class='cuIcon-add text-grey'></text>
+            <text class='text-grey'>手动同步文章</text>
+        </view>
+    </view>
 </view>
 <!-- formId设置窗口 -->
 <view class="cu-modal {{isShow?'show':''}}">
@@ -145,7 +151,7 @@
         <view class='padding-xl text-center'>
             <view class="cu-avatar xl margin-bottom" style="background-image:url(/images/gravatar.png);"></view>
             <view class='text-lg text-bold margin-bottom-sm'>同步公众号文章</view>
-            <view class='text-gray'>确认开始同步公众号最新文章？</view>
+            <view class='text-gray'>确认开始同步公众号最新文章?</view>
             <view class='text-sm text-gray margin-top-sm'>同步将在后台执行，无需等待完成</view>
         </view>
         <view class="cu-bar bg-white justify-center">
@@ -156,5 +162,44 @@
                 </button>
             </view>
         </view>
+    </view>
+</view>
+<!-- 手动同步文章弹窗 -->
+<view class="cu-modal {{isManualSyncShow?'show':''}}">
+    <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+            <view class='content'>手动同步文章</view>
+            <view class='action' bindtap='hideManualSyncModal'>
+                <text class='cuIcon-close text-red'></text>
+            </view>
+        </view>
+        <form bindsubmit="formManualSyncSubmit">
+            <view class='padding-sm'>
+                <view class="cu-form-group text-left">
+                    <view class='title'>文章链接:</view>
+                    <input placeholder="请输入公众号文章链接" class='radius' name='articleUrl' value='{{manualSync.articleUrl}}'></input>
+                </view>
+                <view class="cu-form-group text-left">
+                    <view class='title'>默认图片:</view>
+                    <view class='flex align-center'>
+                        <button class='cu-btn bg-blue sm' bindtap='chooseDefaultImage'>{{manualSync.defaultImageUrl ? '重新选择' : '选择图片'}}</button>
+                        <text class='text-grey text-sm margin-left-sm'>{{manualSync.defaultImageUrl ? '已选择' : '未选择'}}</text>
+                    </view>
+                </view>
+                <view wx:if="{{manualSync.defaultImageUrl}}" class="cu-form-group text-left">
+                    <view class='flex justify-center'>
+                        <image src='{{manualSync.defaultImageUrl}}' mode='aspectFit' style='width:200rpx;height:200rpx;'></image>
+                    </view>
+                </view>
+            </view>
+            <view class="cu-bar bg-white justify-end">
+                <view class='action'>
+                    <button class='cu-btn' bindtap='hideManualSyncModal'>取消</button>
+                    <button form-type="submit" class='cu-btn margin-left bg-green' loading='{{isManualSyncing}}'>
+                        {{isManualSyncing ? '同步中...' : '保存'}}
+                    </button>
+                </view>
+            </view>
+        </form>
     </view>
 </view>

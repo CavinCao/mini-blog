@@ -115,11 +115,14 @@ async function addPostComment(event) {
 
   let result = await task;
 
+  // 优先使用传入的pushTemplateId，否则使用默认的COMMENT_TEMPLATE_ID
+  const templateId = event.pushTemplateId || COMMENT_TEMPLATE_ID;
+
   //如果同意
   if (event.accept == 'accept') {
     await db.collection("mini_subcribute").add({
       data: {
-        templateId: COMMENT_TEMPLATE_ID,
+        templateId: templateId,
         openId: event.commentContent.cOpenId,
         timestamp: new Date().getTime()
       }
@@ -128,6 +131,7 @@ async function addPostComment(event) {
 
   //发送消息
   await cloud.callFunction({
+    env: process.env.Env,
     name: 'messageService',
     data: {
       action: "sendSubscribeMessage",
@@ -136,7 +140,7 @@ async function addPostComment(event) {
       nickName: event.commentContent.cNickName,
       content: event.commentContent.comment,
       createDate: event.commentContent.createDate,
-      templateId: COMMENT_TEMPLATE_ID,
+      templateId: templateId,
       cOpenId: event.commentContent.cOpenId
     }
   })

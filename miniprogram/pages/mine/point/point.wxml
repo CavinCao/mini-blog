@@ -77,7 +77,8 @@
     </view>
     <view class="flex solid-bottom padding justify-between">
         <view class="margin-xs" wx:for="{{shareList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item">
-            <view class="cu-avatar lg round {{item.bgUrl}}" style="{{item.style}}">
+            <image wx:if="{{item.avatarUrl}}" class="cu-avatar lg round" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+            <view wx:else class="cu-avatar lg round {{item.bgUrl}}">
                 <text class="{{item.icon}} lg text-gray"></text>
             </view>
             <view class="text-center text-sm">{{item.nickName}}</view>

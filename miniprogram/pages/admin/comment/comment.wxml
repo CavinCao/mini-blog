@@ -10,7 +10,7 @@
 </scroll-view>
 <view class="cu-list menu-avatar margin-top-self ">
     <view class="cu-item {{curId==item._id?'move-cur':''}}" wx:for="{{comments}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" data-comment="{{item.comment}}" data-flag="{{item.flag}}" bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd">
-        <view class="cu-avatar round lg" style="background-image:url({{item.cAvatarUrl}});"></view>
+        <image class="cu-avatar round lg" src="{{item.cAvatarUrl}}" mode="aspectFill"></image>
         <view class="content">
             <view class="text-grey">{{item.cNickName}}</view>
             <view class="text-gray text-sm flex">

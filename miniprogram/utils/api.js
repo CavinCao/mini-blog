@@ -319,12 +319,14 @@ function deletePostCollectionOrZan(postId, type) {
  * 新增评论
  */
 function addPostComment(commentContent, accept) {
+    const config = require('./config.js');
     return wx.cloud.callFunction({
         name: 'postsService',
         data: {
             action: "addPostComment",
             commentContent: commentContent,
-            accept: accept
+            accept: accept,
+            pushTemplateId: config.subcributeTemplateId
         }
     })
 }
@@ -886,6 +888,7 @@ module.exports = {
     getPointsDetailList:getPointsDetailList,
     addSignAgain:addSignAgain,
     syncWechatPosts: syncWechatPosts,
+    manualSyncArticle: manualSyncArticle,
     searchGitHub: searchGitHub,
     getGitHubRepo: getGitHubRepo,
     getGitHubReadme: getGitHubReadme,
@@ -995,5 +998,21 @@ function syncWechatPosts() {
     return wx.cloud.callFunction({
         name: 'syncService',
         data: {}
+    })
+}
+
+/**
+ * 手动同步文章
+ * @param {*} articleUrl 文章链接地址
+ * @param {*} defaultImageUrl 默认图片云存储地址
+ */
+function manualSyncArticle(articleUrl, defaultImageUrl) {
+    return wx.cloud.callFunction({
+        name: 'syncService',
+        data: {
+            action: 'manualSyncArticle',
+            articleUrl: articleUrl,
+            defaultImageUrl: defaultImageUrl
+        }
     })
 }
