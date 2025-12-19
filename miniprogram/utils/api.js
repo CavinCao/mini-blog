@@ -31,6 +31,34 @@ function getMemberInfo(openId) {
 }
 
 /**
+ * 保存用户头像和昵称
+ * @param {*} avatarUrl 
+ * @param {*} nickName 
+ */
+function saveMemberInfo(avatarUrl, nickName) {
+    return wx.cloud.callFunction({
+        name: 'memberService',
+        data: {
+            action: "saveMemberInfo",
+            avatarUrl: avatarUrl,
+            nickName: nickName
+        }
+    })
+}
+
+/**
+ * 获取用户头像和昵称
+ */
+function getMemberUserInfo() {
+    return wx.cloud.callFunction({
+        name: 'memberService',
+        data: {
+            action: "getMemberUserInfo"
+        }
+    })
+}
+
+/**
  * 获取会员列表
  * @param {*} applyStatus 
  * @param {*} page 
@@ -887,14 +915,15 @@ module.exports = {
     getShareDetailList:getShareDetailList,
     getPointsDetailList:getPointsDetailList,
     addSignAgain:addSignAgain,
-    syncWechatPosts: syncWechatPosts,
     manualSyncArticle: manualSyncArticle,
     searchGitHub: searchGitHub,
     getGitHubRepo: getGitHubRepo,
     getGitHubReadme: getGitHubReadme,
     getGitHubContents: getGitHubContents,
     getGitHubBranches: getGitHubBranches,
-    getGitHubIssues: getGitHubIssues
+    getGitHubIssues: getGitHubIssues,
+    saveMemberInfo: saveMemberInfo,
+    getMemberUserInfo: getMemberUserInfo
 }
 
 /**
@@ -988,16 +1017,6 @@ function getGitHubBranches(fullName) {
             action: 'getGitHubBranches',
             fullName: fullName
         }
-    })
-}
-
-/**
- * 同步公众号文章
- */
-function syncWechatPosts() {
-    return wx.cloud.callFunction({
-        name: 'syncService',
-        data: {}
     })
 }
 

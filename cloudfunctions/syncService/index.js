@@ -35,10 +35,7 @@ exports.main = async (event, context) => {
     }
   }
 
-  await syncWechatPosts(false)
-  //TODO:暂时注释：2019-05-09(cloud.openapi.wxacode.getUnlimited)云调用暂不支持云端测试和定时触发器，只能由小程序端触发
-  //await syncPostQrCode()
-  return true
+  return { success: false, message: '未知的操作类型' }
 }
 
 /**

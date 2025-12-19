@@ -27,6 +27,12 @@ exports.main = async (event, context) => {
     case 'addSignAgain':{
       return addSignAgain(event)
     }
+    case 'saveMemberInfo': {
+      return saveMemberInfo(event)
+    }
+    case 'getMemberUserInfo': {
+      return getMemberUserInfo(event)
+    }
     default: break
   }
 }
@@ -488,6 +494,98 @@ async function addShareDetail(event) {
     catch (e) {
       console.error(e)
       return false
+    }
+  }
+}
+
+/**
+ * 保存用户头像和昵称信息
+ * @param {*} event 
+ */
+async function saveMemberInfo(event) {
+  console.info("saveMemberInfo")
+  try {
+    const openId = event.userInfo.openId
+    
+    let memberInfos = await db.collection('mini_member').where({
+      openId: openId
+    }).get();
+
+    if (memberInfos.data.length === 0) {
+      // 新增用户信息
+      await db.collection('mini_member').add({
+        data: {
+          openId: openId,
+          totalSignedCount: 0,
+          continueSignedCount: 0,
+          totalPoints: 0,
+          lastSignedDate: '',
+          level: 1,
+          unreadMessgeCount: 0,
+          modifyTime: new Date().getTime(),
+          avatarUrl: event.avatarUrl,
+          nickName: event.nickName,
+          applyStatus: 0,
+          sighRightCount: 0,
+          highRight: false
+        }
+      })
+    } else {
+      // 更新用户信息
+      let memberInfo = memberInfos.data[0]
+      await db.collection('mini_member').doc(memberInfo._id).update({
+        data: {
+          avatarUrl: event.avatarUrl,
+          nickName: event.nickName,
+          modifyTime: new Date().getTime()
+        }
+      })
+    }
+    return {
+      success: true,
+      avatarUrl: event.avatarUrl,
+      nickName: event.nickName
+    }
+  } catch (e) {
+    console.error(e)
+    return {
+      success: false,
+      error: e
+    }
+  }
+}
+
+/**
+ * 获取用户头像和昵称信息
+ * @param {*} event 
+ */
+async function getMemberUserInfo(event) {
+  console.info("getMemberUserInfo")
+  try {
+    const openId = event.userInfo.openId
+    
+    let memberInfos = await db.collection('mini_member').where({
+      openId: openId
+    }).get();
+
+    if (memberInfos.data.length > 0) {
+      const memberInfo = memberInfos.data[0]
+      return {
+        success: true,
+        avatarUrl: memberInfo.avatarUrl,
+        nickName: memberInfo.nickName
+      }
+    } else {
+      return {
+        success: false,
+        message: '用户信息不存在'
+      }
+    }
+  } catch (e) {
+    console.error(e)
+    return {
+      success: false,
+      error: e
     }
   }
 }
