@@ -505,7 +505,6 @@ async function manualSyncArticle(event) {
       console.error('获取文章内容失败:', err);
       return { success: false, message: '无法获取文章内容，请检查链接是否正确' };
     }
-    console.info(htmlContent)
 
     // 解析文章标题和内容
     let title = '';
