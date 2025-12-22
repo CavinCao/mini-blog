@@ -6,7 +6,7 @@
     </view>
 </view>
 <view class="padding-sm flex flex-wrap">
-    <view class="padding-xs" wx:for="{{labelList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-labelname="{{item.value}}" id="{{item._id}}" bindtap="showLabelRelatedModal" bindlongpress='deleteLabelById'>
+    <view class="padding-xs" wx:for="{{labelList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-labelname="{{item.value}}" id="{{item.id}}" bindtap="showLabelRelatedModal" bindlongpress='deleteLabelById'>
         <view class="cu-tag line-orange">{{item.value}}</view>
     </view>
 </view>
@@ -56,10 +56,10 @@
         <scroll-view scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 475rpx)" bindscrolltolower="bindscrolltolower">
             <checkbox-group class="block" bindchange="checkboxChange">
                 <view class="cu-list menu text-left">
-                    <view class="cu-item" wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item._id}}">
+                    <view class="cu-item" wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item.id}}">
                         <label class="flex justify-between align-center flex-sub">
                             <view class="flex-sub">{{item.title}}</view>
-                            <checkbox value="{{item._id}}" class="round"></checkbox>
+                            <checkbox value="{{item.id}}" class="round"></checkbox>
                         </label>
                     </view>
                 </view>

@@ -9,7 +9,7 @@
     </view>
 </scroll-view>
 <view class="cu-list menu-avatar margin-top-self ">
-    <view class="cu-item {{curId==item._id?'move-cur':''}}" wx:for="{{members}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" data-comment="{{item.comment}}" data-flag="{{item.flag}}" bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd">
+    <view class="cu-item {{curId==item.id?'move-cur':''}}" wx:for="{{members}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.id}}" data-comment="{{item.comment}}" data-flag="{{item.flag}}" bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd">
         <image class="cu-avatar round lg" src="{{item.avatarUrl}}" mode="aspectFill"></image>
         <view class="content">
             <view class="text-grey">{{item.nickName}}</view>
@@ -18,10 +18,10 @@
             </view>
         </view>
         <view class="move">
-            <view class="bg-green" id="{{item._id}}" data-openid="{{item.openId}}" data-status="pass" bindtap='changeMemberApplyStatus'>
+            <view class="bg-green" id="{{item.id}}" data-openid="{{item.openId}}" data-status="pass" bindtap='changeMemberApplyStatus'>
                通过
             </view>
-            <view class="bg-red" id="{{item._id}}" data-openid="{{item.openId}}"  data-status="reject" bindtap='changeMemberApplyStatus'>
+            <view class="bg-red" id="{{item.id}}" data-openid="{{item.openId}}"  data-status="reject" bindtap='changeMemberApplyStatus'>
                驳回
             </view>
         </view>

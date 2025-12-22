@@ -1,7 +1,7 @@
 <import src="../../../templates/nodata.wxml" />
 <!-- 文章列表 -->
 <view class="cu-card article no-card">
-  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
+  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
     <view class="title text-cut ">{{item.title}}</view>
     <view class="content">
       <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>

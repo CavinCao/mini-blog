@@ -22,23 +22,23 @@
 </view>
 <!-- 文章列表 -->
 <view class="cu-card article no-card margin-top-self">
-  <view wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item._id}}" bindtap="bindPostDetail" class="cu-item shadow solids-bottom">
+  <view wx:for="{{posts}}" wx:key="id" wx:for-index="idx" wx:for-item="item" id="{{item.id}}" bindtap="goEditArticle" data-postid="{{item.id}}" class="cu-item shadow solids-bottom">
     <view class="title text-cut ">{{item.title}}</view>
     <view class="content">
       <image src="{{item.defaultImageUrl}}" mode="aspectFill"></image>
       <view class="desc">
         <view class='text-content '>{{item.digest}}</view>
         <view>
-          <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item._id}}" catchtap='showModal'>
+          <view class='cu-tag bg-{{item.isShow==1?"green":"red"}} light' data-isshow="{{item.isShow}}" data-postid="{{item.id}}" catchtap='showModal'>
             {{item.isShow==1?"已展示":"隐藏中"}}
           </view>
-          <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light' data-classify="{{item.classify}}" data-postid="{{item._id}}" catchtap='showClassifyModal'>
+          <view class='cu-tag bg-{{item.classify==0?"red":"green"}} light' data-classify="{{item.classify}}" data-postid="{{item.id}}" catchtap='showClassifyModal'>
             {{item.classify==0?"无专题":"有专题"}}
           </view>
-          <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light' data-label="{{item.label}}" data-postid="{{item._id}}" catchtap='showLabelModal'>
+          <view class='cu-tag bg-{{item.label.length==0?"red":"green"}}  light' data-label="{{item.label}}" data-postid="{{item.id}}" catchtap='showLabelModal'>
             {{item.label.length==0?"无标签":"有标签"}}
           </view>
-          <view class='cu-tag bg-red  light' data-postid="{{item._id}}" catchtap='showDeleteModal'>
+          <view class='cu-tag bg-red  light' data-postid="{{item.id}}" catchtap='showDeleteModal'>
             删除
           </view>
         </view>
@@ -68,7 +68,7 @@
     <view class='padding-xl'>{{showModelContent}}</view>
     <view class="cu-bar bg-white">
       <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowModal'>取消</view>
-      <view class='action margin-0 flex-sub text-green solid-left' bindtap='saveShowModal'>确定</view>
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='updatePostsShowStatus'>确定</view>
     </view>
   </view>
 </view>
@@ -101,7 +101,7 @@
       <view class="cu-dialog">
         <radio-group class="block" bindchange="radioClassifyChange">
           <view class="cu-list menu text-left">
-            <view class="cu-item" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item._id}}">
+            <view class="cu-item" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item.id}}">
               <label class="flex justify-between align-center flex-sub">
                 <view class="flex-sub">{{item.name}}</view>
                 <radio checked="{{item.checked}}" value="{{item.name}}" class="round"></radio>
@@ -125,7 +125,7 @@
     <view class='padding-xl'>是否确认删除文章，删除后将无法恢复</view>
     <view class="cu-bar bg-white">
       <view class='action margin-0 flex-sub  solid-left' bindtap='hideShowDeleteModal'>取消</view>
-      <view class='action margin-0 flex-sub text-green solid-left' bindtap='deleteShowModal'>
+      <view class='action margin-0 flex-sub text-green solid-left' bindtap='deletePostById'>
         确定
       </view>
     </view>

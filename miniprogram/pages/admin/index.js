@@ -1,6 +1,12 @@
 const config = require('../../utils/config.js')
-const api = require('../../utils/api.js');
 const util = require('../../utils/util.js');
+
+// 【MVVM架构】引入 ViewModel
+const AdminViewModel = require('../../viewmodels/AdminViewModel.js')
+const MessageViewModel = require('../../viewmodels/MessageViewModel.js')
+const GitHubViewModel = require('../../viewmodels/GitHubViewModel.js')
+const FileViewModel = require('../../viewmodels/FileViewModel.js')
+
 Page({
 
   /**
@@ -21,12 +27,19 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    /*let that = this;
-    let res = await api.queryFormIds();
-    that.setData({
-      formIdCount: res.result.formIds
-    })*/
+    // 【MVVM架构】初始化 ViewModel
+    this.adminViewModel = new AdminViewModel()
+    this.messageViewModel = new MessageViewModel()
+    this.gitHubViewModel = new GitHubViewModel()
+    this.fileViewModel = new FileViewModel()
 
+    /*let that = this;
+    let res = await this.messageViewModel.queryFormIds();
+    if (res.success) {
+      that.setData({
+        formIdCount: res.data.formIds
+      })
+    }*/
   },
   /**
    * 隐藏
@@ -108,8 +121,10 @@ Page({
         icon: 'none',
         duration: 1500
       })
+      return
     }
-    else {
+
+    try {
       wx.showLoading({
         title: '保存中...',
       })
@@ -122,10 +137,11 @@ Page({
 
       let title = '小程序更新啦，赶紧来看看吧'
 
-      let res = await api.addReleaseLog(log, title)
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.addReleaseLog(log, title)
       wx.hideLoading()
-      console.info(res)
-      if (res.result) {
+      
+      if (response.success) {
         that.setData({
           isReleaseShow: false,
           release: { releaseName: '', releaseDate: util.formatTime(new Date()), releaseContent: '' }
@@ -133,17 +149,24 @@ Page({
 
         wx.showToast({
           title: '保存成功',
-          icon: 'none',
+          icon: 'success',
           duration: 1500
         })
-      }
-      else {
+      } else {
         wx.showToast({
-          title: '保存出错，请查看云函数日志',
+          title: response.message || '保存失败',
           icon: 'none',
           duration: 1500
         })
       }
+    } catch (error) {
+      wx.hideLoading()
+      console.error('保存发布版本失败:', error)
+      wx.showToast({
+        title: '保存出错，请重试',
+        icon: 'none',
+        duration: 1500
+      })
     }
   },
   /**
@@ -151,37 +174,47 @@ Page({
    * @param {} e 
    */
   saveFormIds: async function (e) {
-
     let that = this;
     if (that.data.formIds.length === 0) {
       return;
     }
 
-    wx.showLoading({
-      title: '保存中...',
-    })
-    let res = await api.addFormIds(that.data.formIds)
-    console.info(res)
-    if (res.result) {
-      that.setData({
-        formIds: [],
-        isShow: false
+    try {
+      wx.showLoading({
+        title: '保存中...',
       })
 
-      wx.showToast({
-        title: '保存完成',
-        icon: 'none',
-        duration: 1500
-      })
-    }
-    else {
+      // 【MVVM架构】使用 MessageViewModel
+      const response = await that.messageViewModel.addFormIds(that.data.formIds)
+      wx.hideLoading()
+      
+      if (response.success) {
+        that.setData({
+          formIds: [],
+          isShow: false
+        })
+
+        wx.showToast({
+          title: '保存完成',
+          icon: 'success',
+          duration: 1500
+        })
+      } else {
+        wx.showToast({
+          title: response.message || '保存失败',
+          icon: 'none',
+          duration: 1500
+        })
+      }
+    } catch (error) {
+      wx.hideLoading()
+      console.error('保存 formIds 失败:', error)
       wx.showToast({
         title: '保存出现异常',
         icon: 'none',
         duration: 1500
       })
     }
-    wx.hideLoading()
   },
   /**
    * 跳转文章编辑
@@ -322,25 +355,25 @@ Page({
         title: '上传中...',
       })
 
-      // 上传图片到云存储
+      // 【MVVM架构】使用 FileViewModel 上传图片
       const timestamp = Date.now()
       const cloudPath = `manual-sync/${timestamp}-${Math.floor(Math.random() * 1000)}.jpg`
-      const uploadRes = await api.uploadFile(cloudPath, that.data.manualSync.tempFilePath)
+      const uploadResponse = await that.fileViewModel.uploadFile(cloudPath, that.data.manualSync.tempFilePath)
       
-      if (!uploadRes.fileID) {
-        throw new Error('图片上传失败')
+      if (!uploadResponse.success || !uploadResponse.data.fileID) {
+        throw new Error(uploadResponse.message || '图片上传失败')
       }
 
       wx.showLoading({
         title: '同步中...',
       })
 
-      // 调用云函数手动同步文章
-      const syncRes = await api.manualSyncArticle(articleUrl, uploadRes.fileID)
+      // 【MVVM架构】使用 GitHubViewModel 手动同步文章
+      const syncResponse = await that.gitHubViewModel.manualSyncArticle(articleUrl, uploadResponse.data.fileID)
       
       wx.hideLoading()
 
-      if (syncRes.result && syncRes.result.success) {
+      if (syncResponse.success) {
         wx.showToast({
           title: '同步成功',
           icon: 'success',
@@ -353,7 +386,7 @@ Page({
           manualSync: { articleUrl: '', defaultImageUrl: '', tempFilePath: '' }
         })
       } else {
-        throw new Error(syncRes.result?.message || '同步失败')
+        throw new Error(syncResponse.message || '同步失败')
       }
 
     } catch (error) {

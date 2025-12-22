@@ -144,6 +144,12 @@ async function addPostComment(event) {
       cOpenId: event.commentContent.cOpenId
     }
   })
+
+  // 返回成功标识
+  return {
+    success: true,
+    message: '评论成功'
+  }
 }
 
 /**
@@ -196,6 +202,12 @@ async function addPostChildComment(event) {
       cOpenId: event.comments[0].cOpenId
     }
   })
+
+  // 返回成功标识
+  return {
+    success: true,
+    message: '回复成功'
+  }
 }
 
 /**
@@ -235,6 +247,12 @@ async function addPostCollection(event) {
 
   let result = await task;
   console.info(result)
+  
+  // 返回成功标识
+  return {
+    success: true,
+    message: '收藏成功'
+  }
 }
 
 /**
@@ -270,6 +288,12 @@ async function addPostZan(event) {
   }
   let result = await task;
   console.info(result)
+  
+  // 返回成功标识
+  return {
+    success: true,
+    message: '点赞成功'
+  }
 }
 
 /**
@@ -284,6 +308,12 @@ async function deletePostCollectionOrZan(event) {
     type: event.type
   }).remove()
   console.info(result)
+  
+  // 返回成功标识
+  return {
+    success: true,
+    message: '操作成功'
+  }
 }
 /**
  * 获取文章明细

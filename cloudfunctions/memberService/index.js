@@ -113,11 +113,17 @@ async function addSignAgain(event)
     })
     tasks.push(task5)
     await Promise.all(tasks)
-    return true
+    return {
+      success: true,
+      message: '补签成功'
+    }
   }
   catch (e) {
     console.error(e)
-    return false
+    return {
+      success: false,
+      message: '补签失败'
+    }
   }
 }
 
@@ -217,11 +223,17 @@ async function addSign(event) {
     })
     tasks.push(task5)
     await Promise.all(tasks)
-    return true
+    return {
+      success: true,
+      message: '签到成功'
+    }
   }
   catch (e) {
     console.error(e)
-    return false
+    return {
+      success: false,
+      message: '签到失败'
+    }
   }
 }
 
@@ -241,7 +253,11 @@ async function getSignedDetail(event) {
     })
     .limit(100)
     .get()
-  return res.data
+  return {
+    success: true,
+    data: res.data,
+    message: '获取签到详情成功'
+  }
 }
 
 /**
@@ -344,11 +360,17 @@ async function addPoints(event) {
     })
     tasks.push(task3)
     await Promise.all(tasks)
-    return true
+    return {
+      success: true,
+      message: '积分操作成功'
+    }
   }
   catch (e) {
     console.error(e)
-    return false
+    return {
+      success: false,
+      message: '积分操作失败'
+    }
   }
 }
 
@@ -404,11 +426,17 @@ async function applyVip(event) {
         }
       });
     }
-    return true;
+    return {
+      success: true,
+      message: 'VIP申请提交成功'
+    };
   }
   catch (e) {
     console.error(e)
-    return false
+    return {
+      success: false,
+      message: 'VIP申请提交失败'
+    }
   }
 }
 
@@ -419,14 +447,20 @@ async function applyVip(event) {
 async function addShareDetail(event) {
   const wxContext = cloud.getWXContext()
   if (wxContext.OPENID == event.info.shareOpenId) {
-    return true;
+    return {
+      success: true,
+      message: '不能分享给自己'
+    };
   }
   let shareInfos = await db.collection('mini_share_detail').where({
     openId: wxContext.OPENID,
     shareOpenId: event.info.shareOpenId
   }).get();
   if (shareInfos.data.length > 0) {
-    return true;
+    return {
+      success: true,
+      message: '已经分享过了'
+    };
   }
   else {
 
@@ -489,11 +523,17 @@ async function addShareDetail(event) {
       })
       tasks.push(task5)
       await Promise.all(tasks)
-      return true
+      return {
+        success: true,
+        message: '分享成功，获得积分奖励'
+      }
     }
     catch (e) {
       console.error(e)
-      return false
+      return {
+        success: false,
+        message: '分享失败'
+      }
     }
   }
 }
@@ -541,16 +581,20 @@ async function saveMemberInfo(event) {
         }
       })
     }
+    // ✅ 返回标准格式
     return {
       success: true,
-      avatarUrl: event.avatarUrl,
-      nickName: event.nickName
+      data: {
+        avatarUrl: event.avatarUrl,
+        nickName: event.nickName
+      },
+      message: '保存成功'
     }
   } catch (e) {
     console.error(e)
     return {
       success: false,
-      error: e
+      message: e.message || '保存失败'
     }
   }
 }
@@ -570,10 +614,14 @@ async function getMemberUserInfo(event) {
 
     if (memberInfos.data.length > 0) {
       const memberInfo = memberInfos.data[0]
+      // ✅ 返回标准格式
       return {
         success: true,
-        avatarUrl: memberInfo.avatarUrl,
-        nickName: memberInfo.nickName
+        data: {
+          avatarUrl: memberInfo.avatarUrl,
+          nickName: memberInfo.nickName
+        },
+        message: '获取成功'
       }
     } else {
       return {
@@ -585,7 +633,7 @@ async function getMemberUserInfo(event) {
     console.error(e)
     return {
       success: false,
-      error: e
+      message: e.message || '获取用户信息失败'
     }
   }
 }

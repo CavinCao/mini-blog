@@ -1,5 +1,5 @@
 const config = require('../../../utils/config.js')
-const api = require('../../../utils/api.js');
+const MemberViewModel = require('../../../viewmodels/MemberViewModel.js');
 const util = require('../../../utils/util.js');
 const app = getApp();
 let toSet = []
@@ -37,6 +37,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 【MVVM架构】初始化 ViewModel
+    this.memberViewModel = new MemberViewModel();
+    
     console.info(options)
     let that = this
     let signedDays = options.signedDays;
@@ -78,17 +81,26 @@ Page({
 
     let year = util.getYear(new Date())
     let month = util.getMonth(new Date())
-    let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
-    console.info(res)
+    
+    // 【MVVM架构】使用 MemberViewModel
+    const response = await this.memberViewModel.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
+    console.info(response)
+    
+    if (!response.success) {
+      return
+    }
+    
     toSet = [];
-    res.result.forEach(function (item) {
-      let set = {
-        year: item.year,
-        month: item.month,
-        day: item.day
-      }
-      toSet.push(set)
-    })
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach(function (item) {
+        let set = {
+          year: item.year,
+          month: item.month,
+          day: item.day
+        }
+        toSet.push(set)
+      })
+    }
 
     this.calendar.setSelectedDays(toSet);
   },
@@ -100,17 +112,26 @@ Page({
   whenChangeMonth: async function (e) {
     let year = e.detail.next.year
     let month = e.detail.next.month
-    let res = await api.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
-    console.info(res)
+    
+    // 【MVVM架构】使用 MemberViewModel
+    const response = await this.memberViewModel.getSignedDetail(app.globalData.openid, year.toString(), month.toString())
+    console.info(response)
+    
+    if (!response.success) {
+      return
+    }
+    
     toSet = [];
-    res.result.forEach(function (item) {
-      let set = {
-        year: item.year,
-        month: item.month,
-        day: item.day
-      }
-      toSet.push(set)
-    })
+    if (response.data && Array.isArray(response.data)) {
+      response.data.forEach(function (item) {
+        let set = {
+          year: item.year,
+          month: item.month,
+          day: item.day
+        }
+        toSet.push(set)
+      })
+    }
 
     this.calendar.setSelectedDays(toSet);
   },
@@ -156,9 +177,11 @@ Page({
               month:e.detail.month,
               day:e.detail.day
             }
-            api.addSignAgain(info).then((res) => {
-              console.info(res)
-              if (res.result) {
+            
+            // 【MVVM架构】使用 MemberViewModel
+            that.memberViewModel.addSignAgain(info).then((response) => {
+              console.info(response)
+              if (response.success) {
                 that.setData({
                   signedDays: Number(that.data.signedDays) + 1,
                   signedRightCount:Number(that.data.signedRightCount) - 1,
@@ -175,7 +198,7 @@ Page({
               }
               else {
                 wx.showToast({
-                  title: "程序有些小异常",
+                  title: response.message || "程序有些小异常",
                   icon: "none",
                   duration: 3000
                 });
@@ -233,18 +256,29 @@ Page({
         templateId: templateId
       }
 
-      let result = await api.addSign(info)
-      await that.afterCalendarRender()
-      that.setData({
-        signedDays: Number(that.data.signedDays) + 1,
-        signed: true
-      })
-      console.info(result)
-      wx.showToast({
-        title: '提交成功',
-        icon: 'success',
-        duration: 1500
-      })
+      // 【MVVM架构】使用 MemberViewModel
+      const response = await that.memberViewModel.addSign(info)
+      console.info(response)
+      
+      if (response.success) {
+        await that.afterCalendarRender()
+        that.setData({
+          signedDays: Number(that.data.signedDays) + 1,
+          signed: true
+        })
+        wx.showToast({
+          title: '提交成功',
+          icon: 'success',
+          duration: 1500
+        })
+      } else {
+        wx.showToast({
+          title: response.message || '操作失败',
+          icon: 'none',
+          duration: 1500
+        })
+      }
+      wx.hideLoading()
     }
     catch (err) {
       wx.showToast({

@@ -1,4 +1,7 @@
-const api = require('../../../utils/api.js');
+// 【MVVM架构】引入 ViewModel
+const AdminViewModel = require('../../../viewmodels/AdminViewModel.js')
+const PostViewModel = require('../../../viewmodels/PostViewModel.js')
+
 Page({
 
   /**
@@ -33,6 +36,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onShow: async function (options) {
+    // 【MVVM架构】初始化 ViewModel
+    this.adminViewModel = new AdminViewModel()
+    this.postViewModel = new PostViewModel()
+
     let that = this;
     let page = 1
     that.setData({
@@ -57,8 +64,8 @@ Page({
   },
 
   /**
- * 页面相关事件处理函数--监听用户下拉动作
- */
+* 页面相关事件处理函数--监听用户下拉动作
+*/
   onPullDownRefresh: async function () {
     let that = this;
     let page = 1
@@ -206,39 +213,61 @@ Page({
       title: '标签加载中...',
     })
 
-    let that = this
-    let postId = e.currentTarget.dataset.postid
-    let label = e.currentTarget.dataset.label
-    let labelList = await api.getLabelList()
-    let otherLabels = []
-    if (label.length > 0) {
-      for (var i = 0; i < label.length; i++) {
+    try {
+      let that = this
+      let postId = e.currentTarget.dataset.postid
+      let label = e.currentTarget.dataset.label
+
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.getLabelList()
+
+      if (!response.success) {
+        wx.showToast({
+          title: response.message || '加载标签失败',
+          icon: 'none',
+          duration: 1500
+        })
+        wx.hideLoading()
+        return
+      }
+
+      let otherLabels = []
+      if (label.length > 0) {
+        for (var i = 0; i < label.length; i++) {
+          otherLabels.push({
+            name: label[i],
+            checked: true
+          })
+        }
+      }
+
+      for (var index in response.data) {
+        let labelRes = otherLabels.filter((a) => response.data[index].value == a.name)
+        if (labelRes.length > 0) { continue; }
+
         otherLabels.push({
-          name: label[i],
-          checked: true
+          name: response.data[index].value,
+          checked: false
         })
       }
-    }
 
-    for (var index in labelList.result.data) {
-      let labelRes = otherLabels.filter((a) => labelList.result.data[index].value == a.name)
-      if (labelRes.length > 0) { continue; }
+      that.setData({
+        isShowLabelModel: true,
+        selectedLabels: label,
+        otherLabels: otherLabels,
+        showCurPostId: postId
+      })
 
-      otherLabels.push({
-        name: labelList.result.data[index].value,
-        checked: false
+      wx.hideLoading()
+    } catch (error) {
+      console.error('加载标签失败:', error)
+      wx.hideLoading()
+      wx.showToast({
+        title: '加载标签失败',
+        icon: 'none',
+        duration: 1500
       })
     }
-
-    that.setData({
-      isShowLabelModel: true,
-      selectedLabels: label,
-      otherLabels: otherLabels,
-      showCurPostId: postId
-    })
-
-    wx.hideLoading()
-
   },
 
   /**
@@ -250,38 +279,60 @@ Page({
       title: '专题加载中...',
     })
 
-    let that = this
-    let postId = e.currentTarget.dataset.postid
-    let curClassify = e.currentTarget.dataset.classify == 0 ? "" : e.currentTarget.dataset.classify
-    let classifyList = await api.getClassifyList()
-    let classify = []
-    if (curClassify != "") {
-      classify.push({
-        name: curClassify,
-        checked: true
-      })
-    }
+    try {
+      let that = this
+      let postId = e.currentTarget.dataset.postid
+      let curClassify = e.currentTarget.dataset.classify == 0 ? "" : e.currentTarget.dataset.classify
 
-    for (var index in classifyList.result.data) {
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.getClassifyList()
 
-      if (curClassify == classifyList.result.data[index].value.classifyName) {
-        continue;
+      if (!response.success) {
+        wx.showToast({
+          title: response.message || '加载专题失败',
+          icon: 'none',
+          duration: 1500
+        })
+        wx.hideLoading()
+        return
       }
 
-      classify.push({
-        name: classifyList.result.data[index].value.classifyName,
-        checked: false
+      let classify = []
+      if (curClassify != "") {
+        classify.push({
+          name: curClassify,
+          checked: true
+        })
+      }
+
+      for (var index in response.data) {
+        if (curClassify == response.data[index].name) {
+          continue;
+        }
+
+        classify.push({
+          name: response.data[index].name,
+          checked: false
+        })
+      }
+
+      that.setData({
+        isShowClassifyModel: true,
+        classifyList: classify,
+        showCurClassify: curClassify,
+        showCurPostId: postId
+      })
+
+      wx.hideLoading()
+    } catch (error) {
+      console.error('加载专题失败:', error)
+      wx.hideLoading()
+      wx.showToast({
+        title: '加载专题失败',
+        icon: 'none',
+        duration: 1500
       })
     }
-
-    that.setData({
-      isShowClassifyModel: true,
-      classifyList: classify,
-      showCurClassify: curClassify,
-      showCurPostId: postId
-    })
-
-    wx.hideLoading()
   },
 
   /**
@@ -345,8 +396,12 @@ Page({
         label: that.data.selectedLabels
       }
 
-      let res = await api.upsertPosts(postId === undefined ? "" : postId, newPost)
-      if (res.result) {
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.upsertPosts(postId === undefined ? "" : postId, newPost)
+
+      wx.hideLoading()
+
+      if (response.success) {
         that.setData({
           isShowLabelModel: false,
           selectedLabels: [],
@@ -361,26 +416,23 @@ Page({
           icon: 'success',
           duration: 1500
         })
-      }
-      else {
+      } else {
         wx.showToast({
-          title: '操作发生未知异常',
+          title: response.message || '操作失败',
+          icon: 'none',
           duration: 1500
         })
       }
     }
     catch (err) {
+      wx.hideLoading()
+      console.error('保存标签失败:', err)
       wx.showToast({
         title: '程序有一点点小异常，操作失败啦',
         icon: 'none',
         duration: 1500
       })
-      console.info(err)
     }
-    finally {
-      wx.hideLoading()
-    }
-
   },
 
   /**
@@ -395,18 +447,20 @@ Page({
     try {
       let that = this
       let postId = that.data.showCurPostId
-      console.info(postId)
-      console.info(that.data.showCurClassify)
       let newPost = {
         classify: that.data.showCurClassify
       }
 
-      let res = await api.upsertPosts(postId === undefined ? "" : postId, newPost)
-      if (res.result) {
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.upsertPosts(postId === undefined ? "" : postId, newPost)
+
+      wx.hideLoading()
+
+      if (response.success) {
         that.setData({
           isShowClassifyModel: false,
-          showCurClassify: "",
           classifyList: [],
+          showCurClassify: "",
           showCurPostId: ""
         })
 
@@ -417,46 +471,48 @@ Page({
           icon: 'success',
           duration: 1500
         })
-      }
-      else {
+      } else {
         wx.showToast({
-          title: '操作发生未知异常',
+          title: response.message || '操作失败',
+          icon: 'none',
           duration: 1500
         })
       }
     }
     catch (err) {
+      wx.hideLoading()
+      console.error('保存专题失败:', err)
       wx.showToast({
         title: '程序有一点点小异常，操作失败啦',
         icon: 'none',
         duration: 1500
       })
-      console.info(err)
-    }
-    finally {
-      wx.hideLoading()
     }
   },
-  /**
-   * 前端是否展示
-   * @param {*} e 
-   */
-  saveShowModal: async function (e) {
 
+  /**
+   * 设置文章状态
+   */
+  updatePostsShowStatus: async function (e) {
     wx.showLoading({
-      title: '加载中...',
+      title: '操作中...',
     })
+
     try {
-      let that = this;
-      let updateShow = that.data.showCurStatus == 0 ? 1 : 0
-      let res = await api.updatePostsShowStatus(that.data.showCurPostId, updateShow)
-      console.info(res)
-      if (res.result) {
+      let that = this
+      let updateShow = that.data.showCurStatus == 1 ? 0 : 1
+
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.updatePostsShowStatus(that.data.showCurPostId, updateShow)
+
+      wx.hideLoading()
+
+      if (response.success) {
         that.setData({
           isShowModel: false,
           showModelContent: "",
           showCurPostId: "",
-          showCurStatus: -1
+          showCurStatus: 0
         })
 
         await that.onPullDownRefresh()
@@ -466,114 +522,132 @@ Page({
           icon: 'success',
           duration: 1500
         })
-      }
-      else {
+      } else {
         wx.showToast({
-          title: '操作发生未知异常',
+          title: response.message || '操作失败',
+          icon: 'none',
           duration: 1500
         })
       }
-    } catch (err) {
+    }
+    catch (err) {
+      wx.hideLoading()
+      console.error('更新文章状态失败:', err)
       wx.showToast({
         title: '程序有一点点小异常，操作失败啦',
         icon: 'none',
         duration: 1500
       })
-      console.info(err)
     }
-    finally {
-      wx.hideLoading()
-    }
-
-
   },
-  /**
- * 前端是否展示
- * @param {*} e 
- */
-  deleteShowModal: async function (e) {
 
+  /**
+   * 删除文章
+   */
+  deletePostById: async function (e) {
     wx.showLoading({
-      title: '加载中...',
+      title: '删除中...',
     })
+
     try {
-      let that = this;
-      let res = await api.deletePostById(that.data.showCurPostId)
-      console.info(res)
-      if (res.result) {
+      let that = this
+
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await that.adminViewModel.deletePostById(that.data.showCurPostId)
+
+      wx.hideLoading()
+
+      if (response.success) {
         that.setData({
           isShowDeleteModel: false,
-          showCurPostId: "",
+          showCurPostId: ""
         })
 
         await that.onPullDownRefresh()
 
         wx.showToast({
-          title: '设置成功',
+          title: '删除成功',
           icon: 'success',
           duration: 1500
         })
-      }
-      else {
+      } else {
         wx.showToast({
-          title: '操作发生未知异常',
+          title: response.message || '删除失败',
+          icon: 'none',
           duration: 1500
         })
       }
-    } catch (err) {
+    }
+    catch (err) {
+      wx.hideLoading()
+      console.error('删除文章失败:', err)
       wx.showToast({
         title: '程序有一点点小异常，操作失败啦',
         icon: 'none',
         duration: 1500
       })
-      console.info(err)
     }
-    finally {
-      wx.hideLoading()
-    }
-
-
-  },
-  /**
-    * 获取文章列表
-  */
-  getPostsList: async function (filter) {
-    wx.showLoading({
-      title: '加载中...',
-    })
-    let that = this
-    let page = that.data.page
-    if (that.data.nomore) {
-      wx.hideLoading()
-      return
-    }
-    let result = await api.getNewPostsList(page, filter)
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
-        that.setData({
-          nodata: true
-        })
-      }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        posts: that.data.posts.concat(result.data),
-      })
-    }
-    wx.hideLoading()
   },
 
   /**
-   * 点击文章明细
+   * 获取文章列表
+   * @param {} filter 
+   * @param {} where 
    */
-  bindPostDetail: function (e) {
-    let blogId = e.currentTarget.id;
+  getPostsList: async function (filter, where) {
+    let that = this;
+    let page = that.data.page;
+
+    try {
+      // 【MVVM架构】使用 PostViewModel
+      const response = await that.postViewModel.getNewPostsList({
+        page: page,
+        filter: filter
+      })
+
+      if (!response.success) {
+        wx.showToast({
+          title: response.message || '加载失败',
+          icon: 'none',
+          duration: 1500
+        })
+        return
+      }
+
+      // response.data 包含 { list, hasMore, isEmpty }
+      const list = response.data.list || []
+      
+      let posts = that.data.posts
+      if (page === 1) {
+        posts = list
+      } else {
+        posts = posts.concat(list)
+      }
+
+      that.setData({
+        posts: posts,
+        page: page + 1,
+        nodata: posts.length === 0,
+        nomore: list.length < 10
+      })
+    } catch (error) {
+      console.error('获取文章列表失败:', error)
+      wx.showToast({
+        title: '加载失败',
+        icon: 'none',
+        duration: 1500
+      })
+    }
+  },
+
+  /**
+   * 跳转文章编辑
+   * @param {*} e 
+   */
+  goEditArticle: function (e) {
+    let postId = e.currentTarget.dataset.postid
     wx.navigateTo({
-      url: '../article/article?id=' + blogId
+      url: '../article/article?blogId=' + postId
     })
   },
 })

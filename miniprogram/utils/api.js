@@ -1,3 +1,181 @@
+/**
+ * ==================================================================================
+ * ⚠️⚠️⚠️ 【此文件已完全废弃，请勿再使用】⚠️⚠️⚠️
+ * ==================================================================================
+ * 
+ * 本项目已于 2025-12-22 全面完成 MVVM 架构迁移
+ * 所有 24 个页面均已迁移，此文件仅保留用于参考，不应再在新代码中使用
+ * 
+ * ==================================================================================
+ * 新架构说明（MVVM Pattern）
+ * ==================================================================================
+ * 
+ * 架构层级：
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ Page (页面)                                                  │
+ * │   ↓                                                          │
+ * │ ViewModel (业务逻辑层)  ← 在这里调用                          │
+ * │   ↓                                                          │
+ * │ Service Interface (服务接口)                                 │
+ * │   ↓                                                          │
+ * │ Service Implementation (服务实现：Cloud/HTTP)                │
+ * │   ↓                                                          │
+ * │ Backend (云开发 / HTTP API)                                  │
+ * └─────────────────────────────────────────────────────────────┘
+ * 
+ * ==================================================================================
+ * 可用的 ViewModel（请使用这些代替 api.js 中的方法）
+ * ==================================================================================
+ * 
+ * 1. PostViewModel        - 文章相关功能
+ *    路径: viewmodels/PostViewModel.js
+ *    功能: 文章列表、详情、点赞、收藏等
+ * 
+ * 2. CommentViewModel     - 评论相关功能
+ *    路径: viewmodels/CommentViewModel.js
+ *    功能: 评论列表、发表评论、删除评论等
+ * 
+ * 3. MemberViewModel      - 用户相关功能
+ *    路径: viewmodels/MemberViewModel.js
+ *    功能: 用户信息、签到、积分、VIP申请等
+ * 
+ * 4. AdminViewModel       - 管理员功能
+ *    路径: viewmodels/AdminViewModel.js
+ *    功能: 文章管理、分类管理、标签管理、配置管理等
+ * 
+ * 5. MessageViewModel     - 消息相关功能
+ *    路径: viewmodels/MessageViewModel.js
+ *    功能: 消息发送、表单ID收集等
+ * 
+ * 6. GitHubViewModel      - GitHub 集成功能
+ *    路径: viewmodels/GitHubViewModel.js
+ *    功能: GitHub 搜索、仓库信息、文章同步等
+ * 
+ * 7. FileViewModel        - 文件上传功能
+ *    路径: viewmodels/FileViewModel.js
+ *    功能: 文件上传到云存储
+ * 
+ * ==================================================================================
+ * 标准使用方式
+ * ==================================================================================
+ * 
+ * 步骤 1: 在页面顶部引入需要的 ViewModel
+ * ```javascript
+ * const PostViewModel = require('../../viewmodels/PostViewModel.js')
+ * const MemberViewModel = require('../../viewmodels/MemberViewModel.js')
+ * ```
+ * 
+ * 步骤 2: 在 onLoad 中初始化 ViewModel
+ * ```javascript
+ * Page({
+ *   onLoad: function(options) {
+ *     // 初始化 ViewModel
+ *     this.postViewModel = new PostViewModel()
+ *     this.memberViewModel = new MemberViewModel()
+ *     
+ *     // 加载数据
+ *     this.loadData()
+ *   },
+ * 
+ *   async loadData() {
+ *     wx.showLoading({ title: '加载中...' })
+ *     
+ *     try {
+ *       // 调用 ViewModel 方法
+ *       const response = await this.postViewModel.getPostsList({
+ *         page: 1,
+ *         filter: '',
+ *         isShow: 1,
+ *         orderBy: 'createTime'
+ *       })
+ *       
+ *       // 检查返回结果
+ *       if (response.success) {
+ *         const { list, hasMore, isEmpty } = response.data
+ *         this.setData({
+ *           postList: list,
+ *           hasMore: hasMore,
+ *           isEmpty: isEmpty
+ *         })
+ *       } else {
+ *         wx.showToast({
+ *           title: response.message || '加载失败',
+ *           icon: 'none'
+ *         })
+ *       }
+ *     } catch (error) {
+ *       console.error('加载数据失败:', error)
+ *       wx.showToast({
+ *         title: error.message || '操作失败',
+ *         icon: 'none'
+ *       })
+ *     } finally {
+ *       wx.hideLoading()
+ *     }
+ *   }
+ * })
+ * ```
+ * 
+ * ==================================================================================
+ * Response 对象结构（统一返回格式）
+ * ==================================================================================
+ * 
+ * 所有 ViewModel 方法都返回标准的 Response 对象：
+ * ```javascript
+ * {
+ *   success: boolean,    // 操作是否成功
+ *   data: any,          // 返回的数据（成功时）
+ *   message: string,    // 提示信息
+ *   code: number        // 状态码（0 表示成功）
+ * }
+ * ```
+ * 
+ * ==================================================================================
+ * 迁移对照表（api.js → ViewModel）
+ * ==================================================================================
+ * 
+ * 旧方法 (api.js)                    → 新方法 (ViewModel)
+ * ─────────────────────────────────────────────────────────────────────────────
+ * api.getNewPostsList()              → postViewModel.getNewPostsList()
+ * api.getPostsDetail()               → postViewModel.getPostDetail()
+ * api.zanPosts()                     → postViewModel.zanPost()
+ * api.collectPosts()                 → postViewModel.collectPost()
+ * api.addPostComment()               → commentViewModel.addPostComment()
+ * api.getCommentList()               → commentViewModel.getCommentList()
+ * api.getMemberInfo()                → memberViewModel.getMemberInfo()
+ * api.saveMemberInfo()               → memberViewModel.saveMemberInfo()
+ * api.addSign()                      → memberViewModel.addSign()
+ * api.getClassifyList()              → adminViewModel.getClassifyList()
+ * api.getLabelList()                 → adminViewModel.getLabelList()
+ * api.searchGitHub()                 → gitHubViewModel.searchGitHub()
+ * api.uploadFile()                   → fileViewModel.uploadFile()
+ * ─────────────────────────────────────────────────────────────────────────────
+ * 
+ * ==================================================================================
+ * 相关文档
+ * ==================================================================================
+ * 
+ * - MVVM 架构使用指南: docs/MVVM-架构使用指南.md
+ * - MVVM 迁移快速指南: docs/MVVM迁移快速指南.md
+ * - 架构优化-数据转换层下沉: docs/架构优化-数据转换层下沉.md
+ * - Git 模块迁移完成: fixes/2025-12-22-git-module-migration-complete.md
+ * - Admin 模块迁移完成: fixes/2025-12-22-admin-module-migration-complete.md
+ * - Mine 模块迁移完成: fixes/2025-12-22-mine-module-migration-complete.md
+ * 
+ * ==================================================================================
+ * 架构优势
+ * ==================================================================================
+ * 
+ * ✅ 前后端解耦：轻松切换云开发/HTTP API
+ * ✅ 代码可维护：结构清晰，职责分明
+ * ✅ 易于测试：各层可独立测试
+ * ✅ 可扩展性：新增功能只需添加 ViewModel 方法
+ * ✅ 统一错误处理：全局统一的错误处理机制
+ * ✅ 代码复用：业务逻辑集中在 ViewModel 层
+ * 
+ * ==================================================================================
+ */
+
 const db = wx.cloud.database()
 const _ = db.command
 

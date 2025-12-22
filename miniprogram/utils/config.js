@@ -31,10 +31,30 @@ var postRelatedType = {
 
 var subcributeTemplateId="BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg"
 
+/**
+ * 服务类型配置
+ * 'cloud' - 使用微信云开发
+ * 'http' - 使用 HTTP API
+ */
+var serviceType = 'cloud'
+
+/**
+ * HTTP API 配置 (当 serviceType 为 'http' 时使用)
+ */
+var httpApi = {
+    baseUrl: 'https://api.example.com',
+    timeout: 10000,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+}
+
 module.exports = {
     postRelatedType: postRelatedType,
     moneyUrl:moneyUrl,
     wechatUrl:wechatUrl,
     env:env,
-    subcributeTemplateId:subcributeTemplateId
+    subcributeTemplateId:subcributeTemplateId,
+    serviceType: serviceType,
+    httpApi: httpApi
 }

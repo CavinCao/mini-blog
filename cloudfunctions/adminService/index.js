@@ -426,36 +426,47 @@ async function getClassifyList(event) {
  */
 async function updateBatchPostsLabel(event) {
   console.info(event)
-  for (let i = 0; i < event.posts.length; i++) {
-    let result = await db.collection('mini_posts').doc(event.posts[i]).get()
-    let oldLabels = result.data.label
-    if (event.operate == 'add') {
-      if (oldLabels.indexOf(event) > -1) {
-        continue
-      }
-      await db.collection('mini_posts').doc(event.posts[i]).update({
-        data: {
-          label: _.push([event.label])
+  try {
+    for (let i = 0; i < event.posts.length; i++) {
+      let result = await db.collection('mini_posts').doc(event.posts[i]).get()
+      let oldLabels = result.data.label
+      if (event.operate == 'add') {
+        if (oldLabels.indexOf(event) > -1) {
+          continue
         }
-      })
+        await db.collection('mini_posts').doc(event.posts[i]).update({
+          data: {
+            label: _.push([event.label])
+          }
+        })
+      }
+      else if (event.operate == 'delete') {
+
+        var index = oldLabels.indexOf(event);
+        if (index == -1) {
+          continue
+        }
+        oldLabels.splice(index, 1);
+
+        await db.collection('mini_posts').doc(event.posts[i]).update({
+          data: {
+            label: oldLabels
+          }
+        })
+      }
     }
-    else if (event.operate == 'delete') {
 
-      var index = oldLabels.indexOf(event);
-      if (index == -1) {
-        continue
-      }
-      oldLabels.splice(index, 1);
-
-      await db.collection('mini_posts').doc(event.posts[i]).update({
-        data: {
-          label: oldLabels
-        }
-      })
+    return {
+      success: true,
+      message: event.operate == 'add' ? '批量添加标签成功' : '批量删除标签成功'
+    }
+  } catch (error) {
+    console.error('updateBatchPostsLabel error:', error)
+    return {
+      success: false,
+      message: '批量操作失败'
     }
   }
-
-  return true;
 }
 
 /**
@@ -463,25 +474,36 @@ async function updateBatchPostsLabel(event) {
  * @param {*} event 
  */
 async function updateBatchPostsClassify(event) {
-  for (let i = 0; i < event.posts.length; i++) {
-    let result = await db.collection('mini_posts').doc(event.posts[i]).get()
-    if (event.operate == 'add') {
-      await db.collection('mini_posts').doc(event.posts[i]).update({
-        data: {
-          classify: event.classify
-        }
-      })
+  try {
+    for (let i = 0; i < event.posts.length; i++) {
+      let result = await db.collection('mini_posts').doc(event.posts[i]).get()
+      if (event.operate == 'add') {
+        await db.collection('mini_posts').doc(event.posts[i]).update({
+          data: {
+            classify: event.classify
+          }
+        })
+      }
+      else if (event.operate == 'delete') {
+        await db.collection('mini_posts').doc(event.posts[i]).update({
+          data: {
+            classify: ""
+          }
+        })
+      }
     }
-    else if (event.operate == 'delete') {
-      await db.collection('mini_posts').doc(event.posts[i]).update({
-        data: {
-          classify: ""
-        }
-      })
+
+    return {
+      success: true,
+      message: event.operate == 'add' ? '批量关联成功' : '批量取消关联成功'
+    }
+  } catch (error) {
+    console.error('updateBatchPostsClassify error:', error)
+    return {
+      success: false,
+      message: '批量操作失败'
     }
   }
-
-  return true;
 }
 
 /**

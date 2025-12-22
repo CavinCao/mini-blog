@@ -5,15 +5,15 @@
         专题列表
     </view>
 </view>
-<view class="cu-list menu card-menu margin-top" wx:for="{{classifyList}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" data-classify="{{item.value.classifyName}}" bindtap="showClassifyRelatedModal"  bindlongpress='deleteClassifyById'>
+<view class="cu-list menu card-menu margin-top" wx:for="{{classifyList}}" wx:key="id" wx:for-index="idx" wx:for-item="item"  id="{{item.id}}" data-classify="{{item.name}}" bindtap="showClassifyRelatedModal"  bindlongpress='deleteClassifyById'>
     <view class="cu-item">
         <view class="content padding-tb-sm">
             <view>
                 <text class="cuIcon-title text-orange "></text>
-                {{item.value.classifyName}}
+                {{item.name}}
             </view>
             <view class="text-gray text-sm">
-                {{item.value.classifyDesc}}
+                {{item.desc}}
             </view>
         </view>
     </view>
@@ -67,10 +67,10 @@
         <scroll-view scroll-y scroll-with-animation scroll-top="{{0}}" style="height:calc(100vh - 475rpx)" bindscrolltolower="bindscrolltolower">
             <checkbox-group class="block" bindchange="checkboxChange">
                 <view class="cu-list menu text-left">
-                    <view class="cu-item" wx:for="{{posts}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" id="{{item._id}}">
+                    <view class="cu-item" wx:for="{{posts}}" wx:key="id" wx:for-index="idx" wx:for-item="item" id="{{item.id}}">
                         <label class="flex justify-between align-center flex-sub">
                             <view class="flex-sub">{{item.title}}</view>
-                            <checkbox value="{{item._id}}" class="round"></checkbox>
+                            <checkbox value="{{item.id}}" class="round"></checkbox>
                         </label>
                     </view>
                 </view>

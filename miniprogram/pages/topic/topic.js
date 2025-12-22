@@ -1,4 +1,5 @@
-const api = require('../../utils/api.js');
+const AdminViewModel = require('../../viewmodels/AdminViewModel.js');
+
 Page({
 
   /**
@@ -12,6 +13,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad:async function(options) {
+    // 【MVVM架构】初始化 ViewModel
+    this.adminViewModel = new AdminViewModel();
+    
     await this.getClassifyList()
   },
   /**
@@ -42,11 +46,22 @@ Page({
       title: '加载中...',
     })
     let that = this
-    let classifyList = await api.getClassifyList()
-    console.info(classifyList)
-    that.setData({
-      classifyList: classifyList.result.data
-    })
+    
+    // 【MVVM架构】使用 AdminViewModel
+    const response = await this.adminViewModel.getClassifyList()
+    console.info(response)
+    
+    if (response.success) {
+      that.setData({
+        classifyList: response.data
+      })
+    } else {
+      wx.showToast({
+        title: response.message || '加载失败',
+        icon: 'none'
+      })
+    }
+    
     wx.hideLoading()
   },
 

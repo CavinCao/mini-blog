@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const PostViewModel = require('../../../viewmodels/PostViewModel.js');
 
 Page({
 
@@ -17,6 +17,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad:async function (options) {
+    // 【MVVM架构】初始化 ViewModel
+    this.postViewModel = new PostViewModel();
+    
     let that = this;
     let classify = options.classify;
     that.setData({
@@ -52,7 +55,7 @@ Page({
 
   /**
   * 获取文章列表
-*/
+  */
   getPostsList: async function (filter) {
     wx.showLoading({
       title: '加载中...',
@@ -63,12 +66,28 @@ Page({
       wx.hideLoading()
       return
     }
-    let where={
-      classify:filter,
-      isShow:1
+    
+    // 【MVVM架构】使用 PostViewModel
+    const response = await this.postViewModel.getNewPostsList({
+      page: page,
+      filter: {
+        classify: filter,
+        isShow: 1
+      }
+    })
+    
+    if (!response.success) {
+      wx.showToast({
+        title: response.message || '加载失败',
+        icon: 'none'
+      })
+      wx.hideLoading()
+      return
     }
-    let result = await api.getNewPostsList(page, where)
-    if (result.data.length === 0) {
+    
+    const { list, hasMore, isEmpty } = response.data
+    
+    if (isEmpty) {
       that.setData({
         nomore: true
       })
@@ -81,7 +100,8 @@ Page({
     else {
       that.setData({
         page: page + 1,
-        posts: that.data.posts.concat(result.data),
+        posts: that.data.posts.concat(list),
+        nomore: !hasMore
       })
     }
     wx.hideLoading()

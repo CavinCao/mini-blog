@@ -1,6 +1,7 @@
 const config = require('../../utils/config.js')
 const util = require('../../utils/util.js')
-const api = require('../../utils/api.js');
+const AdminViewModel = require('../../viewmodels/AdminViewModel.js')
+const MemberViewModel = require('../../viewmodels/MemberViewModel.js')
 const app = getApp();
 Page({
 
@@ -58,6 +59,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.adminViewModel = new AdminViewModel()
+    this.memberViewModel = new MemberViewModel()
+    
     let that = this;
     let showRedDot = wx.getStorageSync('showRedDot');
     console.info(showRedDot)
@@ -252,12 +257,15 @@ Page({
       })
     }
     else {
-      let res = await api.checkAuthor();
-      console.info(res)
-      wx.setStorageSync('isAuthor', res.result)
-      that.setData({
-        isAuthor: res.result
-      })
+      // 【MVVM架构】使用 AdminViewModel
+      const response = await this.adminViewModel.checkAuthor();
+      console.info(response)
+      if (response.success && response.data) {
+        wx.setStorageSync('isAuthor', response.data)
+        that.setData({
+          isAuthor: response.data
+        })
+      }
     }
   },
 
@@ -383,9 +391,10 @@ Page({
         accept: accept,
         templateId: templateId
       }
-      let res = await api.applyVip(info)
-      console.info(res)
-      if (res.result) {
+      // 【MVVM架构】使用 MemberViewModel
+      const response = await this.memberViewModel.applyVip(info)
+      console.info(response)
+      if (response.success) {
         // 更新本地存储
         that.saveUserProfile()
         
@@ -401,7 +410,7 @@ Page({
       }
       else {
         wx.showToast({
-          title: "程序出错啦",
+          title: response.message || "程序出错啦",
           icon: "none",
           duration: 3000
         });
@@ -452,20 +461,20 @@ Page({
    * @param {} e 
    */
   getMemberInfo: async function (e) {
-
     let that = this
     try {
-      let res = await api.getMemberInfo(app.globalData.openid)
-      console.info(res)
-      if (res.data.length > 0) {
-        let memberInfo = res.data[0]
+      // 【MVVM架构】使用 MemberViewModel
+      const response = await this.memberViewModel.getMemberInfo(app.globalData.openid)
+      console.info(response)
+      if (response.success && response.data) {
+        let memberInfo = response.data
         that.setData({
-          signedDays: memberInfo.continueSignedCount,
+          signedDays: memberInfo.continueSignedCount || 0,
           signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
           signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "今日已签到" : "每日签到",
           vipDesc: Number(memberInfo.level) > 1 ? "VIP用户" : "点击申请VIP",
           isVip: Number(memberInfo.level) > 1,
-          applyStatus: memberInfo.applyStatus,
+          applyStatus: memberInfo.applyStatus || 0,
           signedRightCount: memberInfo.sighRightCount == undefined ? 0 : memberInfo.sighRightCount
         })
       }

@@ -5,7 +5,7 @@
         订阅消息模板列表
     </view>
 </view>
-<view class="cu-list menu card-menu margin-top" wx:for="{{templates}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item._id}}" data-title="{{item.title}}" data-templatedid="{{item.priTmplId}}" bindtap="showModol" >
+<view class="cu-list menu card-menu margin-top" wx:for="{{templates}}" wx:key="idx" wx:for-index="idx" wx:for-item="item"  id="{{item.id}}" data-title="{{item.title}}" data-templatedid="{{item.priTmplId}}" bindtap="showModol" >
     <view class="cu-item">
         <view class="content padding-tb-sm">
             <view>

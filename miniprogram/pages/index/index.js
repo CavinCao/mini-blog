@@ -1,5 +1,10 @@
-const api = require('../../utils/api.js');
+// 【MVVM架构】引入 ViewModel 替代 api.js
+const PostViewModel = require('../../viewmodels/PostViewModel.js');
+const AdminViewModel = require('../../viewmodels/AdminViewModel.js');
+const MemberViewModel = require('../../viewmodels/MemberViewModel.js');
+
 const app = getApp();
+
 Page({
 
   /**
@@ -29,7 +34,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    let that=this
+    let that = this
+    
+    // 初始化 ViewModel
+    this.postViewModel = new PostViewModel()
+    this.adminViewModel = new AdminViewModel()
+    this.memberViewModel = new MemberViewModel()
+    
     //有openid跳授权计算积分
     if (options.openid) {
       let shareOpenId = options.openid
@@ -51,7 +62,8 @@ Page({
           nickName: app.globalData.userInfo.nickName,
           avatarUrl: app.globalData.userInfo.avatarUrl
         }
-        await api.addShareDetail(info)
+        // 【MVVM架构】使用 MemberViewModel
+        await this.memberViewModel.addShareDetail(info)
       }
     }
     await that.getPostsList('', 'createTime')
@@ -168,10 +180,13 @@ Page({
         })
 
         let task = that.getPostsList("", 'createTime')
-        let labelList = await api.getLabelList()
-        that.setData({
-          labelList: labelList.result.data
-        })
+        // 【MVVM架构】使用 AdminViewModel 获取标签列表
+        let labelResponse = await this.adminViewModel.getLabelList()
+        if (labelResponse.success) {
+          that.setData({
+            labelList: labelResponse.data
+          })
+        }
         await task
 
         break
@@ -253,6 +268,7 @@ Page({
 
   /**
    * 获取文章列表
+   * 【MVVM架构】使用 PostViewModel 替代 api.js
    */
   getPostsList: async function (filter, orderBy, label) {
     wx.showLoading({
@@ -264,23 +280,43 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getPostsList(page, filter, 1, orderBy, label)
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
+    
+    // 【MVVM架构】使用 PostViewModel 获取文章列表
+    const response = await this.postViewModel.getPostsList({
+      page: page,
+      filter: filter,
+      isShow: 1,
+      orderBy: orderBy,
+      label: label
+    })
+    
+    wx.hideLoading()
+    
+    if (response.success) {
+      const { list, hasMore, isEmpty } = response.data
+      
+      if (isEmpty) {
         that.setData({
+          nomore: true,
           nodata: true
         })
+      } else if (!hasMore) {
+        that.setData({
+          nomore: true,
+          posts: that.data.posts.concat(list)
+        })
+      } else {
+        that.setData({
+          page: page + 1,
+          posts: that.data.posts.concat(list)
+        })
       }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        posts: that.data.posts.concat(result.data),
+    } else {
+      // 处理错误情况
+      wx.showToast({
+        title: response.message || '加载失败',
+        icon: 'none'
       })
     }
-    wx.hideLoading()
   }
 })

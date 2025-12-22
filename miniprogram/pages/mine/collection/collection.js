@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const PostViewModel = require('../../../viewmodels/PostViewModel.js');
 const app = getApp();
 
 Page({
@@ -21,6 +21,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 【MVVM架构】初始化 ViewModel
+    this.postViewModel = new PostViewModel();
+    
     let type = options.type;
     let that = this;
     if (type === "1") {
@@ -102,8 +105,20 @@ Page({
       type: type,
       openId: app.globalData.openid
     };
-    let postRelated = await api.getPostRelated(where, page)
-    if (postRelated.data.length === 0) {
+    
+    // 【MVVM架构】使用 PostViewModel
+    const response = await this.postViewModel.getPostRelated(where, page)
+    
+    if (!response.success) {
+      wx.showToast({
+        title: response.message || '加载失败',
+        icon: 'none'
+      })
+      return
+    }
+    
+    const data = response.data
+    if (data.length === 0) {
       that.setData({
         nomore: true
       })
@@ -116,7 +131,7 @@ Page({
     else {
       that.setData({
         page: page + 1,
-        postRelated: that.data.postRelated.concat(postRelated.data),
+        postRelated: that.data.postRelated.concat(data),
       })
     }
   }

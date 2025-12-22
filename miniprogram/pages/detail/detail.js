@@ -1,7 +1,12 @@
 const config = require('../../utils/config.js')
-const api = require('../../utils/api.js');
-const util = require('../../utils/util.js');
-const app = getApp();
+const util = require('../../utils/util.js')
+
+// 【MVVM架构】引入 ViewModel
+const PostViewModel = require('../../viewmodels/PostViewModel.js')
+const CommentViewModel = require('../../viewmodels/CommentViewModel.js')
+const MemberViewModel = require('../../viewmodels/MemberViewModel.js')
+
+const app = getApp()
 
 Page({
 
@@ -36,7 +41,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    let that = this;
+    let that = this
+    
+    // 【MVVM架构】初始化 ViewModel
+    this.postViewModel = new PostViewModel()
+    this.commentViewModel = new CommentViewModel()
+    this.memberViewModel = new MemberViewModel()
+    
     //1.授权
     app.checkUserInfo(function (userInfo, isLogin) {
       if (!isLogin) {
@@ -50,20 +61,23 @@ Page({
       }
     });
     
-    // 从 mini_member 获取用户头像和昵称
+    // 【MVVM架构】从 mini_member 获取用户头像和昵称
     try {
-      const memberUserInfo = await api.getMemberUserInfo()
-      console.log('获取用户信息:', memberUserInfo)
-      if (memberUserInfo.result && memberUserInfo.result.success) {
+      const response = await this.memberViewModel.getMemberUserInfo()
+      console.log('获取用户信息:', response)
+      
+      if (response.success && response.data) {
         that.setData({
           userInfo: {
             ...that.data.userInfo,
-            avatarUrl: memberUserInfo.result.avatarUrl,
-            nickName: memberUserInfo.result.nickName
+            avatarUrl: response.data.avatarUrl,
+            nickName: response.data.nickName
           },
           hasUserInfo: true
         })
       } else {
+        // 用户信息不存在，需要授权
+        console.log('用户信息不存在，需要授权')
         that.setData({
           hasUserInfo: false
         })
@@ -75,10 +89,25 @@ Page({
       })
     }
     
-    let blogId = options.id;
+    let blogId = options.id
     if (options.scene) {
-      blogId = decodeURIComponent(options.scene);
+      blogId = decodeURIComponent(options.scene)
     }
+    
+    // 【参数校验】检查文章ID是否有效
+    if (!blogId || blogId.trim() === '') {
+      console.error('文章ID无效:', blogId)
+      wx.showToast({
+        title: '文章ID无效',
+        icon: 'none',
+        duration: 2000
+      })
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 2000)
+      return
+    }
+    
     let advert = app.globalData.advert
     //广告加载
     if (advert.bannerStatus) {
@@ -87,9 +116,14 @@ Page({
         showBannerId: advert.bannerId
       })
     }
+    
     //获取文章详情&关联信息
     await that.getDetail(blogId)
-    await that.getPostRelated(that.data.post._id)
+    
+    // 只有成功获取到文章后才获取相关信息
+    if (that.data.post && that.data.post.id) {
+      await that.getPostRelated(that.data.post.id)
+    }
   },
 
   /**
@@ -99,42 +133,54 @@ Page({
   },
   /**
    * 页面上拉触底事件的处理函数
+   * 【MVVM架构】使用 CommentViewModel
    */
   onReachBottom: async function () {
     wx.showLoading({
       title: '加载中...',
     })
     try {
-      let that = this;
-      if (that.data.nomore === true)
-        return;
+      let that = this
+      if (that.data.nomore === true) {
+        wx.hideLoading()
+        return
+      }
 
-      let page = that.data.commentPage;
-      let commentList = await api.getPostComments(page, that.data.post._id)
-      if (commentList.data.length === 0) {
-        that.setData({
-          nomore: true
-        })
-        if (page === 1) {
+      let page = that.data.commentPage
+      const response = await this.commentViewModel.getPostComments(page, that.data.post.id)
+      
+      if (response.success) {
+        const { list, hasMore, isEmpty } = response.data
+        
+        if (isEmpty) {
           that.setData({
+            nomore: true,
             nodata: true
           })
+        } else {
+          that.setData({
+            commentPage: hasMore ? page + 1 : page,
+            commentList: that.data.commentList.concat(list),
+            nomore: !hasMore
+          })
         }
-      }
-      else {
-        that.setData({
-          commentPage: page + 1,
-          commentList: that.data.commentList.concat(commentList.data),
+      } else {
+        wx.showToast({
+          title: response.message || '加载评论失败',
+          icon: 'none'
         })
       }
     }
     catch (err) {
       console.info(err)
+      wx.showToast({
+        title: '加载评论失败',
+        icon: 'none'
+      })
     }
     finally {
       wx.hideLoading()
     }
-
   },
 
   /**
@@ -172,31 +218,81 @@ Page({
   },
   /**
    * 获取文章详情
+   * 【MVVM架构】使用 PostViewModel
    */
   getDetail: async function (blogId) {
+    // 【参数校验】
+    if (!blogId || blogId.trim() === '') {
+      console.error('getDetail: 文章ID无效', blogId)
+      wx.showToast({
+        title: '文章ID无效',
+        icon: 'none',
+        duration: 2000
+      })
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 2000)
+      return
+    }
+    
     wx.showLoading({
       title: '加载中...',
     })
     let that = this
-    let postDetail = await api.getPostDetail(blogId);
-    console.info(postDetail)
     
-    // 解析内容
-    let content = postDetail.result.content;
-    let result = app.towxml(content, 'html', {
-      theme: 'light',
-      events: {
-        tap: (e) => {
-          console.log('tap', e);
+    try {
+      console.log('开始获取文章详情, ID:', blogId)
+      const response = await this.postViewModel.getPostDetail(blogId)
+      console.log('文章详情响应:', response)
+      
+      if (response.success && response.data) {
+        // 解析内容
+        let content = response.data.content
+        
+        if (!content) {
+          console.warn('文章内容为空')
+          content = '<p>文章内容为空</p>'
         }
-      }
-    });
-    postDetail.result.content = result;
+        
+        let result = app.towxml(content, 'html', {
+          theme: 'light',
+          events: {
+            tap: (e) => {
+              console.log('tap', e)
+            }
+          }
+        })
+        response.data.content = result
 
-    that.setData({
-      post: postDetail.result
-    })
-    wx.hideLoading()
+        that.setData({
+          post: response.data
+        })
+        
+        console.log('文章详情加载成功')
+      } else {
+        console.warn('文章加载失败:', response.message)
+        wx.showToast({
+          title: response.message || '文章不存在',
+          icon: 'none',
+          duration: 2000
+        })
+        setTimeout(() => {
+          wx.navigateBack()
+        }, 2000)
+      }
+    } catch (err) {
+      console.error('获取文章详情异常:', err)
+      wx.showToast({
+        title: '加载失败，请稍后重试',
+        icon: 'none',
+        duration: 2000
+      })
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 2000)
+    } finally {
+      wx.hideLoading()
+    }
   },
   /**
    * 显示隐藏功能
@@ -208,49 +304,64 @@ Page({
   },
   /**
    * 收藏功能
+   * 【MVVM架构】使用 PostViewModel
    */
   postCollection: async function () {
     wx.showLoading({
       title: '加载中...',
     })
     try {
-      let that = this;
-      let collection = that.data.collection;
+      let that = this
+      let collection = that.data.collection
+      
       if (collection.status === true) {
-        let result = await api.deletePostCollectionOrZan(that.data.post._id, config.postRelatedType.COLLECTION)
-        console.info(result)
-        that.setData({
-          collection: { status: false, text: "收藏", icon: "favor" }
-        })
-        wx.showToast({
-          title: '已取消收藏',
-          icon: 'success',
-          duration: 1500
-        })
+        // 取消收藏
+        const response = await this.postViewModel.deletePostCollectionOrZan(
+          that.data.post.id, 
+          config.postRelatedType.COLLECTION
+        )
+        
+        if (response.success) {
+          that.setData({
+            collection: { status: false, text: "收藏", icon: "favor" }
+          })
+          wx.showToast({
+            title: '已取消收藏',
+            icon: 'success',
+            duration: 1500
+          })
+        } else {
+          throw new Error(response.message)
+        }
       }
       else {
+        // 添加收藏
         let data = {
-          postId: that.data.post._id,
+          postId: that.data.post.id,
           postTitle: that.data.post.title,
           postUrl: that.data.post.defaultImageUrl,
           postDigest: that.data.post.digest,
           type: config.postRelatedType.COLLECTION
         }
-        await api.addPostCollection(data)
-        that.setData({
-          collection: { status: true, text: "已收藏", icon: "favorfill" }
-        })
-
-        wx.showToast({
-          title: '已收藏',
-          icon: 'success',
-          duration: 1500
-        })
+        const response = await this.postViewModel.addPostCollection(data)
+        
+        if (response.success) {
+          that.setData({
+            collection: { status: true, text: "已收藏", icon: "favorfill" }
+          })
+          wx.showToast({
+            title: '已收藏',
+            icon: 'success',
+            duration: 1500
+          })
+        } else {
+          throw new Error(response.message)
+        }
       }
     }
     catch (err) {
       wx.showToast({
-        title: '程序有一点点小异常，操作失败啦',
+        title: err.message || '操作失败',
         icon: 'none',
         duration: 1500
       })
@@ -259,53 +370,67 @@ Page({
     finally {
       wx.hideLoading()
     }
-
   },
   /**
    * 点赞功能
+   * 【MVVM架构】使用 PostViewModel
    */
   postZan: async function () {
     wx.showLoading({
       title: '加载中...',
     })
     try {
-      let that = this;
-      let zan = that.data.zan;
+      let that = this
+      let zan = that.data.zan
+      
       if (zan.status === true) {
-        let result = await api.deletePostCollectionOrZan(that.data.post._id, config.postRelatedType.ZAN)
-        console.info(result)
-        that.setData({
-          zan: { status: false, text: "点赞", icon: "appreciate" }
-        })
-        wx.showToast({
-          title: '已取消点赞',
-          icon: 'success',
-          duration: 1500
-        })
+        // 取消点赞
+        const response = await this.postViewModel.deletePostCollectionOrZan(
+          that.data.post.id, 
+          config.postRelatedType.ZAN
+        )
+        
+        if (response.success) {
+          that.setData({
+            zan: { status: false, text: "点赞", icon: "appreciate" }
+          })
+          wx.showToast({
+            title: '已取消点赞',
+            icon: 'success',
+            duration: 1500
+          })
+        } else {
+          throw new Error(response.message)
+        }
       }
       else {
+        // 添加点赞
         let data = {
-          postId: that.data.post._id,
+          postId: that.data.post.id,
           postTitle: that.data.post.title,
           postUrl: that.data.post.defaultImageUrl,
           postDigest: that.data.post.digest,
           type: config.postRelatedType.ZAN
         }
-        await api.addPostZan(data)
-        that.setData({
-          zan: { status: true, text: "已赞", icon: "appreciatefill" }
-        })
-
-        wx.showToast({
-          title: '已赞',
-          icon: 'success',
-          duration: 1500
-        })
+        const response = await this.postViewModel.addPostZan(data)
+        
+        if (response.success) {
+          that.setData({
+            zan: { status: true, text: "已赞", icon: "appreciatefill" }
+          })
+          wx.showToast({
+            title: '已赞',
+            icon: 'success',
+            duration: 1500
+          })
+        } else {
+          throw new Error(response.message)
+        }
       }
     }
     catch (err) {
       wx.showToast({
-        title: '程序有一点点小异常，操作失败啦',
+        title: err.message || '操作失败',
         icon: 'none',
         duration: 1500
       })
@@ -327,27 +452,35 @@ Page({
   },
   /**
    * 获取收藏和喜欢的状态
+   * 【MVVM架构】使用 PostViewModel
    */
   getPostRelated: async function (blogId) {
-    let where = {
-      postId: blogId,
-      openId: app.globalData.openid
-    }
-    let postRelated = await api.getPostRelated(where, 1);
-    let that = this;
-    for (var item of postRelated.data) {
-      if (config.postRelatedType.COLLECTION === item.type) {
-        that.setData({
-          collection: { status: true, text: "已收藏", icon: "favorfill" }
-        })
-        continue;
+    try {
+      let where = {
+        postId: blogId,
+        openId: app.globalData.openid
       }
-      if (config.postRelatedType.ZAN === item.type) {
-        that.setData({
-          zan: { status: true, text: "已赞", icon: "appreciatefill" }
-        })
-        continue;
+      const response = await this.postViewModel.getPostRelated(where, 1)
+      
+      if (response.success && response.data) {
+        let that = this
+        for (var item of response.data.data) {
+          if (config.postRelatedType.COLLECTION === item.type) {
+            that.setData({
+              collection: { status: true, text: "已收藏", icon: "favorfill" }
+            })
+            continue
+          }
+          if (config.postRelatedType.ZAN === item.type) {
+            that.setData({
+              zan: { status: true, text: "已赞", icon: "appreciatefill" }
+            })
+            continue
+          }
+        }
       }
+    } catch (err) {
+      console.error('获取收藏点赞状态失败:', err)
     }
   },
 
@@ -363,8 +496,10 @@ Page({
  */
   submitContent: async function (content, commentPage, accept) {
     let that = this
-    let checkResult = await api.checkPostComment(content)
-    if (!checkResult.result) {
+    
+    // 【MVVM架构】检查评论内容
+    const checkResponse = await this.commentViewModel.checkPostComment(content)
+    if (!checkResponse.success || !checkResponse.data) {
       wx.showToast({
         title: '评论内容存在敏感信息',
         icon: 'none',
@@ -373,9 +508,12 @@ Page({
       return
     }
 
+    // 提交评论
+    let submitResponse
     if (that.data.commentId === "") {
+      // 主评论
       var data = {
-        postId: that.data.post._id,
+        postId: that.data.post.id,
         cNickName: that.data.userInfo.nickName,
         cAvatarUrl: that.data.userInfo.avatarUrl,
         cOpenId: app.globalData.openid,
@@ -385,50 +523,61 @@ Page({
         childComment: [],
         flag: 0
       }
-      await api.addPostComment(data, accept)
+      submitResponse = await this.commentViewModel.addPostComment(data, accept)
     }
     else {
+      // 子评论
       var childData = [{
         cOpenId: app.globalData.openid,
         cNickName: that.data.userInfo.nickName,
         cAvatarUrl: that.data.userInfo.avatarUrl,
-        timestamp: new Date().getTime(), //new Date(),
+        timestamp: new Date().getTime(),
         createDate: util.formatTime(new Date()),
         comment: content,
         tNickName: that.data.toName,
         tOpenId: that.data.toOpenId,
         flag: 0
       }]
-      await api.addPostChildComment(that.data.commentId, that.data.post._id, childData, accept)
+      submitResponse = await this.commentViewModel.addPostChildComment(that.data.commentId, that.data.post.id, childData, accept)
     }
 
-    let commentList = await api.getPostComments(commentPage, that.data.post._id)
-    if (commentList.data.length === 0) {
-      that.setData({
-        nomore: true
+    // 【检查提交结果】
+    if (!submitResponse.success) {
+      wx.showToast({
+        title: submitResponse.message || '评论提交失败',
+        icon: 'none',
+        duration: 2000
       })
-      if (commentPage === 1) {
+      return
+    }
+
+    // 【MVVM架构】刷新评论列表
+    const response = await this.commentViewModel.getPostComments(commentPage, that.data.post.id)
+    if (response.success) {
+      const { list, isEmpty } = response.data
+      
+      if (isEmpty) {
         that.setData({
+          nomore: true,
           nodata: true
         })
+      } else {
+        let post = that.data.post
+        post.totalComments = post.totalComments + 1
+        that.setData({
+          commentPage: commentPage + 1,
+          commentList: list,
+          commentContent: "",
+          nomore: false,
+          nodata: false,
+          post: post,
+          commentId: "",
+          placeholder: "评论...",
+          focus: false,
+          toName: "",
+          toOpenId: ""
+        })
       }
-    }
-    else {
-      let post = that.data.post;
-      post.totalComments = post.totalComments + 1
-      that.setData({
-        commentPage: commentPage + 1,
-        commentList: commentList.data,
-        commentContent: "",
-        nomore: false,
-        nodata: false,
-        post: post,
-        commentId: "",
-        placeholder: "评论...",
-        focus: false,
-        toName: "",
-        toOpenId: ""
-      })
     }
 
     wx.showToast({
@@ -624,16 +773,16 @@ Page({
     })
     
     try {
-      // 保存用户信息到 mini_member
-      const result = await api.saveMemberInfo(tempAvatarUrl, tempNickName)
-      console.log('保存用户信息结果:', result)
+      // 【MVVM架构】保存用户信息到 mini_member
+      const response = await this.memberViewModel.saveMemberInfo(tempAvatarUrl, tempNickName)
+      console.log('保存用户信息结果:', response)
       
-      if (result.result && result.result.success) {
+      if (response.success && response.data) {
         that.setData({
           showAuthModal: false,
           hasUserInfo: true,
-          'userInfo.avatarUrl': result.result.avatarUrl,
-          'userInfo.nickName': result.result.nickName,
+          'userInfo.avatarUrl': response.data.avatarUrl,
+          'userInfo.nickName': response.data.nickName,
           'userInfo.tempAvatarUrl': '',
           'userInfo.tempNickName': ''
         })
@@ -645,7 +794,7 @@ Page({
         })
       } else {
         wx.showToast({
-          title: '保存失败，请重试',
+          title: response.message || '保存失败，请重试',
           icon: 'none',
           duration: 1500
         })

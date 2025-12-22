@@ -1,4 +1,5 @@
-const api = require('../../utils/api.js');
+// 【MVVM架构】引入 ViewModel
+const GitHubViewModel = require('../../viewmodels/GitHubViewModel.js')
 
 Page({
   data: {
@@ -15,6 +16,9 @@ Page({
   },
 
   onLoad: function (options) {
+    // 【MVVM架构】初始化 ViewModel
+    this.gitHubViewModel = new GitHubViewModel()
+
     let history = wx.getStorageSync('github_search_history') || [];
     this.setData({
       historySearch: history
@@ -84,31 +88,32 @@ Page({
     wx.showLoading({ title: '加载中...' });
 
     try {
-      let res = await api.searchGitHub(keyword, this.data.page);
-      console.log('GitHub Search Result:', res);
+      // 【MVVM架构】使用 GitHubViewModel
+      const response = await this.gitHubViewModel.searchGitHub(keyword, this.data.page);
+      console.log('GitHub Search Result:', response);
       
-      let items = [];
-      let total_count = 0;
-      if (res.result) {
-        items = res.result.items || [];
-        total_count = res.result.total_count || 0;
+      if (!response.success) {
+        throw new Error(response.message || '搜索失败');
       }
+
+      const items = response.data.items || [];
+      const total_count = response.data.total_count || 0;
       
       if (!isLoadMore) {
         this.setData({ totalCount: total_count });
       }
 
       items.forEach(item => {
-          item.updated_at = item.updated_at ? item.updated_at.substring(0, 10) : '';
+        item.updated_at = item.updated_at ? item.updated_at.substring(0, 10) : '';
       });
 
       if (isLoadMore) {
         if (items.length === 0) {
-           wx.showToast({ title: '没有更多数据了', icon: 'none' });
+          wx.showToast({ title: '没有更多数据了', icon: 'none' });
         } else {
-           this.setData({
-             repoList: this.data.repoList.concat(items)
-           });
+          this.setData({
+            repoList: this.data.repoList.concat(items)
+          });
         }
       } else {
         if (items.length === 0) {
@@ -120,10 +125,10 @@ Page({
         }
       }
     } catch (err) {
-      console.error(err);
-      wx.showToast({ title: '搜索失败', icon: 'none' });
+      console.error('GitHub搜索失败:', err);
+      wx.showToast({ title: err.message || '搜索失败', icon: 'none' });
       if (!isLoadMore) {
-         this.setData({ nodata: true });
+        this.setData({ nodata: true });
       }
     } finally {
       wx.hideLoading();
@@ -143,16 +148,16 @@ Page({
 
   onPullDownRefresh: function () {
     if (this.data.searchKeyword) {
-       this.doSearch(this.data.searchKeyword, false);
+      this.doSearch(this.data.searchKeyword, false);
     } else {
-       wx.stopPullDownRefresh();
+      wx.stopPullDownRefresh();
     }
   },
   
   bindRepoDetail(e) {
-      let fullName = e.currentTarget.dataset.fullname; // Need to update wxml to pass fullname
-      wx.navigateTo({
-        url: '/pages/git/detail/detail?full_name=' + encodeURIComponent(fullName),
-      })
+    let fullName = e.currentTarget.dataset.fullname;
+    wx.navigateTo({
+      url: '/pages/git/detail/detail?full_name=' + encodeURIComponent(fullName),
+    })
   }
 });
