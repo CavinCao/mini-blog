@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const GitHubViewModel = require('../../../viewmodels/GitHubViewModel.js');
 const util = require('../../../utils/util.js');
 const app = getApp();
 
@@ -11,6 +11,9 @@ Page({
   },
 
   onLoad: function (options) {
+    // 初始化 ViewModel
+    this.gitHubViewModel = new GitHubViewModel()
+    
     let fullName = decodeURIComponent(options.full_name);
     this.setData({
       'repo.full_name': fullName
@@ -21,18 +24,9 @@ Page({
 
   async getRepoDetail(fullName) {
     try {
-      //let res = await api.searchGitHub(fullName, 1); // Re-using search or creating new specific API?
-      // Actually searchGitHub returns a list. It's better to get specific repo detail.
-      // I'll add getRepoDetail to api.js and syncService.
-      // For now, let's assume I might pass the basic info from previous page to show quickly.
-      // But better to fetch fresh.
-      
-      // If I don't have getRepoDetail yet, I can implementation it.
-      // Let's implement getGitHubRepo in api/syncService.
-      
-      let repoRes = await api.getGitHubRepo(fullName);
-      if (repoRes.result) {
-         let repo = repoRes.result;
+      let repoRes = await this.gitHubViewModel.getGitHubRepo(fullName);
+      if (repoRes.success && repoRes.data) {
+         let repo = repoRes.data;
          repo.updated_at = repo.updated_at ? repo.updated_at.substring(0, 10) : '';
          repo.created_at = repo.created_at ? repo.created_at.substring(0, 10) : '';
          this.setData({
@@ -48,9 +42,9 @@ Page({
 
   async getRepoReadme(fullName) {
     try {
-      let res = await api.getGitHubReadme(fullName);
-      if (res.result) {
-        let content = res.result;
+      let res = await this.gitHubViewModel.getGitHubReadme(fullName);
+      if (res.success && res.data) {
+        let content = res.data;
         
         // 解析 markdown
         let result = app.towxml(content, 'markdown', {

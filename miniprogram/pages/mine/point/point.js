@@ -1,6 +1,6 @@
 const config = require('../../../utils/config.js')
-const api = require('../../../utils/api.js');
 const util = require('../../../utils/util.js');
+const MemberViewModel = require('../../../viewmodels/MemberViewModel.js');
 const app = getApp();
 let rewardedVideoAd = null
 
@@ -31,7 +31,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-
+    // 初始化 ViewModel
+    this.memberViewModel = new MemberViewModel()
+    
     let that = this
     let advert = app.globalData.advert
     if (advert.pointsStatus) {
@@ -53,16 +55,16 @@ Page({
       }
     });
 
-    let res = await api.getMemberInfo(app.globalData.openid)
-    if (res.data.length > 0) {
-      let memberInfo = res.data[0]
+    let res = await this.memberViewModel.getMemberInfo(app.globalData.openid)
+    if (res.success && res.data) {
+      let memberInfo = res.data
       that.setData({
-        signedDays: memberInfo.continueSignedCount,
-        totalPoints: memberInfo.totalPoints,
+        signedDays: memberInfo.continueSignedCount || 0,
+        totalPoints: memberInfo.totalPoints || 0,
         signed: util.formatTime(new Date()) == memberInfo.lastSignedDate ? 1 : 0,
         signBtnTxt: util.formatTime(new Date()) == memberInfo.lastSignedDate ? "已经完成" : "马上签到",
         isVip: Number(memberInfo.level) > 1,
-        applyStatus: memberInfo.applyStatus,
+        applyStatus: memberInfo.applyStatus || 0,
         signedRightCount: memberInfo.sighRightCount == undefined ? 0 : memberInfo.sighRightCount
       })
     }
@@ -71,12 +73,11 @@ Page({
       that.loadInterstitialAd(advert.taskVideoId);
     }
 
-    let shareList = await api.getShareDetailList(app.globalData.openid, util.formatTime(new Date()))
+    let shareListRes = await this.memberViewModel.getShareDetailList(app.globalData.openid, util.formatTime(new Date()))
     let defaultShareList = that.data.shareList
-    console.info(shareList)
-    if (shareList.data.length > 0) {
+    if (shareListRes.success && shareListRes.data && shareListRes.data.length > 0) {
       let i = 0
-      shareList.data.forEach(item => {
+      shareListRes.data.forEach(item => {
         defaultShareList[i].nickName = item.nickName
         defaultShareList[i].bgUrl = ""
         defaultShareList[i].icon = ""
@@ -204,9 +205,8 @@ Page({
             avatarUrl: app.globalData.userInfo.avatarUrl,
           }
 
-          api.addPoints("taskVideo", info).then((res) => {
-            console.info(res)
-            if (res.result) {
+          that.memberViewModel.addPoints("taskVideo", info).then((res) => {
+            if (res.success) {
               that.setData({
                 totalPoints: Number(that.data.totalPoints) + 50,
               })
@@ -218,7 +218,7 @@ Page({
             }
             else {
               wx.showToast({
-                title: "程序有些小异常",
+                title: res.message || "程序有些小异常",
                 icon: "none",
                 duration: 3000
               });
@@ -286,14 +286,12 @@ Page({
     wx.showLoading({
       title: '提交中...',
     })
-    console.info(app.globalData.userInfo)
     let info = {
       nickName: app.globalData.userInfo.nickName,
       avatarUrl: app.globalData.userInfo.avatarUrl,
     }
-    let res = await api.applyVip(info)
-    console.info(res)
-    if (res.result) {
+    let res = await this.memberViewModel.applyVip(info)
+    if (res.success) {
       wx.showToast({
         title: "申请成功，等待审批",
         icon: "none",
@@ -306,7 +304,7 @@ Page({
     }
     else {
       wx.showToast({
-        title: "程序出错啦",
+        title: res.message || "程序出错啦",
         icon: "none",
         duration: 3000
       });
@@ -351,9 +349,8 @@ Page({
             nickName: app.globalData.userInfo.nickName,
             avatarUrl: app.globalData.userInfo.avatarUrl,
           }
-          api.addPoints("forgetSignRight", info).then((res) => {
-            console.info(res)
-            if (res.result) {
+          that.memberViewModel.addPoints("forgetSignRight", info).then((res) => {
+            if (res.success) {
               that.setData({
                 totalPoints: Number(that.data.totalPoints) - 200
               })
@@ -365,7 +362,7 @@ Page({
             }
             else {
               wx.showToast({
-                title: "程序有些小异常",
+                title: res.message || "程序有些小异常",
                 icon: "none",
                 duration: 3000
               });

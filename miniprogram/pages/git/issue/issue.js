@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const GitHubViewModel = require('../../../viewmodels/GitHubViewModel.js');
 const util = require('../../../utils/util.js');
 
 Page({
@@ -14,6 +14,9 @@ Page({
   },
 
   onLoad: function (options) {
+    // 初始化 ViewModel
+    this.gitHubViewModel = new GitHubViewModel()
+    
     this.setData({
       fullName: decodeURIComponent(options.full_name)
     });
@@ -49,16 +52,10 @@ Page({
     }
 
     try {
-      let res = await api.getGitHubIssues(this.data.fullName, this.data.state, this.data.page);
-      if (res.result) { // Assuming cloud function returns { result: [...] } or just [...]
-         // GitHub API returns array directly, but my syncService usually wraps it?
-         // Let's check syncService implementation again. 
-         // Most syncService functions return `result` from `rp` call which handles `json: true`.
-         // If `json:true`, rp returns the body directly.
-         
-         let newIssues = res.result || [];
+      let res = await this.gitHubViewModel.getGitHubIssues(this.data.fullName, this.data.state, this.data.page);
+      if (res.success && res.data) {
+         let newIssues = res.data || [];
          if (!Array.isArray(newIssues)) {
-             // If wrapped in something else?
              newIssues = []; 
          }
 
@@ -76,11 +73,6 @@ Page({
            issues: this.data.issues.concat(newIssues),
            isLoading: false
          });
-         
-         // Try to get counts if possible?
-         // GitHub API doesn't return total counts in list response.
-         // Usually we get counts from repo detail.
-         // Maybe I should pass counts from previous page or fetch repo detail again if needed.
       } else {
           this.setData({ isLoading: false, isMore: false });
       }

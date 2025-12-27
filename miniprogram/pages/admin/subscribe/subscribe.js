@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const MessageViewModel = require('../../../viewmodels/MessageViewModel.js');
 
 Page({
 
@@ -17,15 +17,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.messageViewModel = new MessageViewModel()
+    
     let that=this
     let templates=that.data.templates
     for (var index in that.data.templates) {
-      var res=await api.querySubscribeCount(templates[index].priTmplId);
-      console.info(res)
-      templates[index].sendCount=res.result.formIds
+      var res=await this.messageViewModel.querySubscribeCount(templates[index].priTmplId);
+      if (res.success && res.data) {
+        templates[index].sendCount=res.data.formIds
+      }
     }
-
-    console.info(templates)
 
     that.setData({
       templates: templates
@@ -153,9 +155,8 @@ Page({
     wx.showLoading({
       title: '保存中...',
     })
-    let res = await api.addSubscribeCount(that.data.templateIds)
-    console.info(res)
-    if (res.result) {
+    let res = await this.messageViewModel.addSubscribeCount(that.data.templateIds)
+    if (res.success) {
       that.setData({
         templateIds: [],
         isShow: false
@@ -169,7 +170,7 @@ Page({
     }
     else {
       wx.showToast({
-        title: '保存出现异常',
+        title: res.message || '保存出现异常',
         icon: 'none',
         duration: 1500
       })

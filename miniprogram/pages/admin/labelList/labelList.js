@@ -1,4 +1,5 @@
-const api = require('../../../utils/api.js');
+const AdminViewModel = require('../../../viewmodels/AdminViewModel.js');
+const PostViewModel = require('../../../viewmodels/PostViewModel.js');
 Page({
 
   /**
@@ -26,6 +27,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.adminViewModel = new AdminViewModel()
+    this.postViewModel = new PostViewModel()
     await this.getLabelList()
   },
 
@@ -89,11 +93,12 @@ Page({
    */
   getLabelList: async function () {
     let that = this
-    let labelList = await api.getLabelList()
-    console.info(labelList)
-    that.setData({
-      labelList: labelList.result.data
-    })
+    let labelList = await this.adminViewModel.getLabelList()
+    if (labelList.success) {
+      that.setData({
+        labelList: labelList.data
+      })
+    }
   },
 
   /**
@@ -169,10 +174,9 @@ Page({
         title: '保存中...',
       })
 
-      let res = await api.addBaseLabel(labelName)
-      console.info(res)
+      let res = await this.adminViewModel.addBaseLabel(labelName)
       wx.hideLoading()
-      if (res.result) {
+      if (res.success) {
         that.setData({
           isLabelModelShow: false,
           labelName: ""
@@ -188,7 +192,7 @@ Page({
       }
       else {
         wx.showToast({
-          title: '保存出错，请查看云函数日志',
+          title: res.message || '保存出错，请查看云函数日志',
           icon: 'none',
           duration: 1500
         })
@@ -209,10 +213,9 @@ Page({
       content: '是否确认删除[' + labelName + ']标签',
       success(res) {
         if (res.confirm) {
-          api.deleteConfigById(labelId).then(res => {
+          that.adminViewModel.deleteConfigById(labelId).then(res => {
             return that.onPullDownRefresh()
           }).then(res => { })
-          console.log(res)
         } else if (res.cancel) {
           console.log('用户点击取消')
         }
@@ -230,8 +233,8 @@ Page({
   },
 
   /**
- * 获取文章列表
- */
+   * 获取文章列表
+   */
   getPostsList: async function (filter) {
     wx.showLoading({
       title: '加载中...',
@@ -242,22 +245,28 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getNewPostsList(page, filter)
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
+    let result = await this.postViewModel.getNewPostsList({
+      page: page,
+      filter: filter
+    })
+    
+    if (result.success && result.data) {
+      if (result.data.list.length === 0) {
         that.setData({
-          nodata: true
+          nomore: true
+        })
+        if (page === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        that.setData({
+          page: page + 1,
+          posts: that.data.posts.concat(result.data.list),
         })
       }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        posts: that.data.posts.concat(result.data),
-      })
     }
     that.setData({
       canOperate: true
@@ -304,10 +313,8 @@ Page({
       title: '处理中...',
     })
     try {
-      console.info(that.data.curLabelName)
-      let res = await api.updateBatchPostsLabel(that.data.curLabelName, that.data.tabCur == 1 ? "add" : "delete", posts)
-      console.info(res)
-      if (res.result) {
+      let res = await this.postViewModel.updateBatchPostsLabel(that.data.curLabelName, that.data.tabCur == 1 ? "add" : "delete", posts)
+      if (res.success) {
         wx.showToast({
           title: '处理成功',
           icon: 'none',
@@ -327,7 +334,7 @@ Page({
       }
       else {
         wx.showToast({
-          title: '处理失败',
+          title: res.message || '处理失败',
           icon: 'none',
           duration: 1500
         })

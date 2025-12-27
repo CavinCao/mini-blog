@@ -1,4 +1,5 @@
-const api = require('../../../utils/api.js');
+const MemberViewModel = require('../../../viewmodels/MemberViewModel.js');
+const AdminViewModel = require('../../../viewmodels/AdminViewModel.js');
 Page({
 
   /**
@@ -24,6 +25,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.memberViewModel = new MemberViewModel()
+    this.adminViewModel = new AdminViewModel()
     await this.getMemberInfoList(1)
   },
   /**
@@ -78,22 +82,24 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getMemberInfoList(page, that.data.tabCur + 1)
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
+    let result = await this.memberViewModel.getMemberInfoList(page, that.data.tabCur + 1)
+    if (result.success && result.data) {
+      if (result.data.list.length === 0) {
         that.setData({
-          nodata: true
+          nomore: true
+        })
+        if (page === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        that.setData({
+          page: page + 1,
+          members: that.data.members.concat(result.data.list),
         })
       }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        members: that.data.members.concat(result.data),
-      })
     }
     wx.hideLoading()
   },
@@ -167,11 +173,8 @@ Page({
       let memberId = e.currentTarget.id
       let status = e.currentTarget.dataset.status
       let openId=e.currentTarget.dataset.openid
-      console.info(memberId)
-      console.info(status)
-      let res = await api.approveApplyVip(memberId, status,openId)
-      console.info(res)
-      if (res.result) {
+      let res = await this.adminViewModel.approveApplyVip(memberId, status, openId)
+      if (res.success) {
         wx.showToast({
           title: '设置成功',
           icon: 'success',
@@ -180,7 +183,7 @@ Page({
       }
       else {
         wx.showToast({
-          title: '操作发生未知异常',
+          title: res.message || '操作发生未知异常',
           duration: 1500
         })
       }

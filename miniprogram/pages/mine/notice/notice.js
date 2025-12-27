@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const AdminViewModel = require('../../../viewmodels/AdminViewModel.js');
 const app = getApp();
 
 Page({
@@ -17,6 +17,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.adminViewModel = new AdminViewModel()
     wx.setStorageSync('showRedDot', '1');
     await this.getNoticeLogsList()
   },
@@ -58,22 +60,24 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getNoticeLogsList(page, '')
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
+    let result = await this.adminViewModel.getNoticeLogsList(page, '')
+    if (result.success && result.data) {
+      if (result.data.list.length === 0) {
         that.setData({
-          nodata: true
+          nomore: true
+        })
+        if (page === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        that.setData({
+          page: page + 1,
+          notice: that.data.notice.concat(result.data.list),
         })
       }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        notice: that.data.notice.concat(result.data),
-      })
     }
     wx.hideLoading()
   }

@@ -191,10 +191,13 @@ App({
    * 获取广告信息
    */
   getAdvertConfig: function () {
-    const api = require('/utils/api.js')
-    api.getAdvertConfig().then(res => {
+    const AdminViewModel = require('/viewmodels/AdminViewModel.js')
+    const adminViewModel = new AdminViewModel()
+    adminViewModel.getAdvertConfig().then(res => {
       try {
-        this.globalData.advert = res.result.value
+        if (res.success && res.data) {
+          this.globalData.advert = res.data.value
+        }
       }
       catch (err) {
         console.info(err)

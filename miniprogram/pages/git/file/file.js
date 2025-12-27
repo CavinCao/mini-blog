@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const GitHubViewModel = require('../../../viewmodels/GitHubViewModel.js');
 const app = getApp();
 
 Page({
@@ -11,6 +11,9 @@ Page({
   },
 
   onLoad: function (options) {
+    // 初始化 ViewModel
+    this.gitHubViewModel = new GitHubViewModel()
+    
     let fullName = decodeURIComponent(options.full_name);
     let path = decodeURIComponent(options.path);
     let branch = options.branch || 'master';
@@ -26,10 +29,10 @@ Page({
 
   async getFileContent() {
     try {
-      let res = await api.getGitHubContents(this.data.fullName, this.data.path, this.data.branch);
-      if (res.result) {
-        let content = res.result.content;
-        let encoding = res.result.encoding;
+      let res = await this.gitHubViewModel.getGitHubContents(this.data.fullName, this.data.path, this.data.branch);
+      if (res.success && res.data) {
+        let content = res.data.content;
+        let encoding = res.data.encoding;
         
         if (encoding === 'base64') {
           content = this.base64Decode(content);

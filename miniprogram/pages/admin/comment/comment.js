@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const CommentViewModel = require('../../../viewmodels/CommentViewModel.js');
 Page({
 
   /**
@@ -23,6 +23,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.commentViewModel = new CommentViewModel()
     await this.getCommentsList(0)
   },
   /**
@@ -79,22 +81,24 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getCommentsList(page, that.data.tabCur)
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
+    let result = await this.commentViewModel.getCommentsList(page, that.data.tabCur)
+    if (result.success && result.data) {
+      if (result.data.list.length === 0) {
         that.setData({
-          nodata: true
+          nomore: true
+        })
+        if (page === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        that.setData({
+          page: page + 1,
+          comments: that.data.comments.concat(result.data.list),
         })
       }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        comments: that.data.comments.concat(result.data),
-      })
     }
     wx.hideLoading()
   },
@@ -169,8 +173,8 @@ Page({
       let postId = e.currentTarget.dataset.postid
       let count = that.data.tabCur === 0 ? e.currentTarget.dataset.count * -1 : e.currentTarget.dataset.count
       let flag = that.data.tabCur === 0 ? 1 : 0
-      let res = await api.changeCommentFlagById(commentId, flag, postId, count)
-      if (res.result) {
+      let res = await this.commentViewModel.changeCommentFlag(commentId, flag, postId, count)
+      if (res.success) {
         wx.showToast({
           title: '设置成功',
           icon: 'success',
@@ -179,7 +183,7 @@ Page({
       }
       else {
         wx.showToast({
-          title: '操作发生未知异常',
+          title: res.message || '操作发生未知异常',
           duration: 1500
         })
       }

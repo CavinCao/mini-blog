@@ -1,4 +1,4 @@
-const api = require('../../../utils/api.js');
+const GitHubViewModel = require('../../../viewmodels/GitHubViewModel.js');
 
 Page({
   data: {
@@ -13,6 +13,9 @@ Page({
   },
 
   onLoad: function (options) {
+    // 初始化 ViewModel
+    this.gitHubViewModel = new GitHubViewModel()
+    
     let fullName = decodeURIComponent(options.full_name);
     let branch = options.branch || 'master';
     this.setData({
@@ -25,9 +28,9 @@ Page({
 
   async getBranches() {
       try {
-          let res = await api.getGitHubBranches(this.data.fullName);
-          if (res && Array.isArray(res) && res.length > 0) {
-              let branches = res.map(b => b.name);
+          let res = await this.gitHubViewModel.getGitHubBranches(this.data.fullName);
+          if (res.success && res.data && Array.isArray(res.data) && res.data.length > 0) {
+              let branches = res.data.map(b => b.name);
               let index = branches.indexOf(this.data.branch);
               if (index === -1) index = 0;
               
@@ -57,9 +60,9 @@ Page({
   async getContents(path) {
     this.setData({ isLoading: true });
     try {
-      let res = await api.getGitHubContents(this.data.fullName, path, this.data.branch);
-      if (res.result) {
-        let contents = res.result;
+      let res = await this.gitHubViewModel.getGitHubContents(this.data.fullName, path, this.data.branch);
+      if (res.success && res.data) {
+        let contents = res.data;
         // Sort: folders first, then files
         contents.sort((a, b) => {
           if (a.type === b.type) {

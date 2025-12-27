@@ -323,6 +323,24 @@ class PostViewModel extends BaseViewModel {
       return Response.error(message)
     }
   }
+
+  /**
+   * 批量更新文章标签
+   * @param {string} label - 标签名
+   * @param {string} operate - 操作类型 (add/delete)
+   * @param {Array} posts - 文章ID数组
+   * @returns {Promise<Response>}
+   */
+  async updateBatchPostsLabel(label, operate, posts) {
+    try {
+      const result = await this.postService.updateBatchPostsLabel(label, operate, posts)
+      // Service 已经返回 Response 对象
+      return result
+    } catch (error) {
+      const message = this.handleError(error, '批量更新标签失败')
+      return Response.error(message)
+    }
+  }
 }
 
 module.exports = PostViewModel

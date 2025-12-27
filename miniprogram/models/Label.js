@@ -17,7 +17,8 @@ class Label {
   toSimple() {
     return {
       id: this.id,
-      name: this.name
+      name: this.name,
+      value: this.name  // 添加 value 字段以保持向后兼容
     }
   }
 }

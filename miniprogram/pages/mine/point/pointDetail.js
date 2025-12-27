@@ -1,6 +1,6 @@
 const config = require('../../../utils/config.js')
-const api = require('../../../utils/api.js');
 const util = require('../../../utils/util.js');
+const MemberViewModel = require('../../../viewmodels/MemberViewModel.js');
 const app = getApp();
 Page({
 
@@ -18,6 +18,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 初始化 ViewModel
+    this.memberViewModel = new MemberViewModel()
     await this.getPointDetailList()
   },
 
@@ -58,22 +60,24 @@ Page({
       wx.hideLoading()
       return
     }
-    let result = await api.getPointsDetailList(page, app.globalData.openid)
-    if (result.data.length === 0) {
-      that.setData({
-        nomore: true
-      })
-      if (page === 1) {
+    let result = await this.memberViewModel.getPointsDetailList(page, app.globalData.openid)
+    if (result.success && result.data) {
+      if (result.data.list.length === 0) {
         that.setData({
-          nodata: true
+          nomore: true
+        })
+        if (page === 1) {
+          that.setData({
+            nodata: true
+          })
+        }
+      }
+      else {
+        that.setData({
+          page: page + 1,
+          pointList: that.data.pointList.concat(result.data.list),
         })
       }
-    }
-    else {
-      that.setData({
-        page: page + 1,
-        pointList: that.data.pointList.concat(result.data),
-      })
     }
     wx.hideLoading()
   },
