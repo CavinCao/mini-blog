@@ -1,6 +1,8 @@
 const BaseViewModel = require('./base/BaseViewModel.js')
 const Response = require('./base/Response.js')
 const ServiceFactory = require('../services/ServiceFactory.js')
+const githubHelper = require('../utils/githubHelper.js')
+const GitHubRepo = require('../models/GitHubRepo.js')
 
 /**
  * GitHub ViewModel
@@ -20,8 +22,8 @@ class GitHubViewModel extends BaseViewModel {
    */
   async searchGitHub(keyword, page) {
     try {
-      // Service 直接返回 Response 对象，包含原始的 items 和 total_count
-      return await this.gitHubService.searchGitHub(keyword, page)
+      const data = await githubHelper.searchGitHub(keyword, page)
+      return Response.success(data)
     } catch (error) {
       const message = this.handleError(error, '搜索失败')
       return Response.error(message)
@@ -35,7 +37,8 @@ class GitHubViewModel extends BaseViewModel {
    */
   async getGitHubRepo(fullName) {
     try {
-      const repo = await this.gitHubService.getGitHubRepo(fullName)
+      const data = await githubHelper.getGitHubRepo(fullName)
+      const repo = this._convertToGitHubRepo(data)
       return Response.success(repo ? repo.toDetail() : null)
     } catch (error) {
       const message = this.handleError(error, '获取仓库详情失败')
@@ -50,9 +53,8 @@ class GitHubViewModel extends BaseViewModel {
    */
   async getGitHubReadme(fullName) {
     try {
-      const result = await this.gitHubService.getGitHubReadme(fullName)
-      // Service 已经返回 Response 对象
-      return result
+      const readme = await githubHelper.getGitHubReadme(fullName)
+      return Response.success(readme)
     } catch (error) {
       const message = this.handleError(error, '获取README失败')
       return Response.error(message)
@@ -68,9 +70,8 @@ class GitHubViewModel extends BaseViewModel {
    */
   async getGitHubContents(fullName, path, ref) {
     try {
-      const result = await this.gitHubService.getGitHubContents(fullName, path, ref)
-      // Service 已经返回 Response 对象
-      return result
+      const data = await githubHelper.getGitHubContents(fullName, path, ref)
+      return Response.success(data)
     } catch (error) {
       const message = this.handleError(error, '获取仓库内容失败')
       return Response.error(message)
@@ -84,9 +85,8 @@ class GitHubViewModel extends BaseViewModel {
    */
   async getGitHubBranches(fullName) {
     try {
-      const result = await this.gitHubService.getGitHubBranches(fullName)
-      // Service 已经返回 Response 对象
-      return result
+      const data = await githubHelper.getGitHubBranches(fullName)
+      return Response.success(data)
     } catch (error) {
       const message = this.handleError(error, '获取分支列表失败')
       return Response.error(message)
@@ -102,9 +102,8 @@ class GitHubViewModel extends BaseViewModel {
    */
   async getGitHubIssues(fullName, state, page) {
     try {
-      const result = await this.gitHubService.getGitHubIssues(fullName, state, page)
-      // Service 已经返回 Response 对象
-      return result
+      const data = await githubHelper.getGitHubIssues(fullName, state, page)
+      return Response.success(data)
     } catch (error) {
       const message = this.handleError(error, '获取Issues失败')
       return Response.error(message)
@@ -119,13 +118,39 @@ class GitHubViewModel extends BaseViewModel {
    */
   async manualSyncArticle(articleUrl, defaultImageUrl) {
     try {
+      // 涉及数据库操作，依然使用云服务
       const result = await this.gitHubService.manualSyncArticle(articleUrl, defaultImageUrl)
-      // Service 已经返回 Response 对象
       return result
     } catch (error) {
       const message = this.handleError(error, '同步文章失败')
       return Response.error(message)
     }
+  }
+
+  /**
+   * 将 GitHub API 数据转换为 GitHubRepo 对象
+   * @private
+   */
+  _convertToGitHubRepo(apiData) {
+    if (!apiData) return null
+    
+    return new GitHubRepo({
+      id: apiData.id,
+      name: apiData.name,
+      fullName: apiData.full_name,
+      description: apiData.description || '',
+      stars: apiData.stargazers_count || 0,
+      forks: apiData.forks_count || 0,
+      watchers: apiData.watchers_count || 0,
+      language: apiData.language || '',
+      owner: {
+        login: apiData.owner?.login || '',
+        avatarUrl: apiData.owner?.avatar_url || ''
+      },
+      htmlUrl: apiData.html_url || '',
+      createdAt: apiData.created_at || '',
+      updatedAt: apiData.updated_at || ''
+    })
   }
 }
 
