@@ -221,6 +221,26 @@ class CloudAdminService extends BaseCloudService {
       id: id
     })
   }
+
+  /**
+   * 获取活动位配置
+   */
+  async getActivityConfig() {
+    const result = await this.callFunction('adminService', {
+      action: "getActivityConfig"
+    })
+    return result
+  }
+
+  /**
+   * 保存活动位配置
+   */
+  async saveActivityConfig(config) {
+    return await this.callFunction('adminService', {
+      action: "saveActivityConfig",
+      config: config
+    })
+  }
 }
 
 module.exports = CloudAdminService

@@ -24,7 +24,8 @@
         "pages/mine/sign/sign",
         "pages/mine/point/point",
         "pages/mine/point/pointDetail",
-        "pages/admin/member/member"
+        "pages/admin/member/member",
+        "pages/admin/activity/activity"
     ],
     "window": {
         "backgroundTextStyle": "light",

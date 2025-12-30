@@ -1,5 +1,23 @@
 <import src="../../templates/nodata.wxml" />
 <import src="../../templates/login/login.wxml" />
+<!-- 活动位 -->
+<view wx:if="{{activities && activities.length > 0}}" class="activity-swiper">
+  <swiper class="screen-swiper square-dot" indicator-dots="true" circular="true" autoplay="true" interval="5000" duration="500">
+    <swiper-item wx:for="{{activities}}" wx:key="index" bindtap="handleActivityClick" data-url="{{item.jump_url}}">
+      <image src="{{item.image_url}}" mode="aspectFill"></image>
+      <view class="swiper-title">{{item.title}}</view>
+    </swiper-item>
+  </swiper>
+</view>
+
+<!-- 功能icon -->
+<view class="cu-list grid col-4 no-border margin-bottom-sm">
+  <view class="cu-item" wx:for="{{iconList}}" wx:key="index" bindtap="handleIconClick" data-item="{{item}}">
+    <view class="cuIcon-{{item.icon}} text-{{item.color}}"></view>
+    <text>{{item.name}}</text>
+  </view>
+</view>
+
 <!-- 搜索栏 -->
 <view class='box'>
   <form bindsubmit='bindconfirm'>

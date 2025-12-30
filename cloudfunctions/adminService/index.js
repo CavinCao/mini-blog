@@ -11,7 +11,7 @@ const APPLY_TEMPLATE_ID = 'DI_AuJDmFXnNuME1vpX_hY2yw1pR6kFXPZ7ZAQ0uLOY'
 // 云函数入口函数
 exports.main = async (event, context) => {
   //admin服务都要验证一下权限
-  if (event.action !== 'checkAuthor' && event.action !== 'getLabelList' && event.action !== 'getClassifyList' && event.action !== 'getAdvertConfig') {
+  if (event.action !== 'checkAuthor' && event.action !== 'getLabelList' && event.action !== 'getClassifyList' && event.action !== 'getAdvertConfig' && event.action !== 'getActivityConfig') {
     let result = await checkAuthor(event)
     if (!result) {
       return false;
@@ -70,10 +70,81 @@ exports.main = async (event, context) => {
     case 'getAdvertConfig': {
       return getAdvertConfig(event)
     }
+    case 'getActivityConfig': {
+      return getActivityConfig(event)
+    }
+    case 'saveActivityConfig': {
+      return saveActivityConfig(event)
+    }
     case 'approveApplyVip': {
       return approveApplyVip(event)
     }
     default: break
+  }
+}
+
+/**
+ * 获取活动位配置
+ */
+async function getActivityConfig(event) {
+  let key = "activityConfig"
+  let collection = "mini_config"
+
+  let result = await db.collection(collection).where({
+    key: key
+  }).get()
+
+  if (result.data.length > 0) {
+    return {
+      success: true,
+      data: result.data[0].value,
+      message: '获取成功'
+    }
+  }
+  return {
+    success: true,
+    data: null,
+    message: '无数据'
+  }
+}
+
+/**
+ * 保存活动位配置
+ */
+async function saveActivityConfig(event) {
+  let key = "activityConfig"
+  let collection = "mini_config"
+  let result = await db.collection(collection).where({
+    key: key
+  }).get()
+
+  try {
+    if (result.data.length > 0) {
+      await db.collection(collection).doc(result.data[0]._id).update({
+        data: {
+          timestamp: Date.now(),
+          value: event.config
+        }
+      });
+    } else {
+      await db.collection(collection).add({
+        data: {
+          key: key,
+          timestamp: Date.now(),
+          value: event.config
+        }
+      });
+    }
+    return {
+      success: true,
+      message: '保存成功'
+    }
+  } catch (e) {
+    console.error(e)
+    return {
+      success: false,
+      message: '保存失败: ' + e.message
+    }
   }
 }
 

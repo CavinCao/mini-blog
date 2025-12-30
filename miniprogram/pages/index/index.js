@@ -27,7 +27,18 @@ Page({
     labelList: [],
     labelCur: "全部",
     whereItem: ['', 'createTime', ''],//下拉查询条件
-    showLogin: false
+    showLogin: false,
+    activities: [],
+    iconList: [
+      { name: '文章', icon: 'newsfill', color: 'orange', type: 'article' },
+      { name: '专题', icon: 'explorefill', color: 'blue', type: 'classify' },
+      { name: 'git', icon: 'github', color: 'black', type: 'git' },
+      { name: '问答', icon: 'questionfill', color: 'green', type: 'qa' },
+      { name: '提示词', icon: 'commandfill', color: 'cyan', type: 'prompt' },
+      { name: '手绘', icon: 'picfill', color: 'pink', type: 'draw' },
+      { name: 'AI', icon: 'discoverfill', color: 'purple', type: 'ai' },
+      { name: '我的开源', icon: 'link', color: 'red', type: 'open_source' }
+    ]
   },
 
   /**
@@ -67,7 +78,65 @@ Page({
       }
     }
     await that.getPostsList('', 'createTime')
+    await that.getActivities()
   },
+
+  /**
+   * 获取活动配置
+   */
+  getActivities: async function () {
+    try {
+      const response = await this.adminViewModel.getActivityConfig()
+      if (response.success && response.data) {
+        this.setData({
+          activities: response.data
+        })
+      }
+    } catch (error) {
+      console.error('获取活动配置失败:', error)
+    }
+  },
+
+  /**
+   * 活动位点击跳转
+   */
+  handleActivityClick: function (e) {
+    const url = e.currentTarget.dataset.url
+    if (url) {
+      if (url.startsWith('http')) {
+        // 如果是外部链接，可以跳转到 web-view 页面（如有）或者直接提示
+        wx.showToast({ title: '外部链接请手动复制', icon: 'none' })
+      } else {
+        wx.navigateTo({ url })
+      }
+    }
+  },
+
+  /**
+   * 功能图标点击
+   */
+  handleIconClick: function (e) {
+    const item = e.currentTarget.dataset.item
+    switch (item.type) {
+      case 'article':
+        // 已经在首页展示文章了，可以跳转到分类或者特定页面
+        wx.showToast({ title: '已在下方文章列表', icon: 'none' })
+        break
+      case 'classify':
+        wx.navigateTo({ url: '../topic/topic' })
+        break
+      case 'git':
+        wx.navigateTo({ url: '../git/git' })
+        break
+      default:
+        wx.showToast({
+          title: item.name + ' 功能开发中...',
+          icon: 'none'
+        })
+        break
+    }
+  },
+
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */

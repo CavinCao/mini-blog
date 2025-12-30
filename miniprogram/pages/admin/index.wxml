@@ -69,6 +69,12 @@
         </view>
     </view>
     <view class="cu-item arrow">
+        <view class='content' bindtap='showActivityConfig'>
+            <text class='cuIcon-settingsfill text-grey'></text>
+            <text class='text-grey'>活动配置</text>
+        </view>
+    </view>
+    <view class="cu-item arrow">
         <view class='content' bindtap='showManualSyncModal'>
             <text class='cuIcon-add text-grey'></text>
             <text class='text-grey'>手动同步文章</text>

@@ -140,6 +140,23 @@ class IAdminService {
   async deletePostById(id) {
     throw new Error('Method not implemented: deletePostById')
   }
+
+  /**
+   * 获取活动位配置
+   * @returns {Promise<Object>}
+   */
+  async getActivityConfig() {
+    throw new Error('Method not implemented: getActivityConfig')
+  }
+
+  /**
+   * 保存活动位配置
+   * @param {Object} config - 活动位配置
+   * @returns {Promise<Object>}
+   */
+  async saveActivityConfig(config) {
+    throw new Error('Method not implemented: saveActivityConfig')
+  }
 }
 
 module.exports = IAdminService

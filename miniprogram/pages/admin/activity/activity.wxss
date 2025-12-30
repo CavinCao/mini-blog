@@ -1,0 +1,8 @@
+.cu-form-group .title {
+  min-width: calc(4em + 30rpx);
+}
+
+.margin-bottom-sm {
+  margin-bottom: 20rpx;
+}
+

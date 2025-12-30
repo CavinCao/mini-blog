@@ -258,6 +258,35 @@ class AdminViewModel extends BaseViewModel {
       return Response.error(message)
     }
   }
+
+  /**
+   * 获取活动位配置
+   * @returns {Promise<Response>}
+   */
+  async getActivityConfig() {
+    try {
+      const result = await this.adminService.getActivityConfig()
+      return result
+    } catch (error) {
+      const message = this.handleError(error, '获取活动配置失败')
+      return Response.error(message)
+    }
+  }
+
+  /**
+   * 保存活动位配置
+   * @param {Object} config - 活动位配置
+   * @returns {Promise<Response>}
+   */
+  async saveActivityConfig(config) {
+    try {
+      const result = await this.adminService.saveActivityConfig(config)
+      return result
+    } catch (error) {
+      const message = this.handleError(error, '保存活动配置失败')
+      return Response.error(message)
+    }
+  }
 }
 
 module.exports = AdminViewModel

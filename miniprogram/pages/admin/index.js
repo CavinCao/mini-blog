@@ -236,6 +236,15 @@ Page({
   },
 
   /**
+   * 跳转活动位配置
+   */
+  showActivityConfig: async function (e) {
+    wx.navigateTo({
+      url: '../admin/activity/activity'
+    })
+  },
+
+  /**
    * 跳转到评论列表
    * @param {*} e 
    */
