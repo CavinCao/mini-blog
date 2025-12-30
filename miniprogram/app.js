@@ -8,10 +8,15 @@ App({
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
-      wx.cloud.init({
-        traceUser: true,
-        env: config.env
-      })
+      // 如果是 mock 模式，跳过云开发初始化
+      if (config.serviceType === 'mock') {
+        console.info('🛠️ 当前处于 Mock 模式，跳过云开发初始化')
+      } else {
+        wx.cloud.init({
+          traceUser: true,
+          env: config.env
+        })
+      }
       
       // 初始化 openId
       await this.initOpenId()
@@ -27,6 +32,14 @@ App({
    */
   initOpenId: async function() {
     try {
+      // 如果是 mock 模式，返回固定 mock id
+      if (config.serviceType === 'mock') {
+        const mockOpenId = 'mock_openid_123456'
+        this.globalData.openid = mockOpenId
+        console.info('🛠️ Mock 模式: 使用模拟 openId:', mockOpenId)
+        return mockOpenId
+      }
+
       // 先从缓存中获取
       const cachedOpenId = wx.getStorageSync('openid');
       if (cachedOpenId) {

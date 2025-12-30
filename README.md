@@ -5,7 +5,7 @@
 > 🚀 一款基于微信云开发的博客小程序，采用 MVVM 架构，支持前后端完全解耦  
 > 💡 无需自己的网站、服务器、域名等资源，只需注册小程序账号即可使用
 
-[在线体验](#-在线体验) | [快速开始](#-快速开始) | [架构文档](docs/MVVM-架构使用指南.md) | [更新日志](fixes/2025-12-30-article-module-redesign-and-comment-removal.md) | [功能清单](#-功能清单)
+[在线体验](#-在线体验) | [快速开始](#-快速开始) | [架构文档](docs/MVVM-架构使用指南.md) | [更新日志](fixes/2025-12-30-implement-mock-service.md) | [功能清单](#-功能清单)
 
 </div>
 
@@ -34,8 +34,9 @@
 
 ### 🏗️ MVVM 架构（2025-12-22 全面升级）
 
-- ✅ **前后端完全解耦**：可轻松切换云开发/HTTP API
+- ✅ **前后端完全解耦**：可轻松切换云开发/HTTP API/Mock
 - ✅ **四层架构设计**：Page → ViewModel → Service → Backend
+- ✅ **支持 Mock 模式**：无需云环境即可零成本预览全功能（2025-12-30 新增）
 - ✅ **统一数据流**：所有请求遵循相同的调用模式
 - ✅ **代码高度复用**：业务逻辑集中在 ViewModel 层
 - ✅ **易于测试维护**：各层职责清晰，可独立测试
@@ -68,8 +69,8 @@
 │  IPostService | ICommentService | IMemberService ...       │
 ├────────────────────────────────────────────────────────────┤
 │         Service Implementation Layer (服务实现层)           │
-│      CloudPostService | CloudCommentService ...            │
-│              (支持扩展 HTTP 实现)                            │
+│      CloudPostService | MockPostService | HttpPostService   │
+│              (支持 云开发 / Mock / HTTP 实现)               │
 ├────────────────────────────────────────────────────────────┤
 │                 Backend Layer (后端层)                      │
 │                    微信云开发                                │
@@ -216,10 +217,13 @@ cd mini-blog
 
 ```javascript
 module.exports = {
-  serviceType: 'cloud',  // 使用云开发
+  serviceType: 'mock',   // [默认值] 开启 Mock 模式，无需配置环境即可预览
+  // serviceType: 'cloud', // 切换为云开发模式
   // 其他配置...
 }
 ```
+
+> **提示**：如果您只是想快速体验 UI，保持 `serviceType: 'mock'` 即可。如果您需要使用完整的功能（如真实同步 GitHub 文章），请切换到 `'cloud'` 并完成上述云环境部署。
 
 5. **预览/发布**
 
@@ -492,6 +496,6 @@ class HttpPostService extends IPostService {
 
 **Built with ❤️ by [Cavin.Cao](https://github.com/CavinCao)**
 
-**最后更新**: 2025-12-30 - 文章模块深度改版，移除评论系统，提升阅读体验 🚀
+**最后更新**: 2025-12-30 - 实现 Mock Service 机制，支持零成本零环境预览全功能 🚀
 
 **项目地址**: [https://github.com/CavinCao/mini-blog](https://github.com/CavinCao/mini-blog)

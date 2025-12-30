@@ -9,8 +9,16 @@ const CloudMessageService = require('./cloud/CloudMessageService.js')
 const CloudGitHubService = require('./cloud/CloudGitHubService.js')
 const CloudFileService = require('./cloud/CloudFileService.js')
 
+// Mock Service 实现
+const MockPostService = require('./mock/MockPostService.js')
+const MockCommentService = require('./mock/MockCommentService.js')
+const MockMemberService = require('./mock/MockMemberService.js')
+const MockAdminService = require('./mock/MockAdminService.js')
+const MockMessageService = require('./mock/MockMessageService.js')
+const MockGitHubService = require('./mock/MockGitHubService.js')
+const MockFileService = require('./mock/MockFileService.js')
+
 // HTTP Service 实现 (预留)
-// const HttpPostService = require('./http/HttpPostService.js')
 // ...
 
 /**
@@ -25,6 +33,8 @@ class ServiceFactory {
   static getPostService() {
     if (config.serviceType === 'cloud') {
       return new CloudPostService()
+    } else if (config.serviceType === 'mock') {
+      return new MockPostService()
     } else if (config.serviceType === 'http') {
       // return new HttpPostService()
       throw new Error('HTTP Service 尚未实现')
@@ -39,6 +49,8 @@ class ServiceFactory {
   static getCommentService() {
     if (config.serviceType === 'cloud') {
       return new CloudCommentService()
+    } else if (config.serviceType === 'mock') {
+      return new MockCommentService()
     } else if (config.serviceType === 'http') {
       // return new HttpCommentService()
       throw new Error('HTTP Service 尚未实现')
@@ -53,6 +65,8 @@ class ServiceFactory {
   static getMemberService() {
     if (config.serviceType === 'cloud') {
       return new CloudMemberService()
+    } else if (config.serviceType === 'mock') {
+      return new MockMemberService()
     } else if (config.serviceType === 'http') {
       // return new HttpMemberService()
       throw new Error('HTTP Service 尚未实现')
@@ -67,6 +81,8 @@ class ServiceFactory {
   static getAdminService() {
     if (config.serviceType === 'cloud') {
       return new CloudAdminService()
+    } else if (config.serviceType === 'mock') {
+      return new MockAdminService()
     } else if (config.serviceType === 'http') {
       // return new HttpAdminService()
       throw new Error('HTTP Service 尚未实现')
@@ -81,6 +97,8 @@ class ServiceFactory {
   static getMessageService() {
     if (config.serviceType === 'cloud') {
       return new CloudMessageService()
+    } else if (config.serviceType === 'mock') {
+      return new MockMessageService()
     } else if (config.serviceType === 'http') {
       // return new HttpMessageService()
       throw new Error('HTTP Service 尚未实现')
@@ -95,6 +113,8 @@ class ServiceFactory {
   static getGitHubService() {
     if (config.serviceType === 'cloud') {
       return new CloudGitHubService()
+    } else if (config.serviceType === 'mock') {
+      return new MockGitHubService()
     } else if (config.serviceType === 'http') {
       // return new HttpGitHubService()
       throw new Error('HTTP Service 尚未实现')
@@ -109,6 +129,8 @@ class ServiceFactory {
   static getFileService() {
     if (config.serviceType === 'cloud') {
       return new CloudFileService()
+    } else if (config.serviceType === 'mock') {
+      return new MockFileService()
     } else if (config.serviceType === 'http') {
       // return new HttpFileService()
       throw new Error('HTTP Service 尚未实现')

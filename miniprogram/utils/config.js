@@ -35,6 +35,7 @@ var subcributeTemplateId="BxVtrR681icGxgVJOfJ8xdze6TsZiXdSmmUUXnd_9Zg"
  * 服务类型配置
  * 'cloud' - 使用微信云开发
  * 'http' - 使用 HTTP API
+ * 'mock' - 使用 Mock 数据
  */
 var serviceType = 'cloud'
 
