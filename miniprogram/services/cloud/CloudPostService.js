@@ -15,7 +15,7 @@ class CloudPostService extends BaseCloudService {
    * 获取文章列表
    */
   async getPostsList(params) {
-    const { page = 1, filter = '', isShow = 1, orderBy = 'createTime', label = '' } = params
+    const { page = 1, filter = '', isShow = 1, orderBy = 'createTime', label = '', limit = 10 } = params
     
     let where = {}
     
@@ -38,8 +38,8 @@ class CloudPostService extends BaseCloudService {
     const result = await this.db.collection('mini_posts')
       .where(where)
       .orderBy(orderBy, 'desc')
-      .skip((page - 1) * 10)
-      .limit(10)
+      .skip((page - 1) * limit)
+      .limit(limit)
       .field({
         _id: true,
         author: true,

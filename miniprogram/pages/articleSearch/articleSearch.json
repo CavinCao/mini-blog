@@ -1,6 +1,6 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "评论列表",
+  "navigationBarTitleText": "文章搜索",
   "backgroundTextStyle": "dark",
   "enablePullDownRefresh": true
 }

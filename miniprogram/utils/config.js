@@ -53,7 +53,7 @@ var httpApi = {
  * 首页功能图标配置
  */
 var indexIconList = [
-    { name: '文章', icon: 'newsfill', color: 'orange', type: 'article', url: '', jumpType: '' },
+    { name: '文章', icon: 'newsfill', color: 'orange', type: 'article', url: '/pages/articleSearch/articleSearch', jumpType: '' },
     { name: '专题', icon: 'explorefill', color: 'blue', type: 'classify', url: '/pages/topic/topic', jumpType: 'switchTab' },
     { name: 'git', icon: 'github', color: 'black', type: 'git', url: '/pages/git/git', jumpType: 'switchTab' },
     { name: '问答', icon: 'questionfill', color: 'green', type: 'qa', url: '', jumpType: '' },

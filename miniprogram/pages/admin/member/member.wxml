@@ -9,7 +9,7 @@
     </view>
 </scroll-view>
 <view class="cu-list menu-avatar margin-top-self ">
-    <view class="cu-item {{curId==item.id?'move-cur':''}}" wx:for="{{members}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.id}}" data-comment="{{item.comment}}" data-flag="{{item.flag}}" bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd">
+    <view class="cu-item {{curId==item.id?'move-cur':''}}" wx:for="{{members}}" wx:key="idx" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}" id="{{item.id}}" bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd">
         <image class="cu-avatar round lg" src="{{item.avatarUrl}}" mode="aspectFill"></image>
         <view class="content">
             <view class="text-grey">{{item.nickName}}</view>
@@ -30,31 +30,4 @@
 <!-- 数据不存在 -->
 <view wx:if="{{nodata}}">
     <template is="nodata" />
-</view>
-<!-- 评论处理窗口 -->
-<view class="cu-modal {{isCommentShow?'show':''}}">
-    <view class="cu-dialog">
-        <view class="cu-bar bg-white justify-end">
-            <view class='content'>评论操作</view>
-            <view class='action' bindtap='hideCommentModal'>
-                <text class='cuIcon-close text-red'></text>
-            </view>
-        </view>
-        <view class='padding-sm'>
-            <view class="cu-form-group">
-                <view class="title">评论状态：</view>
-                <view wx:if="{{curFlag===1}}" class="cu-tag round bg-red light">已隐藏</view>
-                <view wx:if="{{curFlag===0}}" class="cu-tag round bg-green light">已显示</view>
-            </view>
-            <view wx:if="{{isCommentShow}}" class="cu-form-group text-left">
-                <textarea placeholder="评论内容" maxlength="-1" name='releaseContent' value='评论内容：{{curComment}}' placeholder-class='placeholder'></textarea>
-            </view>
-        </view>
-        <view class="cu-bar bg-white justify-end">
-            <view class='action'>
-                <button class='cu-btn' bindtap='hideCommentModal'>取消</button>
-                <button class='cu-btn margin-left bg-green' bindtap='deleteCommentModal'>删除</button>
-            </view>
-        </view>
-    </view>
 </view>

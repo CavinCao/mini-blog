@@ -11,6 +11,7 @@ class IPostService {
    * @param {number} params.isShow - 是否显示 (1显示 0隐藏 -1全部)
    * @param {string} params.orderBy - 排序字段
    * @param {string} params.label - 标签筛选
+   * @param {number} params.limit - 每页数量
    * @returns {Promise<Array<Post>>}
    */
   async getPostsList(params) {

@@ -20,10 +20,11 @@ class PostViewModel extends BaseViewModel {
   async getPostsList(params) {
     try {
       const posts = await this.postService.getPostsList(params)
+      const limit = params.limit || 10
       
       return Response.success({
         list: posts.map(post => post.toListItem()),
-        hasMore: posts.length >= 10,
+        hasMore: posts.length >= limit,
         isEmpty: posts.length === 0 && params.page === 1
       })
     } catch (error) {

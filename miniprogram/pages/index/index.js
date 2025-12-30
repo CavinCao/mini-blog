@@ -18,15 +18,6 @@ Page({
     nodata: false,
     nomore: false,
     defaultSearchValue: "",
-    navItems: [{ name: '最新', index: 1 }, { name: '热门', index: 2 }, { name: '标签', index: 3 }],
-    tabCur: 1,
-    scrollLeft: 0,
-    showHot: false,
-    showLabels: false,
-    hotItems: ["浏览最多", "评论最多", "点赞最多", "收藏最多"],
-    hotCur: 0,
-    labelList: [],
-    labelCur: "全部",
     whereItem: ['', 'createTime', ''],//下拉查询条件
     showLogin: false,
     activities: [],
@@ -178,146 +169,9 @@ Page({
    * @param {} e 
    */
   bindconfirm: async function (e) {
-    let that = this;
-    console.log('e.detail.value', e.detail.value)
-    let page = 1
-    that.setData({
-      page: page,
-      posts: [],
-      filter: e.detail.value,
-      nomore: false,
-      nodata: false,
-      whereItem: [e.detail.value, 'createTime', '']
+    wx.navigateTo({
+      url: '../articleSearch/articleSearch?filter=' + e.detail.value
     })
-    await this.getPostsList(e.detail.value, 'createTime')
-  },
-
-  /**
- * tab切换
- * @param {} e 
- */
-  tabSelect: async function (e) {
-    let that = this;
-    console.log(e);
-    let tabCur = e.currentTarget.dataset.id
-    switch (tabCur) {
-      case 1: {
-        that.setData({
-          tabCur: e.currentTarget.dataset.id,
-          scrollLeft: (e.currentTarget.dataset.id - 1) * 60,
-          nomore: false,
-          nodata: false,
-          showHot: false,
-          showLabels: false,
-          defaultSearchValue: "",
-          posts: [],
-          page: 1,
-          whereItem: ['', 'createTime', '']
-        })
-
-        await that.getPostsList("", 'createTime')
-        break
-      }
-      case 2: {
-        that.setData({
-          posts: [],
-          tabCur: e.currentTarget.dataset.id,
-          scrollLeft: (e.currentTarget.dataset.id - 1) * 60,
-          showHot: true,
-          showLabels: false,
-          defaultSearchValue: "",
-          page: 1,
-          nomore: false,
-          nodata: false,
-          whereItem: ['', 'totalVisits', '']
-        })
-        await that.getPostsList("", "totalVisits")
-        break
-      }
-      case 3: {
-        that.setData({
-          tabCur: e.currentTarget.dataset.id,
-          scrollLeft: (e.currentTarget.dataset.id - 1) * 60,
-          showHot: false,
-          showLabels: true,
-        })
-
-        let task = that.getPostsList("", 'createTime')
-        // 【MVVM架构】使用 AdminViewModel 获取标签列表
-        let labelResponse = await this.adminViewModel.getLabelList()
-        if (labelResponse.success) {
-          that.setData({
-            labelList: labelResponse.data
-          })
-        }
-        await task
-
-        break
-      }
-    }
-  },
-
-  /**
-   * 热门按钮切换
-   * @param {*} e 
-   */
-  hotSelect: async function (e) {
-    let that = this
-    let hotCur = e.currentTarget.dataset.id
-    let orderBy = "createTime"
-    switch (hotCur) {
-      //浏览最多
-      case 0: {
-        orderBy = "totalVisits"
-        break
-      }
-      //评论最多
-      case 1: {
-        orderBy = "totalComments"
-        break
-      }
-      //点赞最多
-      case 2: {
-        orderBy = "totalZans"
-        break
-      }
-      //收藏最多
-      case 3: {
-        orderBy = "totalCollection"
-        break
-      }
-    }
-    that.setData({
-      posts: [],
-      hotCur: hotCur,
-      defaultSearchValue: "",
-      page: 1,
-      nomore: false,
-      nodata: false,
-      whereItem: ['', orderBy, '']
-    })
-    await that.getPostsList("", orderBy)
-  },
-
-  /**
-   * 标签按钮切换
-   * @param {*} e 
-   */
-  labelSelect: async function (e) {
-    let that = this
-    let labelCur = e.currentTarget.dataset.id
-
-    that.setData({
-      posts: [],
-      labelCur: labelCur,
-      defaultSearchValue: "",
-      page: 1,
-      nomore: false,
-      nodata: false,
-      whereItem: ['', 'createTime', labelCur == "全部" ? "" : labelCur]
-    })
-
-    await that.getPostsList("", "createTime", labelCur == "全部" ? "" : labelCur)
   },
 
   /**
@@ -347,10 +201,11 @@ Page({
     // 【MVVM架构】使用 PostViewModel 获取文章列表
     const response = await this.postViewModel.getPostsList({
       page: page,
-      filter: filter,
+      filter: filter || '',
       isShow: 1,
-      orderBy: orderBy,
-      label: label
+      orderBy: orderBy || 'createTime',
+      label: label || '',
+      limit: 10
     })
     
     wx.hideLoading()

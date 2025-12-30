@@ -245,19 +245,9 @@ Page({
   },
 
   /**
-   * 跳转到评论列表
+   * 跳转到专题列表
    * @param {*} e 
    */
-  showComment: async function (e) {
-    wx.navigateTo({
-      url: '../admin/comment/comment'
-    })
-  },
-
-  /**
- * 跳转到专题列表
- * @param {*} e 
- */
   showClassify: async function (e) {
     wx.navigateTo({
       url: '../admin/classify/classify'

@@ -1,6 +1,7 @@
 {
     "pages": [
         "pages/index/index",
+        "pages/articleSearch/articleSearch",
         "pages/git/git",
         "pages/git/detail/detail",
         "pages/git/code/code",
@@ -16,7 +17,6 @@
         "pages/mine/release/release",
         "pages/admin/articleList/articleList",
         "pages/admin/labelList/labelList",
-        "pages/admin/comment/comment",
         "pages/admin/classify/classify",
         "pages/detail/original",
         "pages/admin/subscribe/subscribe",

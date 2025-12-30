@@ -15,9 +15,6 @@ Page({
     page: 1,
     nodata: false,
     nomore: false,
-    isCommentShow: false,
-    curFlag: 0,
-    curComment: "",
     curId: ""
   },
 
@@ -102,34 +99,6 @@ Page({
       }
     }
     wx.hideLoading()
-  },
-  /**
-  * 隐藏
-  * @param {*} e 
-  */
-  hideCommentModal(e) {
-    this.setData({
-      isCommentShow: false,
-      curId: "",
-      curFlag: 0,
-      curComment: ""
-    })
-  },
-  /**
-* 显示
-* @param {} e 
-*/
-  showCommentModal(e) {
-    console.info(e)
-    let curId = e.currentTarget.id
-    let curFlag = e.currentTarget.dataset.flag
-    let curComment = e.currentTarget.dataset.comment
-    this.setData({
-      isCommentShow: true,
-      curId: curId,
-      curFlag: curFlag,
-      curComment: curComment
-    })
   },
   // ListTouch触摸开始
   ListTouchStart(e) {

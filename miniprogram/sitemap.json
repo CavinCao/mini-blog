@@ -19,10 +19,6 @@
     },
     {
       "action": "disallow",
-      "page": "pages/admin/comment/comment"
-    },
-    {
-      "action": "disallow",
       "page": "pages/admin/labelList/labelList"
     },
     {

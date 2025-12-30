@@ -3,10 +3,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #fff;
-  box-shadow: 0 0 6px rgba(30, 20, 20, 0.1);
-  z-index: 1;
-  /*margin-bottom:2rpx; */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.98) 100%);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* 文章封面图片容器 */
@@ -26,45 +26,47 @@
 }
 
 .menu-box {
-  position: relative;
-  height: 160rpx;
-  padding: 0;
-  box-sizing: border-box;
-  margin-bottom: -160rpx;
+  display: flex;
+  height: 130rpx;
+  align-items: center;
+}
+
+.menu-box.cu-list.grid > .cu-item {
+  padding: 10rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-box .item {
-  padding-top: 0;
-  margin-top: 0;
+  color: #333;
 }
 
-.emoji-move-in {
-  margin-bottom: 0;
-  /*去除动画效果，有点迟钝 2019-05-11*/
-  /*-webkit-animation: emoji-move-in 0.3s forwards;
-  animation: emoji-move-in 0.3s forwards;*/
+.menu-box .item text {
+  font-size: 22rpx;
+  margin-top: 4rpx;
+  line-height: 1;
 }
 
-.emoji-move-out {
-  margin-bottom: -160rpx;
-  /*-webkit-animation: emoji-move-out 0.3s forwards;
-  animation: emoji-move-out 0.3s forwards;*/
-}
-
-.no-emoji-move {
-  -webkit-animation: none;
-  animation: none;
+.menu-box .item .cuIcon-share,
+.menu-box .item .cuIcon-favor,
+.menu-box .item .cuIcon-favorfill,
+.menu-box .item .cuIcon-appreciate,
+.menu-box .item .cuIcon-appreciatefill,
+.menu-box .item .cuIcon-refund {
+  font-size: 44rpx;
+  margin-bottom: 2rpx;
 }
 
 .share-button {
-  opacity: 0;
   position: absolute;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 1;
 }
 
 @-webkit-keyframes emoji-move-in {
