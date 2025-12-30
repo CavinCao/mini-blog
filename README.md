@@ -5,7 +5,7 @@
 > 🚀 一款基于微信云开发的博客小程序，采用 MVVM 架构，支持前后端完全解耦  
 > 💡 无需自己的网站、服务器、域名等资源，只需注册小程序账号即可使用
 
-[在线体验](#-在线体验) | [快速开始](#-快速开始) | [架构文档](docs/MVVM-架构使用指南.md) | [更新日志](#-功能清单)
+[在线体验](#-在线体验) | [快速开始](#-快速开始) | [架构文档](docs/MVVM-架构使用指南.md) | [更新日志](fixes/2025-12-30-homepage-redesign-and-activity-config.md) | [功能清单](#-功能清单)
 
 </div>
 
@@ -42,6 +42,7 @@
 
 ### 💎 核心功能
 
+- 🏠 **首页改版**：新增 Swiper 活动位与 Grid 功能导航，支持后台动态配置
 - 📝 **文章管理**：支持富文本编辑、分类标签、发布管理
 - 💬 **评论系统**：支持文章评论、回复评论、评论管理
 - 👍 **互动功能**：点赞、收藏、分享、生成海报
@@ -58,7 +59,7 @@
 ```
 ┌────────────────────────────────────────────────────────────┐
 │                    Page Layer (页面层)                      │
-│                   24 个小程序页面                            │
+│                   25 个小程序页面                            │
 ├────────────────────────────────────────────────────────────┤
 │               ViewModel Layer (视图模型层)                  │
 │  PostViewModel | CommentViewModel | MemberViewModel        │
@@ -137,12 +138,12 @@ mini-blog/
 │   │   │   └── CloudFileService.js
 │   │   └── ServiceFactory.js       # 服务工厂
 │   │
-│   ├── pages/                      # 页面文件 (24个页面)
-│   │   ├── index/                  # 首页
-│   │   ├── detail/                 # 文章详情
-│   │   ├── topic/                  # 专题模块
-│   │   ├── mine/                   # 个人中心模块 (7个页面)
-│   │   ├── admin/                  # 管理员模块 (8个页面)
+│      ├── pages/                      # 页面文件 (25个页面)
+   │   │   ├── index/                  # 首页 (已改版：Swiper + Grid)
+   │   │   ├── detail/                 # 文章详情
+   │   │   ├── topic/                  # 专题模块
+   │   │   ├── mine/                   # 个人中心模块 (7个页面)
+   │   │   ├── admin/                  # 管理员模块 (9个页面)
 │   │   └── git/                    # GitHub模块 (5个页面)
 │   │
 │   ├── component/                  # 自定义组件
@@ -383,6 +384,7 @@ Page({
 
 ### 迁移总结文档
 
+- [首页改版与活动配置功能实现](fixes/2025-12-30-homepage-redesign-and-activity-config.md) - 📌 最新
 - [MVVM 架构升级完整总结](fixes/2025-12-22-mvvm-migration-final-summary.md) - 📌 必读
 - [Git 模块迁移完成](fixes/2025-12-22-git-module-migration-complete.md)
 - [Admin 模块迁移完成](fixes/2025-12-22-admin-module-migration-complete.md)
@@ -491,6 +493,6 @@ class HttpPostService extends IPostService {
 
 **Built with ❤️ by [Cavin.Cao](https://github.com/CavinCao)**
 
-**最后更新**: 2025-12-22 - MVVM 架构全面升级完成 🎉
+**最后更新**: 2025-12-30 - 首页 UI 大改版，活动位配置功能上线 🚀
 
 **项目地址**: [https://github.com/CavinCao/mini-blog](https://github.com/CavinCao/mini-blog)

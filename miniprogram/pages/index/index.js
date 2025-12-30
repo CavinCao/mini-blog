@@ -2,6 +2,7 @@
 const PostViewModel = require('../../viewmodels/PostViewModel.js');
 const AdminViewModel = require('../../viewmodels/AdminViewModel.js');
 const MemberViewModel = require('../../viewmodels/MemberViewModel.js');
+const config = require('../../utils/config.js');
 
 const app = getApp();
 
@@ -29,16 +30,7 @@ Page({
     whereItem: ['', 'createTime', ''],//下拉查询条件
     showLogin: false,
     activities: [],
-    iconList: [
-      { name: '文章', icon: 'newsfill', color: 'orange', type: 'article' },
-      { name: '专题', icon: 'explorefill', color: 'blue', type: 'classify' },
-      { name: 'git', icon: 'github', color: 'black', type: 'git' },
-      { name: '问答', icon: 'questionfill', color: 'green', type: 'qa' },
-      { name: '提示词', icon: 'commandfill', color: 'cyan', type: 'prompt' },
-      { name: '手绘', icon: 'picfill', color: 'pink', type: 'draw' },
-      { name: 'AI', icon: 'discoverfill', color: 'purple', type: 'ai' },
-      { name: '我的开源', icon: 'link', color: 'red', type: 'open_source' }
-    ]
+    iconList: config.indexIconList
   },
 
   /**
@@ -117,23 +109,25 @@ Page({
    */
   handleIconClick: function (e) {
     const item = e.currentTarget.dataset.item
-    switch (item.type) {
-      case 'article':
-        // 已经在首页展示文章了，可以跳转到分类或者特定页面
-        wx.showToast({ title: '已在下方文章列表', icon: 'none' })
-        break
-      case 'classify':
-        wx.navigateTo({ url: '../topic/topic' })
-        break
-      case 'git':
-        wx.navigateTo({ url: '../git/git' })
-        break
-      default:
-        wx.showToast({
-          title: item.name + ' 功能开发中...',
-          icon: 'none'
+    if (item.url) {
+      if (item.jumpType === 'switchTab') {
+        wx.switchTab({
+          url: item.url
         })
-        break
+      } else {
+        wx.navigateTo({
+          url: item.url
+        })
+      }
+    } else {
+      let title = item.name + ' 功能开发中...'
+      if (item.type === 'article') {
+        title = '已在下方文章列表'
+      }
+      wx.showToast({
+        title: title,
+        icon: 'none'
+      })
     }
   },
 
