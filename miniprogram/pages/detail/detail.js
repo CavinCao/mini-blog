@@ -394,15 +394,23 @@ Page({
    */
   getPostRelated: async function (blogId) {
     try {
+      // 确保获取到 openId
+      const openid = await app.ensureOpenId()
+      if (!openid) {
+        console.warn('无法获取 openId，跳过获取收藏点赞状态')
+        return
+      }
+
       let where = {
         postId: blogId,
-        openId: app.globalData.openid
+        openId: openid
       }
       const response = await this.postViewModel.getPostRelated(where, 1)
       
       if (response.success && response.data) {
         let that = this
-        for (var item of response.data.data) {
+        // response.data 已经是数组了
+        for (var item of response.data) {
           if (config.postRelatedType.COLLECTION === item.type) {
             that.setData({
               collection: { status: true, text: "已收藏", icon: "favorfill" }

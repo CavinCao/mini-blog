@@ -191,55 +191,27 @@ class CloudPostService extends BaseCloudService {
       throw new Error('文章ID不能为空')
     }
     
-    try {
-      const result = await wx.cloud.callFunction({
-        name: 'postsService',
-        data: {
-          action: "getPostsDetail",
-          id: id.trim(),
-          type: 1
-        }
-      })
+    const response = await this.callFunction('postsService', {
+      action: "getPostsDetail",
+      id: id.trim(),
+      type: 1
+    })
 
-      // 检查云函数返回结果
-      if (result.errMsg && result.errMsg.indexOf('fail') > -1) {
-        console.error('云函数调用失败:', result)
-        throw new Error('获取文章详情失败')
-      }
-      
-      // 【修复】云函数直接返回文章对象，不是 { data: ... } 格式
-      // result.result 就是文章对象本身
-      if (result.result && typeof result.result === 'object' && result.result._id) {
-        return this._convertToPost(result.result)
-      }
-      
-      // 文章不存在（云函数返回空字符串 ""）
-      console.warn('文章不存在或返回数据异常, id:', id, 'result:', result.result)
-      return null
-    } catch (error) {
-      console.error('CloudPostService.getPostDetail 错误:', error)
-      
-      // 处理特定错误
-      if (error.errMsg && error.errMsg.indexOf('document with _id') > -1) {
-        console.warn('文章ID不存在:', id)
-        return null
-      }
-      
-      throw error
+    if (response.success && response.data) {
+      return this._convertToPost(response.data)
     }
+    
+    return null
   }
 
   /**
    * 新增/更新文章
    */
   async upsertPost(id, post) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "upsertPosts",
-        id: id,
-        post: post
-      }
+    return await this.callFunction('adminService', {
+      action: "upsertPosts",
+      id: id,
+      post: post
     })
   }
 
@@ -247,12 +219,9 @@ class CloudPostService extends BaseCloudService {
    * 删除文章
    */
   async deletePost(id) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "deletePostById",
-        id: id
-      }
+    return await this.callFunction('adminService', {
+      action: "deletePostById",
+      id: id
     })
   }
 
@@ -260,13 +229,10 @@ class CloudPostService extends BaseCloudService {
    * 更新文章状态
    */
   async updatePostStatus(id, isShow) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "updatePostsShowStatus",
-        id: id,
-        isShow: isShow
-      }
+    return await this.callFunction('adminService', {
+      action: "updatePostsShowStatus",
+      id: id,
+      isShow: isShow
     })
   }
 
@@ -274,13 +240,10 @@ class CloudPostService extends BaseCloudService {
    * 更新文章分类
    */
   async updatePostClassify(id, classify) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "updatePostsClassify",
-        id: id,
-        classify: classify
-      }
+    return await this.callFunction('adminService', {
+      action: "updatePostsClassify",
+      id: id,
+      classify: classify
     })
   }
 
@@ -288,13 +251,10 @@ class CloudPostService extends BaseCloudService {
    * 更新文章标签
    */
   async updatePostLabel(id, label) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "updatePostsLabel",
-        id: id,
-        label: label
-      }
+    return await this.callFunction('adminService', {
+      action: "updatePostsLabel",
+      id: id,
+      label: label
     })
   }
 
@@ -341,16 +301,13 @@ class CloudPostService extends BaseCloudService {
    * 新增文章收藏
    */
   async addPostCollection(data) {
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "addPostCollection",
-        postId: data.postId,
-        postTitle: data.postTitle,
-        postUrl: data.postUrl,
-        postDigest: data.postDigest,
-        type: data.type
-      }
+    return await this.callFunction('postsService', {
+      action: "addPostCollection",
+      postId: data.postId,
+      postTitle: data.postTitle,
+      postUrl: data.postUrl,
+      postDigest: data.postDigest,
+      type: data.type
     })
   }
 
@@ -358,16 +315,13 @@ class CloudPostService extends BaseCloudService {
    * 新增文章点赞
    */
   async addPostZan(data) {
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "addPostZan",
-        postId: data.postId,
-        postTitle: data.postTitle,
-        postUrl: data.postUrl,
-        postDigest: data.postDigest,
-        type: data.type
-      }
+    return await this.callFunction('postsService', {
+      action: "addPostZan",
+      postId: data.postId,
+      postTitle: data.postTitle,
+      postUrl: data.postUrl,
+      postDigest: data.postDigest,
+      type: data.type
     })
   }
 
@@ -375,13 +329,10 @@ class CloudPostService extends BaseCloudService {
    * 取消收藏或点赞
    */
   async deletePostCollectionOrZan(postId, type) {
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "deletePostCollectionOrZan",
-        postId: postId,
-        type: type
-      }
+    return await this.callFunction('postsService', {
+      action: "deletePostCollectionOrZan",
+      postId: postId,
+      type: type
     })
   }
 
@@ -389,13 +340,10 @@ class CloudPostService extends BaseCloudService {
    * 生成文章二维码
    */
   async addPostQrCode(postId, timestamp) {
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "addPostQrCode",
-        timestamp: timestamp,
-        postId: postId
-      }
+    return await this.callFunction('postsService', {
+      action: "addPostQrCode",
+      timestamp: timestamp,
+      postId: postId
     })
   }
 

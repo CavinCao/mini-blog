@@ -101,9 +101,17 @@ Page({
   getPostRelated: async function (type) {
     let that = this;
     let page = that.data.page;
+    
+    // 确保获取到 openId
+    const openid = await app.ensureOpenId()
+    if (!openid) {
+      console.warn('无法获取 openId，跳过获取收藏点赞列表')
+      return
+    }
+
     let where = {
       type: type,
-      openId: app.globalData.openid
+      openId: openid
     };
     
     // 【MVVM架构】使用 PostViewModel

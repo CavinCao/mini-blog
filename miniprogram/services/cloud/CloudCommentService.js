@@ -72,14 +72,11 @@ class CloudCommentService extends BaseCloudService {
    */
   async addPostComment(commentContent, accept) {
     const config = require('../../utils/config.js')
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "addPostComment",
-        commentContent: commentContent,
-        accept: accept,
-        pushTemplateId: config.subcributeTemplateId
-      }
+    return await this.callFunction('postsService', {
+      action: "addPostComment",
+      commentContent: commentContent,
+      accept: accept,
+      pushTemplateId: config.subcributeTemplateId
     })
   }
 
@@ -87,15 +84,12 @@ class CloudCommentService extends BaseCloudService {
    * 新增子评论
    */
   async addPostChildComment(id, postId, comments, accept) {
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "addPostChildComment",
-        id: id,
-        comments: comments,
-        postId: postId,
-        accept: accept
-      }
+    return await this.callFunction('postsService', {
+      action: "addPostChildComment",
+      id: id,
+      comments: comments,
+      postId: postId,
+      accept: accept
     })
   }
 
@@ -103,12 +97,9 @@ class CloudCommentService extends BaseCloudService {
    * 检查评论内容
    */
   async checkPostComment(content) {
-    return await wx.cloud.callFunction({
-      name: 'postsService',
-      data: {
-        action: "checkPostComment",
-        content: content
-      }
+    return await this.callFunction('postsService', {
+      action: "checkPostComment",
+      content: content
     })
   }
 
@@ -116,15 +107,12 @@ class CloudCommentService extends BaseCloudService {
    * 更改评论状态
    */
   async changeCommentFlag(id, flag, postId, count) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "changeCommentFlagById",
-        id: id,
-        flag: flag,
-        postId: postId,
-        count: count
-      }
+    return await this.callFunction('adminService', {
+      action: "changeCommentFlagById",
+      id: id,
+      flag: flag,
+      postId: postId,
+      count: count
     })
   }
 }

@@ -15,11 +15,8 @@ class CloudAdminService extends BaseCloudService {
    * 验证是否是管理员
    */
   async checkAuthor() {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "checkAuthor"
-      }
+    return await this.callFunction('adminService', {
+      action: "checkAuthor"
     })
   }
 
@@ -27,13 +24,10 @@ class CloudAdminService extends BaseCloudService {
    * 新增版本日志
    */
   async addReleaseLog(log, title) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "addReleaseLog",
-        log: log,
-        title: title
-      }
+    return await this.callFunction('adminService', {
+      action: "addReleaseLog",
+      log: log,
+      title: title
     })
   }
 
@@ -66,15 +60,12 @@ class CloudAdminService extends BaseCloudService {
    * 获取标签列表
    */
   async getLabelList() {
-    const result = await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "getLabelList"
-      }
+    const response = await this.callFunction('adminService', {
+      action: "getLabelList"
     })
 
-    if (result.result && result.result.data) {
-      return result.result.data.map(cloudData => this._convertToLabel(cloudData))
+    if (response.success && response.data) {
+      return response.data.map(cloudData => this._convertToLabel(cloudData))
     }
     return []
   }
@@ -97,12 +88,9 @@ class CloudAdminService extends BaseCloudService {
    * 新增标签
    */
   async addBaseLabel(labelName) {
-    return await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "addBaseLabel",
-        labelName: labelName
-      }
+    return await this.callFunction('adminService', {
+      action: "addBaseLabel",
+      labelName: labelName
     })
   }
 
@@ -110,15 +98,12 @@ class CloudAdminService extends BaseCloudService {
    * 获取分类列表
    */
   async getClassifyList() {
-    const result = await wx.cloud.callFunction({
-      name: 'adminService',
-      data: {
-        action: "getClassifyList"
-      }
+    const response = await this.callFunction('adminService', {
+      action: "getClassifyList"
     })
 
-    if (result.result && result.result.data) {
-      return result.result.data.map(cloudData => this._convertToClassify(cloudData))
+    if (response.success && response.data) {
+      return response.data.map(cloudData => this._convertToClassify(cloudData))
     }
     return []
   }
